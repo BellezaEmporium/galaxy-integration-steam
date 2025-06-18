@@ -742,3 +742,4 @@ service MobileDevice {
 	rpc RegisterMobileDevice (.CMobileDevice_RegisterMobileDevice_Request) returns (.CMobileDevice_RegisterMobileDevice_Response);
 	rpc DeregisterMobileDevice (.CMobileDevice_DeregisterMobileDevice_Notification) returns (.NoResponse);
 }
+
