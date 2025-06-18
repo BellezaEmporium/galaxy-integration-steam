@@ -1,12 +1,12 @@
 {
-	"tag_name": "v1.2.1",
+	"tag_name": "v1.2.1-pbfix",
 	"assets": [
 		{
-			"browser_download_url": "https://github.com/ABaumher/galaxy-integration-steam/releases/download/v1.2.1Beta/windows.zip",
+			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.1-pbfix/windows.zip",
 			"name": "windows.zip"
 		},
 		{
-			"browser_download_url": "https://github.com/ABaumher/galaxy-integration-steam/releases/download/v1.2.1Beta/mac.zip",
+			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.1-pbfix/mac.zip",
 			"name": "mac.zip"
 		}
 	]
