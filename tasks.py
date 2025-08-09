@@ -188,8 +188,8 @@ def GenerateProtobufMessages(c):
         fp.write(b"")
 
     all_files = " ".join(map(lambda x: '"' + os.path.join(proto_files_dir, x) + '"', os.listdir(proto_files_dir)))
-    print(f'{PROTOC_EXE} -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
-    c.run(f'{PROTOC_EXE} -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
+    print(f'"{PROTOC_EXE}" -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
+    c.run(f'"{PROTOC_EXE}" -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
 
 
 @task
