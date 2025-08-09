@@ -43,7 +43,6 @@ class WebSocketCachePersistence:
             return None
 
     def write(self, cell_id: int, server: str) -> None:
-        self._clean_up_servers_cache()
         logger.debug(f"Storing server in cache {server} at cell {cell_id}")
         cache = self._deserialize_cache()
 
@@ -76,10 +75,3 @@ class WebSocketCachePersistence:
 
         if cell_id_cache['timeout'] < time.time():
             raise CachePersistenceException(f"websocket_cache entry expired {cell_id_cache}")
-
-    # TODO: Temporary clean up, remove after 2021-08-01
-    # https://github.com/FriendsOfGalaxy/galaxy-integration-steam/pull/108
-    def _clean_up_servers_cache(self):
-        if 'servers_cache' in self._persistent_cache:
-            logger.info("Removing 'servers_cache' from persistent_cache")
-            self._persistent_cache.pop('servers_cache')
