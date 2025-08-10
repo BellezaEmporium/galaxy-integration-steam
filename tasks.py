@@ -86,19 +86,21 @@ def _get_filename_from_url(url: str) -> str:
     return url.split("/")[-1]
 
 
-def _pull_protobufs_internal(c, selection: str, silent: bool = False):
+def _pull_protobufs_internal(selection: str, silent: bool = False, clear_directory: bool = False):
     target_dir = os.path.join(BASE_DIR, "protobuf_files", "proto")
     list_file = os.path.join(BASE_DIR, "protobuf_files", f"protobuf_{selection}.txt")
 
-    try:
-        rmtree(target_dir)
-    except Exception:
-        pass  # directory probably just already exists
+    # Only clear the directory if explicitly requested
+    if clear_directory and os.path.exists(target_dir):
+        try:
+            rmtree(target_dir)
+        except Exception:
+            pass
 
     os.makedirs(target_dir, exist_ok=True)
 
     with open(list_file, "r") as file:
-        urls = filter(None, file.read().split("\n"))  # filter(None, ...) is used to strip empty lines from the collection
+        urls = filter(None, file.read().split("\n"))
 
     for url in urls:
         if not silent:
@@ -147,20 +149,22 @@ def InstallProtoc(c):
 
     print("protoc successfully installed")
 
-
-#for whatever reason if i give this an _ in the name it can't find it. i have no idea why. so TitleCase
 @task
 def PullProtobufSteamMessages(c, silent=False):
-   _pull_protobufs_internal(c, "steammessages", silent)
+   _pull_protobufs_internal("steammessages", silent)
 
 @task
 def PullProtobufWebui(c, silent=False):
-   _pull_protobufs_internal(c, "webui", silent)
+   _pull_protobufs_internal("webui", silent)
 
 @task
 def PullAllProtobufFiles(c, silent=False):
-    PullProtobufSteamMessages(c, silent)
-    PullProtobufWebui(c, silent)
+    target_dir = os.path.join(BASE_DIR, "protobuf_files", "proto")
+    if os.path.exists(target_dir):
+        rmtree(target_dir)
+    
+    _pull_protobufs_internal("steammessages", silent, clear_directory=False)
+    _pull_protobufs_internal("webui", silent, clear_directory=False)
 
 @task
 def ClearProtobufFiles(c):

@@ -659,6 +659,14 @@ enum EExternalSaleEventType {
 	k_EExternalSaleEventType_Franchise = 5;
 }
 
+enum EContentReportSubjectType {
+	k_EContentReportSubjectType_Invalid = 0;
+	k_EContentReportSubjectType_ForumPost = 1;
+	k_EContentReportSubjectType_UGCComment = 2;
+	k_EContentReportSubjectType_UGCFile = 3;
+	k_EContentReportSubjectType_MAX = 4;
+}
+
 enum EContentReportReason {
 	k_EContentReportReason_Invalid = 0;
 	k_EContentReportReason_Abusive = 1;
@@ -683,4 +691,20 @@ enum EContentModeratorLevel {
 	k_EContentModeratorLevel_Supervisor = 1;
 	k_EContentModeratorLevel_Valve = 10;
 	k_EContentModeratorLevel_MAX = 11;
+}
+
+enum EContentReportResolution {
+	k_EContentReportResolution_Unresolved = 0;
+	k_EContentReportResolution_Acquitted = 1;
+	k_EContentReportResolution_Removed = 2;
+	k_EContentReportResolution_Relabelled = 3;
+	k_EContentReportResolution_MAX = 4;
+}
+
+enum EContentModeratedReason {
+	k_EContentModeratedReason_Invalid = 0;
+	k_EContentModeratedReason_None = 1;
+	k_EContentModeratedReason_Unknown = 2;
+	k_EContentModeratedReason_AnimalHarm = 3;
+	k_EContentModeratedReason_MAX = 4;
 }
