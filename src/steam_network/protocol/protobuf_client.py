@@ -313,8 +313,15 @@ class ProtobufClient:
     async def _get_obfuscated_private_ip(self) -> int:
         logger.info('Websocket state is: %s' % self._socket.state.name)
         await self._socket.ensure_open()
-        host, port = self._socket.local_address
-        ip = int(ipaddress.IPv4Address(host))
+        try:
+            address_info = self._socket.local_address
+            host, port = address_info[0], address_info[1]
+            ip = int(ipaddress.IPv4Address(host))
+        except Exception as e:
+            logger.error(f"Error getting obfuscated private IP: {e}")
+            # Fallback if host is not a valid IPv4 address (e.g., IPv6)
+            # or if address unpacking fails for any other reason.
+            return 0
         obfuscated_ip = ip ^ self._IP_OBFUSCATION_MASK
         logger.debug(f"Local obfuscated IP: {obfuscated_ip}")
         return obfuscated_ip

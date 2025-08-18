@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
+from dataclasses_json.api import dataclass_json
 from typing import List, Dict, Optional, Set, AsyncGenerator
 import logging
 import json
@@ -110,7 +110,8 @@ class GamesCache(ProtoCache):
         return packages
 
     def update_packages(self):
-        self._parsing_status.packages_to_parse -= 1
+        if self._parsing_status.packages_to_parse is not None:
+            self._parsing_status.packages_to_parse -= 1
         self._update_ready_state()
 
     async def __consume_resolved_apps(self, shared_licenses: bool, apptype: str):
@@ -142,8 +143,15 @@ class GamesCache(ProtoCache):
     async def get_shared_games(self) -> AsyncGenerator[App, None]:
         async for app in self.__consume_resolved_apps(True, 'game'):
             yield app
+    
+    # Quite recent since Steam now allows EA Play to be purchased from their store.
+    async def get_subscription_games(self) -> AsyncGenerator[App, None]:
+        async for app in self.__consume_resolved_apps(False, 'subscription'):
+            yield app
 
     def update_license_apps(self, package_id, appid):
+        if self._parsing_status.apps_to_parse is None:
+            self._parsing_status.apps_to_parse = 0
         self._parsing_status.apps_to_parse += 1
         for license in self._storing_map.licenses:
             if license.package_id == package_id:
@@ -152,7 +160,8 @@ class GamesCache(ProtoCache):
     def update_app_title(self, appid, title, type, parent):
         for license in self._storing_map.licenses:
             if appid in license.app_ids:
-                self._parsing_status.apps_to_parse -= 1
+                if self._parsing_status.apps_to_parse is not None:
+                    self._parsing_status.apps_to_parse -= 1
         new_app = App(appid=appid, title=title, type=type, parent=parent)
         self._storing_map.apps[appid] = new_app
         if self.add_game_lever and new_app not in self._sent_apps:

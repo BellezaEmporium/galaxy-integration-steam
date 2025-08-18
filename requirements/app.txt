@@ -1,9 +1,10 @@
 galaxy.plugin.api==0.69
 
 # steam_network backend
-protobuf==3.19.4
-vdf==3.2
-pyobjc-framework-CoreServices==5.1.2; sys_platform == 'darwin'
-websockets==8.1
-dataclasses-json==0.4.2
-rsa==4.9
+protobuf==4.24.4
+vdf==3.4
+pyobjc-framework-CoreServices==9.2; sys_platform == 'darwin'
+websockets==11.0.3
+dataclasses-json==0.6.7
+rsa==4.9.1
+certifi

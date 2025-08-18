@@ -180,12 +180,20 @@ class LevelDbParser():
 
         try:
             db_log_file = self._read_db_log_file(level_db_dir, 'utf-8')
-            user_json_start, user_json_end, encoding = self._find_last_meta_miniprofile_pair(db_log_file)
+            result = self._find_last_meta_miniprofile_pair(db_log_file)
+            if result is None:
+                logger.warning("No META-miniprofile pair found in db log")
+                return []
+            user_json_start, user_json_end, encoding = result
 
             if encoding != 'utf-8':
                 logger.info("Last entry in utf-16 encoding")
                 db_log_file = self._read_db_log_file(level_db_dir, "utf-16-le")
-                user_json_start, user_json_end, encoding = self._find_last_meta_miniprofile_pair(db_log_file)
+                result = self._find_last_meta_miniprofile_pair(db_log_file)
+                if result is None:
+                    logger.warning("No META-miniprofile pair found in db log in utf-16 encoding")
+                    return []
+                user_json_start, user_json_end, encoding = result
 
             logger.info(f"Read lvldb file {db_log_file}")
             collections_list = self._retrieve_jsons(db_log_file, user_json_start, user_json_end)

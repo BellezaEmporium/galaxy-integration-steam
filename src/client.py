@@ -5,6 +5,7 @@ import os
 import enum
 import platform
 from typing import Iterable, List, Optional, Dict, Any
+import winreg
 
 import vdf
 from galaxy.api.types import LocalGame, LocalGameState
@@ -51,29 +52,23 @@ def load_vdf(path: str) -> Dict[str, Any]:
     return vdf.load(open(path, encoding="utf-8", errors="replace"), mapper=CaseInsensitiveDict)
 
 
-# Windows registry implementation
-if platform.system() == "Windows":
-    import winreg
-
-
-    def registry_apps_as_dict():
+def registry_apps_as_dict():
+    system = platform.system().lower()
+    if system == "windows":
         try:
             apps = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam\Apps")
         except OSError as e:
             logger.info("Steam Apps registry cannot be read: %s", str(e))
             return {}
-
-        apps_dict = dict()
+        apps_dict = {}
         sub_key_index = 0
-
         while True:
             try:
                 sub_key_name = winreg.EnumKey(apps, sub_key_index)
             except OSError:
-                # OSError marks end of the enumeration: https://docs.python.org/3/library/winreg.html#winreg.EnumKey
                 break
             try:
-                sub_key_dict = dict()
+                sub_key_dict = {}
                 with winreg.OpenKey(apps, sub_key_name) as sub_key:
                     value_index = 0
                     while True:
@@ -83,36 +78,25 @@ if platform.system() == "Windows":
                             value_index += 1
                         except OSError:
                             break
-                    winreg.CloseKey(sub_key)
                 apps_dict[sub_key_name] = sub_key_dict
                 sub_key_index += 1
             except OSError:
                 logger.exception("Failed to parse Steam registry")
                 break
-
         winreg.CloseKey(apps)
-
         return apps_dict
-
-
-elif platform.system().lower() == "darwin":
-    # MacOS "registry" implementation (registry.vdf file)
-    def registry_apps_as_dict():
+    elif system == "darwin":
         try:
             registry = load_vdf(os.path.expanduser("~/Library/Application Support/Steam/registry.vdf"))
         except OSError:
             logger.exception("Failed to read Steam registry")
             return {}
-
         try:
             return registry["Registry"]["HKCU"]["Software"]["Valve"]["Steam"]["Apps"]
         except KeyError:
             logger.exception("Failed to parse Steam registry")
             return {}
-
-# fallback for other systems
-else:
-    def registry_apps_as_dict():
+    else:
         return {}
 
 

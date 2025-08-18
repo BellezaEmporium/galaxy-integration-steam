@@ -1,5 +1,5 @@
 import abc
-from typing import Callable, Set, Union, Optional
+from typing import Set, Union, Optional
 from functools import partial
 
 from galaxy.api.consts import Feature
