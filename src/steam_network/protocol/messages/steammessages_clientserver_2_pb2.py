@@ -4,9 +4,8 @@
 """Generated protocol buffer code."""
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
-from google.protobuf import message as _message
-from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
+from google.protobuf.internal import builder as _builder
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -17,1190 +16,244 @@ import steammessages_base_pb2 as steammessages__base__pb2
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\"steammessages_clientserver_2.proto\x1a\x18steammessages_base.proto\"w\n\x1c\x43MsgClientUpdateUserGameInfo\x12\x14\n\x0csteamid_idgs\x18\x01 \x01(\x06\x12\x0e\n\x06gameid\x18\x02 \x01(\x06\x12\x0f\n\x07game_ip\x18\x03 \x01(\r\x12\x11\n\tgame_port\x18\x04 \x01(\r\x12\r\n\x05token\x18\x05 \x01(\x0c\"S\n\x1c\x43MsgClientRichPresenceUpload\x12\x18\n\x10rich_presence_kv\x18\x01 \x01(\x0c\x12\x19\n\x11steamid_broadcast\x18\x02 \x03(\x06\"8\n\x1d\x43MsgClientRichPresenceRequest\x12\x17\n\x0fsteamid_request\x18\x01 \x03(\x06\"\xf6\x01\n\x1a\x43MsgClientRichPresenceInfo\x12?\n\rrich_presence\x18\x01 \x03(\x0b\x32(.CMsgClientRichPresenceInfo.RichPresence\x1a \n\x02KV\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\x1au\n\x0cRichPresence\x12\x14\n\x0csteamid_user\x18\x01 \x01(\x06\x12\x18\n\x10rich_presence_kv\x18\x02 \x01(\x0c\x12\x35\n\rrich_presense\x18\x03 \x03(\x0b\x32\x1e.CMsgClientRichPresenceInfo.KV\".\n\x1c\x43MsgClientCheckFileSignature\x12\x0e\n\x06\x61pp_id\x18\x01 \x01(\r\"\xf7\x01\n$CMsgClientCheckFileSignatureResponse\x12\x0e\n\x06\x61pp_id\x18\x01 \x01(\r\x12\x0b\n\x03pid\x18\x02 \x01(\r\x12\x0f\n\x07\x65result\x18\x03 \x01(\r\x12\x10\n\x08\x66ilename\x18\x04 \x01(\t\x12\x18\n\x10\x65signatureresult\x18\x05 \x01(\r\x12\x10\n\x08sha_file\x18\x06 \x01(\x0c\x12\x17\n\x0fsignatureheader\x18\x07 \x01(\x0c\x12\x10\n\x08\x66ilesize\x18\x08 \x01(\r\x12\x14\n\x0cgetlasterror\x18\t \x01(\r\x12\"\n\x1a\x65valvesignaturecheckdetail\x18\n \x01(\r\"$\n\x15\x43MsgClientRegisterKey\x12\x0b\n\x03key\x18\x01 \x01(\t\"p\n\x1a\x43MsgClientPurchaseResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x1f\n\x17purchase_result_details\x18\x02 \x01(\x05\x12\x1d\n\x15purchase_receipt_info\x18\x03 \x01(\x0c\"\xc5\x01\n\x1c\x43MsgClientActivateOEMLicense\x12\x19\n\x11\x62ios_manufacturer\x18\x01 \x01(\t\x12\x19\n\x11\x62ios_serialnumber\x18\x02 \x01(\t\x12\x14\n\x0clicense_file\x18\x03 \x01(\x0c\x12\x1e\n\x16mainboard_manufacturer\x18\x04 \x01(\t\x12\x19\n\x11mainboard_product\x18\x05 \x01(\t\x12\x1e\n\x16mainboard_serialnumber\x18\x06 \x01(\t\"9\n\x1c\x43MsgClientRegisterOEMMachine\x12\x19\n\x11oem_register_file\x18\x01 \x01(\x0c\"7\n$CMsgClientRegisterOEMMachineResponse\x12\x0f\n\x07\x65result\x18\x01 \x01(\r\"K\n\x1f\x43MsgClientPurchaseWithMachineID\x12\x12\n\npackage_id\x18\x01 \x01(\r\x12\x14\n\x0cmachine_info\x18\x02 \x01(\x0c\"g\n CMsgTrading_InitiateTradeRequest\x12\x18\n\x10trade_request_id\x18\x01 \x01(\r\x12\x15\n\rother_steamid\x18\x02 \x01(\x04\x12\x12\n\nother_name\x18\x03 \x01(\t\"\xd2\x02\n!CMsgTrading_InitiateTradeResponse\x12\x10\n\x08response\x18\x01 \x01(\r\x12\x18\n\x10trade_request_id\x18\x02 \x01(\r\x12\x15\n\rother_steamid\x18\x03 \x01(\x04\x12 \n\x18steamguard_required_days\x18\x04 \x01(\r\x12 \n\x18new_device_cooldown_days\x18\x05 \x01(\r\x12-\n%default_password_reset_probation_days\x18\x06 \x01(\r\x12%\n\x1dpassword_reset_probation_days\x18\x07 \x01(\r\x12+\n#default_email_change_probation_days\x18\x08 \x01(\r\x12#\n\x1b\x65mail_change_probation_days\x18\t \x01(\r\"7\n\x1e\x43MsgTrading_CancelTradeRequest\x12\x15\n\rother_steamid\x18\x01 \x01(\x04\"1\n\x18\x43MsgTrading_StartSession\x12\x15\n\rother_steamid\x18\x01 \x01(\x04\"C\n\x1f\x43MsgClientGetDepotDecryptionKey\x12\x10\n\x08\x64\x65pot_id\x18\x01 \x01(\r\x12\x0e\n\x06\x61pp_id\x18\x02 \x01(\r\"m\n\'CMsgClientGetDepotDecryptionKeyResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x10\n\x08\x64\x65pot_id\x18\x02 \x01(\r\x12\x1c\n\x14\x64\x65pot_encryption_key\x18\x03 \x01(\x0c\"X\n\x1e\x43MsgClientCheckAppBetaPassword\x12\x0e\n\x06\x61pp_id\x18\x01 \x01(\r\x12\x14\n\x0c\x62\x65tapassword\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\x05\"\xda\x01\n&CMsgClientCheckAppBetaPasswordResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12K\n\rbetapasswords\x18\x04 \x03(\x0b\x32\x34.CMsgClientCheckAppBetaPasswordResponse.BetaPassword\x1aO\n\x0c\x42\x65taPassword\x12\x10\n\x08\x62\x65taname\x18\x01 \x01(\t\x12\x14\n\x0c\x62\x65tapassword\x18\x02 \x01(\t\x12\x17\n\x0f\x62\x65tadescription\x18\x03 \x01(\t\"\x99\x01\n\x1b\x43MsgClientUGSGetGlobalStats\x12\x0e\n\x06gameid\x18\x01 \x01(\x04\x12\x1e\n\x16history_days_requested\x18\x02 \x01(\r\x12\x1b\n\x13time_last_requested\x18\x03 \x01(\x07\x12\x18\n\x10\x66irst_day_cached\x18\x04 \x01(\r\x12\x13\n\x0b\x64\x61ys_cached\x18\x05 \x01(\r\"\x95\x02\n#CMsgClientUGSGetGlobalStatsResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x11\n\ttimestamp\x18\x02 \x01(\x07\x12\x13\n\x0b\x64\x61y_current\x18\x03 \x01(\x05\x12\x36\n\x04\x64\x61ys\x18\x04 \x03(\x0b\x32(.CMsgClientUGSGetGlobalStatsResponse.Day\x1az\n\x03\x44\x61y\x12\x0e\n\x06\x64\x61y_id\x18\x01 \x01(\r\x12<\n\x05stats\x18\x02 \x03(\x0b\x32-.CMsgClientUGSGetGlobalStatsResponse.Day.Stat\x1a%\n\x04Stat\x12\x0f\n\x07stat_id\x18\x01 \x01(\x05\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x03\"2\n\x19\x43MsgClientRedeemGuestPass\x12\x15\n\rguest_pass_id\x18\x01 \x01(\x06\"c\n!CMsgClientRedeemGuestPassResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\r:\x01\x32\x12\x12\n\npackage_id\x18\x02 \x01(\r\x12\x16\n\x0emust_own_appid\x18\x03 \x01(\r\"8\n\x1f\x43MsgClientGetClanActivityCounts\x12\x15\n\rsteamid_clans\x18\x01 \x03(\x04\"=\n\'CMsgClientGetClanActivityCountsResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\r:\x01\x32\"y\n\x19\x43MsgClientOGSReportString\x12\x13\n\x0b\x61\x63\x63umulated\x18\x01 \x01(\x08\x12\x11\n\tsessionid\x18\x02 \x01(\x04\x12\x10\n\x08severity\x18\x03 \x01(\x05\x12\x11\n\tformatter\x18\x04 \x01(\t\x12\x0f\n\x07varargs\x18\x05 \x01(\x0c\"P\n\x16\x43MsgClientOGSReportBug\x12\x11\n\tsessionid\x18\x01 \x01(\x04\x12\x0f\n\x07\x62ugtext\x18\x02 \x01(\t\x12\x12\n\nscreenshot\x18\x03 \x01(\x0c\"\x14\n\x12\x43MsgClientSentLogs\"\x92\x01\n\x0c\x43MsgGCClient\x12\r\n\x05\x61ppid\x18\x01 \x01(\r\x12\x0f\n\x07msgtype\x18\x02 \x01(\r\x12\x0f\n\x07payload\x18\x03 \x01(\x0c\x12\x0f\n\x07steamid\x18\x04 \x01(\x06\x12\x0e\n\x06gcname\x18\x05 \x01(\t\x12\n\n\x02ip\x18\x06 \x01(\r\x12\r\n\x05\x66lags\x18\x07 \x01(\r\"\x15\n\x05\x45\x46lag\x12\x0c\n\x08VALVE_DS\x10\x01\".\n\x1c\x43MsgClientRequestFreeLicense\x12\x0e\n\x06\x61ppids\x18\x02 \x03(\r\"n\n$CMsgClientRequestFreeLicenseResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\r:\x01\x32\x12\x1a\n\x12granted_packageids\x18\x02 \x03(\r\x12\x16\n\x0egranted_appids\x18\x03 \x03(\r\"\xd3\x01\n#CMsgDRMDownloadRequestWithCrashData\x12\x16\n\x0e\x64ownload_flags\x18\x01 \x01(\r\x12\x1c\n\x14\x64ownload_types_known\x18\x02 \x01(\r\x12\x10\n\x08guid_drm\x18\x03 \x01(\x0c\x12\x12\n\nguid_split\x18\x04 \x01(\x0c\x12\x12\n\nguid_merge\x18\x05 \x01(\x0c\x12\x13\n\x0bmodule_name\x18\x06 \x01(\t\x12\x13\n\x0bmodule_path\x18\x07 \x01(\t\x12\x12\n\ncrash_data\x18\x08 \x01(\x0c\"\xdb\x01\n\x17\x43MsgDRMDownloadResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\r:\x01\x32\x12\x0e\n\x06\x61pp_id\x18\x02 \x01(\r\x12\x1a\n\x12\x62lob_download_type\x18\x03 \x01(\r\x12\x12\n\nmerge_guid\x18\x04 \x01(\x0c\x12\x1c\n\x14\x64ownload_file_dfs_ip\x18\x05 \x01(\r\x12\x1e\n\x16\x64ownload_file_dfs_port\x18\x06 \x01(\r\x12\x19\n\x11\x64ownload_file_url\x18\x07 \x01(\t\x12\x13\n\x0bmodule_path\x18\x08 \x01(\t\"\xd7\x01\n\x12\x43MsgDRMFinalResult\x12\x12\n\x07\x65Result\x18\x01 \x01(\r:\x01\x32\x12\x0e\n\x06\x61pp_id\x18\x02 \x01(\r\x12\x1a\n\x12\x62lob_download_type\x18\x03 \x01(\r\x12\x14\n\x0c\x65rror_detail\x18\x04 \x01(\r\x12\x12\n\nmerge_guid\x18\x05 \x01(\x0c\x12\x1c\n\x14\x64ownload_file_dfs_ip\x18\x06 \x01(\r\x12\x1e\n\x16\x64ownload_file_dfs_port\x18\x07 \x01(\r\x12\x19\n\x11\x64ownload_file_url\x18\x08 \x01(\t\"3\n\x1e\x43MsgClientDPCheckSpecialSurvey\x12\x11\n\tsurvey_id\x18\x01 \x01(\r\"\x96\x01\n&CMsgClientDPCheckSpecialSurveyResponse\x12\x12\n\x07\x65Result\x18\x01 \x01(\r:\x01\x32\x12\r\n\x05state\x18\x02 \x01(\r\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x12\n\ncustom_url\x18\x04 \x01(\t\x12\x18\n\x10include_software\x18\x05 \x01(\x08\x12\r\n\x05token\x18\x06 \x01(\x0c\"H\n%CMsgClientDPSendSpecialSurveyResponse\x12\x11\n\tsurvey_id\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"O\n*CMsgClientDPSendSpecialSurveyResponseReply\x12\x12\n\x07\x65Result\x18\x01 \x01(\r:\x01\x32\x12\r\n\x05token\x18\x02 \x01(\x0c\"W\n\'CMsgClientRequestForgottenPasswordEmail\x12\x14\n\x0c\x61\x63\x63ount_name\x18\x01 \x01(\t\x12\x16\n\x0epassword_tried\x18\x02 \x01(\t\"_\n/CMsgClientRequestForgottenPasswordEmailResponse\x12\x0f\n\x07\x65Result\x18\x01 \x01(\r\x12\x1b\n\x13use_secret_question\x18\x02 \x01(\x08\"\xf6\x01\n\x1b\x43MsgClientItemAnnouncements\x12\x17\n\x0f\x63ount_new_items\x18\x01 \x01(\r\x12=\n\x0cunseen_items\x18\x02 \x03(\x0b\x32\'.CMsgClientItemAnnouncements.UnseenItem\x1a\x7f\n\nUnseenItem\x12\r\n\x05\x61ppid\x18\x01 \x01(\r\x12\x12\n\ncontext_id\x18\x02 \x01(\x04\x12\x10\n\x08\x61sset_id\x18\x03 \x01(\x04\x12\x0e\n\x06\x61mount\x18\x04 \x01(\x04\x12\x16\n\x0ertime32_gained\x18\x05 \x01(\x07\x12\x14\n\x0csource_appid\x18\x06 \x01(\r\"$\n\"CMsgClientRequestItemAnnouncements\"\x9e\x01\n\x1b\x43MsgClientUserNotifications\x12@\n\rnotifications\x18\x01 \x03(\x0b\x32).CMsgClientUserNotifications.Notification\x1a=\n\x0cNotification\x12\x1e\n\x16user_notification_type\x18\x01 \x01(\r\x12\r\n\x05\x63ount\x18\x02 \x01(\r\"\x88\x01\n\x1e\x43MsgClientCommentNotifications\x12\x1a\n\x12\x63ount_new_comments\x18\x01 \x01(\r\x12 \n\x18\x63ount_new_comments_owner\x18\x02 \x01(\r\x12(\n count_new_comments_subscriptions\x18\x03 \x01(\r\"\'\n%CMsgClientRequestCommentNotifications\"g\n$CMsgClientOfflineMessageNotification\x12\x18\n\x10offline_messages\x18\x01 \x01(\r\x12%\n\x1d\x66riends_with_offline_messages\x18\x02 \x03(\r\"&\n$CMsgClientRequestOfflineMessageCount\"8\n%CMsgClientChatGetFriendMessageHistory\x12\x0f\n\x07steamid\x18\x01 \x01(\x06\"\xf9\x01\n-CMsgClientChatGetFriendMessageHistoryResponse\x12\x0f\n\x07steamid\x18\x01 \x01(\x06\x12\x0f\n\x07success\x18\x02 \x01(\r\x12N\n\x08messages\x18\x03 \x03(\x0b\x32<.CMsgClientChatGetFriendMessageHistoryResponse.FriendMessage\x1aV\n\rFriendMessage\x12\x11\n\taccountid\x18\x01 \x01(\r\x12\x11\n\ttimestamp\x18\x02 \x01(\r\x12\x0f\n\x07message\x18\x03 \x01(\t\x12\x0e\n\x06unread\x18\x04 \x01(\x08\"9\n7CMsgClientChatGetFriendMessageHistoryForOfflineMessages\"7\n!CMsgClientFSGetFriendsSteamLevels\x12\x12\n\naccountids\x18\x01 \x03(\r\"\x9b\x01\n)CMsgClientFSGetFriendsSteamLevelsResponse\x12\x42\n\x07\x66riends\x18\x01 \x03(\x0b\x32\x31.CMsgClientFSGetFriendsSteamLevelsResponse.Friend\x1a*\n\x06\x46riend\x12\x11\n\taccountid\x18\x01 \x01(\r\x12\r\n\x05level\x18\x02 \x01(\r\"\xca\x01\n\x17\x43MsgClientEmailAddrInfo\x12\x15\n\remail_address\x18\x01 \x01(\t\x12\x1a\n\x12\x65mail_is_validated\x18\x02 \x01(\x08\x12 \n\x18\x65mail_validation_changed\x18\x03 \x01(\x08\x12\'\n\x1f\x63redential_change_requires_code\x18\x04 \x01(\x08\x12\x31\n)password_or_secretqa_change_requires_code\x18\x05 \x01(\x08\"\x8b\x01\n\x16\x43MsgCREItemVoteSummary\x12\x43\n\x12published_file_ids\x18\x01 \x03(\x0b\x32\'.CMsgCREItemVoteSummary.PublishedFileId\x1a,\n\x0fPublishedFileId\x12\x19\n\x11published_file_id\x18\x01 \x01(\x06\"\xfa\x01\n\x1e\x43MsgCREItemVoteSummaryResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12L\n\x13item_vote_summaries\x18\x02 \x03(\x0b\x32/.CMsgCREItemVoteSummaryResponse.ItemVoteSummary\x1av\n\x0fItemVoteSummary\x12\x19\n\x11published_file_id\x18\x01 \x01(\x06\x12\x11\n\tvotes_for\x18\x02 \x01(\x05\x12\x15\n\rvotes_against\x18\x03 \x01(\x05\x12\x0f\n\x07reports\x18\x04 \x01(\x05\x12\r\n\x05score\x18\x05 \x01(\x02\"P\n\"CMsgCREUpdateUserPublishedItemVote\x12\x19\n\x11published_file_id\x18\x01 \x01(\x06\x12\x0f\n\x07vote_up\x18\x02 \x01(\x08\"@\n*CMsgCREUpdateUserPublishedItemVoteResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\"\xab\x01\n&CMsgCREGetUserPublishedItemVoteDetails\x12S\n\x12published_file_ids\x18\x01 \x03(\x0b\x32\x37.CMsgCREGetUserPublishedItemVoteDetails.PublishedFileId\x1a,\n\x0fPublishedFileId\x12\x19\n\x11published_file_id\x18\x01 \x01(\x06\"\xea\x01\n.CMsgCREGetUserPublishedItemVoteDetailsResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x62\n\x16user_item_vote_details\x18\x02 \x03(\x0b\x32\x42.CMsgCREGetUserPublishedItemVoteDetailsResponse.UserItemVoteDetail\x1a@\n\x12UserItemVoteDetail\x12\x19\n\x11published_file_id\x18\x01 \x01(\x06\x12\x0f\n\x04vote\x18\x02 \x01(\x05:\x01\x30\"*\n\x16\x43MsgFSGetFollowerCount\x12\x10\n\x08steam_id\x18\x01 \x01(\x06\"F\n\x1e\x43MsgFSGetFollowerCountResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x10\n\x05\x63ount\x18\x02 \x01(\x05:\x01\x30\"(\n\x14\x43MsgFSGetIsFollowing\x12\x10\n\x08steam_id\x18\x01 \x01(\x06\"O\n\x1c\x43MsgFSGetIsFollowingResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x1b\n\x0cis_following\x18\x02 \x01(\x08:\x05\x66\x61lse\"3\n\x1c\x43MsgFSEnumerateFollowingList\x12\x13\n\x0bstart_index\x18\x01 \x01(\r\"d\n$CMsgFSEnumerateFollowingListResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x15\n\rtotal_results\x18\x02 \x01(\x05\x12\x11\n\tsteam_ids\x18\x03 \x03(\x06\"0\n\x1f\x43MsgDPGetNumberOfCurrentPlayers\x12\r\n\x05\x61ppid\x18\x01 \x01(\r\"S\n\'CMsgDPGetNumberOfCurrentPlayersResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x14\n\x0cplayer_count\x18\x02 \x01(\x05\"a\n#CMsgClientFriendUserStatusPublished\x12\x16\n\x0e\x66riend_steamid\x18\x01 \x01(\x06\x12\r\n\x05\x61ppid\x18\x02 \x01(\r\x12\x13\n\x0bstatus_text\x18\x03 \x01(\t\"h\n\x1d\x43MsgClientServiceMethodLegacy\x12\x13\n\x0bmethod_name\x18\x01 \x01(\t\x12\x19\n\x11serialized_method\x18\x02 \x01(\x0c\x12\x17\n\x0fis_notification\x18\x03 \x01(\x08\"`\n%CMsgClientServiceMethodLegacyResponse\x12\x13\n\x0bmethod_name\x18\x01 \x01(\t\x12\"\n\x1aserialized_method_response\x18\x02 \x01(\x0c\"5\n\x10\x43MsgClientUIMode\x12\x0e\n\x06uimode\x18\x01 \x01(\r\x12\x11\n\tchat_mode\x18\x02 \x01(\r\"<\n&CMsgClientVanityURLChangedNotification\x12\x12\n\nvanity_url\x18\x01 \x01(\t\"y\n%CMsgClientAuthorizeLocalDeviceRequest\x12\x1a\n\x12\x64\x65vice_description\x18\x01 \x01(\t\x12\x18\n\x10owner_account_id\x18\x02 \x01(\r\x12\x1a\n\x12local_device_token\x18\x03 \x01(\x04\"k\n\x1e\x43MsgClientAuthorizeLocalDevice\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x18\n\x10owner_account_id\x18\x02 \x01(\r\x12\x1b\n\x13\x61uthed_device_token\x18\x03 \x01(\x04\"v\n*CMsgClientAuthorizeLocalDeviceNotification\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x18\n\x10owner_account_id\x18\x02 \x01(\r\x12\x1a\n\x12local_device_token\x18\x03 \x01(\x04\"n\n\"CMsgClientDeauthorizeDeviceRequest\x12\"\n\x1a\x64\x65\x61uthorization_account_id\x18\x01 \x01(\r\x12$\n\x1c\x64\x65\x61uthorization_device_token\x18\x02 \x01(\x04\"U\n\x1b\x43MsgClientDeauthorizeDevice\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\"\n\x1a\x64\x65\x61uthorization_account_id\x18\x02 \x01(\r\"\xd1\x01\n&CMsgClientUseLocalDeviceAuthorizations\x12 \n\x18\x61uthorization_account_id\x18\x01 \x03(\r\x12J\n\rdevice_tokens\x18\x02 \x03(\x0b\x32\x33.CMsgClientUseLocalDeviceAuthorizations.DeviceToken\x1a\x39\n\x0b\x44\x65viceToken\x12\x18\n\x10owner_account_id\x18\x01 \x01(\r\x12\x10\n\x08token_id\x18\x02 \x01(\x04\" \n\x1e\x43MsgClientGetAuthorizedDevices\"\xad\x02\n&CMsgClientGetAuthorizedDevicesResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12S\n\x11\x61uthorized_device\x18\x02 \x03(\x0b\x32\x38.CMsgClientGetAuthorizedDevicesResponse.AuthorizedDevice\x1a\x99\x01\n\x10\x41uthorizedDevice\x12\x19\n\x11\x61uth_device_token\x18\x01 \x01(\x04\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\x12\x18\n\x10last_access_time\x18\x03 \x01(\r\x12\x13\n\x0b\x62orrower_id\x18\x04 \x01(\r\x12\x12\n\nis_pending\x18\x05 \x01(\x08\x12\x12\n\napp_played\x18\x06 \x01(\r\"\xc2\x01\n!CMsgClientSharedLibraryLockStatus\x12H\n\x0elocked_library\x18\x01 \x03(\x0b\x32\x30.CMsgClientSharedLibraryLockStatus.LockedLibrary\x12\x1d\n\x15own_library_locked_by\x18\x02 \x01(\r\x1a\x34\n\rLockedLibrary\x12\x10\n\x08owner_id\x18\x01 \x01(\r\x12\x11\n\tlocked_by\x18\x02 \x01(\r\"\xa7\x01\n\"CMsgClientSharedLibraryStopPlaying\x12\x14\n\x0cseconds_left\x18\x01 \x01(\x05\x12>\n\tstop_apps\x18\x02 \x03(\x0b\x32+.CMsgClientSharedLibraryStopPlaying.StopApp\x1a+\n\x07StopApp\x12\x0e\n\x06\x61pp_id\x18\x01 \x01(\r\x12\x10\n\x08owner_id\x18\x02 \x01(\r\"\x81\x02\n\x15\x43MsgClientServiceCall\x12\x15\n\rsysid_routing\x18\x01 \x01(\x0c\x12\x13\n\x0b\x63\x61ll_handle\x18\x02 \x01(\r\x12\x12\n\nmodule_crc\x18\x03 \x01(\r\x12\x13\n\x0bmodule_hash\x18\x04 \x01(\x0c\x12\x13\n\x0b\x66unction_id\x18\x05 \x01(\r\x12\x16\n\x0e\x63ub_output_max\x18\x06 \x01(\r\x12\r\n\x05\x66lags\x18\x07 \x01(\r\x12\x15\n\rcallparameter\x18\x08 \x01(\x0c\x12\x11\n\tping_only\x18\t \x01(\x08\x12\x1d\n\x15max_outstanding_calls\x18\n \x01(\r\x12\x0e\n\x06\x61pp_id\x18\x0b \x01(\r\"Z\n\x17\x43MsgClientServiceModule\x12\x12\n\nmodule_crc\x18\x01 \x01(\r\x12\x13\n\x0bmodule_hash\x18\x02 \x01(\x0c\x12\x16\n\x0emodule_content\x18\x03 \x01(\x0c\"\xb8\x04\n\x1d\x43MsgClientServiceCallResponse\x12\x15\n\rsysid_routing\x18\x01 \x01(\x0c\x12\x13\n\x0b\x63\x61ll_handle\x18\x02 \x01(\r\x12\x12\n\nmodule_crc\x18\x03 \x01(\r\x12\x13\n\x0bmodule_hash\x18\x04 \x01(\x0c\x12\x13\n\x0b\x65\x63\x61llresult\x18\x05 \x01(\r\x12\x16\n\x0eresult_content\x18\x06 \x01(\x0c\x12\x17\n\x0fos_version_info\x18\x07 \x01(\x0c\x12\x13\n\x0bsystem_info\x18\x08 \x01(\x0c\x12\x14\n\x0cload_address\x18\t \x01(\x06\x12\x18\n\x10\x65xception_record\x18\n \x01(\x0c\x12 \n\x18portable_os_version_info\x18\x0b \x01(\x0c\x12\x1c\n\x14portable_system_info\x18\x0c \x01(\x0c\x12\x15\n\rwas_converted\x18\r \x01(\x08\x12\x17\n\x0finternal_result\x18\x0e \x01(\r\x12\x15\n\rcurrent_count\x18\x0f \x01(\r\x12\x18\n\x10last_call_handle\x18\x10 \x01(\r\x12\x1c\n\x14last_call_module_crc\x18\x11 \x01(\r\x12\x1f\n\x17last_call_sysid_routing\x18\x12 \x01(\x0c\x12\x18\n\x10last_ecallresult\x18\x13 \x01(\r\x12\x1c\n\x14last_callissue_delta\x18\x14 \x01(\r\x12\x1f\n\x17last_callcomplete_delta\x18\x15 \x01(\r\"C\n\x10\x43MsgAMUnlockH264\x12\r\n\x05\x61ppid\x18\x01 \x01(\r\x12\x10\n\x08platform\x18\x02 \x01(\x05\x12\x0e\n\x06reason\x18\x03 \x01(\x05\"F\n\x18\x43MsgAMUnlockH264Response\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x16\n\x0e\x65ncryption_key\x18\x02 \x01(\x0c\"M\n\x1d\x43MsgClientPlayingSessionState\x12\x17\n\x0fplaying_blocked\x18\x02 \x01(\x08\x12\x13\n\x0bplaying_app\x18\x03 \x01(\r\"6\n\x1c\x43MsgClientKickPlayingSession\x12\x16\n\x0eonly_stop_game\x18\x01 \x01(\x08\"v\n\x1f\x43MsgClientVoiceCallPreAuthorize\x12\x16\n\x0e\x63\x61ller_steamid\x18\x01 \x01(\x06\x12\x18\n\x10receiver_steamid\x18\x02 \x01(\x06\x12\x11\n\tcaller_id\x18\x03 \x01(\x05\x12\x0e\n\x06hangup\x18\x04 \x01(\x08\"\x82\x01\n\'CMsgClientVoiceCallPreAuthorizeResponse\x12\x16\n\x0e\x63\x61ller_steamid\x18\x01 \x01(\x06\x12\x18\n\x10receiver_steamid\x18\x02 \x01(\x06\x12\x12\n\x07\x65result\x18\x03 \x01(\x05:\x01\x32\x12\x11\n\tcaller_id\x18\x04 \x01(\x05\"B\n\x1c\x43MsgBadgeCraftedNotification\x12\r\n\x05\x61ppid\x18\x01 \x01(\r\x12\x13\n\x0b\x62\x61\x64ge_level\x18\x02 \x01(\r\"w\n CMsgClientStartPeerContentServer\x12\x0f\n\x07steamid\x18\x01 \x01(\x06\x12\x18\n\x10\x63lient_remote_id\x18\x02 \x01(\x06\x12\x0e\n\x06\x61pp_id\x18\x03 \x01(\r\x12\x18\n\x10\x63urrent_build_id\x18\x04 \x01(\r\"\x7f\n(CMsgClientStartPeerContentServerResponse\x12\x0e\n\x06result\x18\x01 \x01(\r\x12\x13\n\x0bserver_port\x18\x02 \x01(\r\x12\x18\n\x10installed_depots\x18\x03 \x03(\r\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x04 \x01(\x04\"f\n\x1c\x43MsgClientGetPeerContentInfo\x12\x0f\n\x07steamid\x18\x01 \x01(\x06\x12\x18\n\x10\x63lient_remote_id\x18\x02 \x01(\x06\x12\x1b\n\x13owned_games_visible\x18\x03 \x01(\x08\"D\n$CMsgClientGetPeerContentInfoResponse\x12\x0e\n\x06result\x18\x01 \x01(\r\x12\x0c\n\x04\x61pps\x18\x02 \x03(\r\"-\n\x1b\x43MsgClientPendingGameLaunch\x12\x0e\n\x06\x61pp_id\x18\x01 \x01(\r\"Y\n#CMsgClientPendingGameLaunchResponse\x12\x12\n\x07\x65result\x18\x01 \x01(\x05:\x01\x32\x12\x0e\n\x06\x61pp_id\x18\x02 \x01(\r\x12\x0e\n\x06\x65nvkey\x18\x03 \x01(\tB\x05H\x01\x90\x01\x00')
 
-
-
-_CMSGCLIENTUPDATEUSERGAMEINFO = DESCRIPTOR.message_types_by_name['CMsgClientUpdateUserGameInfo']
-_CMSGCLIENTRICHPRESENCEUPLOAD = DESCRIPTOR.message_types_by_name['CMsgClientRichPresenceUpload']
-_CMSGCLIENTRICHPRESENCEREQUEST = DESCRIPTOR.message_types_by_name['CMsgClientRichPresenceRequest']
-_CMSGCLIENTRICHPRESENCEINFO = DESCRIPTOR.message_types_by_name['CMsgClientRichPresenceInfo']
-_CMSGCLIENTRICHPRESENCEINFO_KV = _CMSGCLIENTRICHPRESENCEINFO.nested_types_by_name['KV']
-_CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE = _CMSGCLIENTRICHPRESENCEINFO.nested_types_by_name['RichPresence']
-_CMSGCLIENTCHECKFILESIGNATURE = DESCRIPTOR.message_types_by_name['CMsgClientCheckFileSignature']
-_CMSGCLIENTCHECKFILESIGNATURERESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientCheckFileSignatureResponse']
-_CMSGCLIENTREGISTERKEY = DESCRIPTOR.message_types_by_name['CMsgClientRegisterKey']
-_CMSGCLIENTPURCHASERESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientPurchaseResponse']
-_CMSGCLIENTACTIVATEOEMLICENSE = DESCRIPTOR.message_types_by_name['CMsgClientActivateOEMLicense']
-_CMSGCLIENTREGISTEROEMMACHINE = DESCRIPTOR.message_types_by_name['CMsgClientRegisterOEMMachine']
-_CMSGCLIENTREGISTEROEMMACHINERESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientRegisterOEMMachineResponse']
-_CMSGCLIENTPURCHASEWITHMACHINEID = DESCRIPTOR.message_types_by_name['CMsgClientPurchaseWithMachineID']
-_CMSGTRADING_INITIATETRADEREQUEST = DESCRIPTOR.message_types_by_name['CMsgTrading_InitiateTradeRequest']
-_CMSGTRADING_INITIATETRADERESPONSE = DESCRIPTOR.message_types_by_name['CMsgTrading_InitiateTradeResponse']
-_CMSGTRADING_CANCELTRADEREQUEST = DESCRIPTOR.message_types_by_name['CMsgTrading_CancelTradeRequest']
-_CMSGTRADING_STARTSESSION = DESCRIPTOR.message_types_by_name['CMsgTrading_StartSession']
-_CMSGCLIENTGETDEPOTDECRYPTIONKEY = DESCRIPTOR.message_types_by_name['CMsgClientGetDepotDecryptionKey']
-_CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientGetDepotDecryptionKeyResponse']
-_CMSGCLIENTCHECKAPPBETAPASSWORD = DESCRIPTOR.message_types_by_name['CMsgClientCheckAppBetaPassword']
-_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientCheckAppBetaPasswordResponse']
-_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD = _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE.nested_types_by_name['BetaPassword']
-_CMSGCLIENTUGSGETGLOBALSTATS = DESCRIPTOR.message_types_by_name['CMsgClientUGSGetGlobalStats']
-_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientUGSGetGlobalStatsResponse']
-_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY = _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE.nested_types_by_name['Day']
-_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT = _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY.nested_types_by_name['Stat']
-_CMSGCLIENTREDEEMGUESTPASS = DESCRIPTOR.message_types_by_name['CMsgClientRedeemGuestPass']
-_CMSGCLIENTREDEEMGUESTPASSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientRedeemGuestPassResponse']
-_CMSGCLIENTGETCLANACTIVITYCOUNTS = DESCRIPTOR.message_types_by_name['CMsgClientGetClanActivityCounts']
-_CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientGetClanActivityCountsResponse']
-_CMSGCLIENTOGSREPORTSTRING = DESCRIPTOR.message_types_by_name['CMsgClientOGSReportString']
-_CMSGCLIENTOGSREPORTBUG = DESCRIPTOR.message_types_by_name['CMsgClientOGSReportBug']
-_CMSGCLIENTSENTLOGS = DESCRIPTOR.message_types_by_name['CMsgClientSentLogs']
-_CMSGGCCLIENT = DESCRIPTOR.message_types_by_name['CMsgGCClient']
-_CMSGCLIENTREQUESTFREELICENSE = DESCRIPTOR.message_types_by_name['CMsgClientRequestFreeLicense']
-_CMSGCLIENTREQUESTFREELICENSERESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientRequestFreeLicenseResponse']
-_CMSGDRMDOWNLOADREQUESTWITHCRASHDATA = DESCRIPTOR.message_types_by_name['CMsgDRMDownloadRequestWithCrashData']
-_CMSGDRMDOWNLOADRESPONSE = DESCRIPTOR.message_types_by_name['CMsgDRMDownloadResponse']
-_CMSGDRMFINALRESULT = DESCRIPTOR.message_types_by_name['CMsgDRMFinalResult']
-_CMSGCLIENTDPCHECKSPECIALSURVEY = DESCRIPTOR.message_types_by_name['CMsgClientDPCheckSpecialSurvey']
-_CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientDPCheckSpecialSurveyResponse']
-_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientDPSendSpecialSurveyResponse']
-_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY = DESCRIPTOR.message_types_by_name['CMsgClientDPSendSpecialSurveyResponseReply']
-_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL = DESCRIPTOR.message_types_by_name['CMsgClientRequestForgottenPasswordEmail']
-_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientRequestForgottenPasswordEmailResponse']
-_CMSGCLIENTITEMANNOUNCEMENTS = DESCRIPTOR.message_types_by_name['CMsgClientItemAnnouncements']
-_CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM = _CMSGCLIENTITEMANNOUNCEMENTS.nested_types_by_name['UnseenItem']
-_CMSGCLIENTREQUESTITEMANNOUNCEMENTS = DESCRIPTOR.message_types_by_name['CMsgClientRequestItemAnnouncements']
-_CMSGCLIENTUSERNOTIFICATIONS = DESCRIPTOR.message_types_by_name['CMsgClientUserNotifications']
-_CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION = _CMSGCLIENTUSERNOTIFICATIONS.nested_types_by_name['Notification']
-_CMSGCLIENTCOMMENTNOTIFICATIONS = DESCRIPTOR.message_types_by_name['CMsgClientCommentNotifications']
-_CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS = DESCRIPTOR.message_types_by_name['CMsgClientRequestCommentNotifications']
-_CMSGCLIENTOFFLINEMESSAGENOTIFICATION = DESCRIPTOR.message_types_by_name['CMsgClientOfflineMessageNotification']
-_CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT = DESCRIPTOR.message_types_by_name['CMsgClientRequestOfflineMessageCount']
-_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY = DESCRIPTOR.message_types_by_name['CMsgClientChatGetFriendMessageHistory']
-_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientChatGetFriendMessageHistoryResponse']
-_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE = _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE.nested_types_by_name['FriendMessage']
-_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES = DESCRIPTOR.message_types_by_name['CMsgClientChatGetFriendMessageHistoryForOfflineMessages']
-_CMSGCLIENTFSGETFRIENDSSTEAMLEVELS = DESCRIPTOR.message_types_by_name['CMsgClientFSGetFriendsSteamLevels']
-_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientFSGetFriendsSteamLevelsResponse']
-_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND = _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE.nested_types_by_name['Friend']
-_CMSGCLIENTEMAILADDRINFO = DESCRIPTOR.message_types_by_name['CMsgClientEmailAddrInfo']
-_CMSGCREITEMVOTESUMMARY = DESCRIPTOR.message_types_by_name['CMsgCREItemVoteSummary']
-_CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID = _CMSGCREITEMVOTESUMMARY.nested_types_by_name['PublishedFileId']
-_CMSGCREITEMVOTESUMMARYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgCREItemVoteSummaryResponse']
-_CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY = _CMSGCREITEMVOTESUMMARYRESPONSE.nested_types_by_name['ItemVoteSummary']
-_CMSGCREUPDATEUSERPUBLISHEDITEMVOTE = DESCRIPTOR.message_types_by_name['CMsgCREUpdateUserPublishedItemVote']
-_CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE = DESCRIPTOR.message_types_by_name['CMsgCREUpdateUserPublishedItemVoteResponse']
-_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS = DESCRIPTOR.message_types_by_name['CMsgCREGetUserPublishedItemVoteDetails']
-_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID = _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS.nested_types_by_name['PublishedFileId']
-_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgCREGetUserPublishedItemVoteDetailsResponse']
-_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL = _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE.nested_types_by_name['UserItemVoteDetail']
-_CMSGFSGETFOLLOWERCOUNT = DESCRIPTOR.message_types_by_name['CMsgFSGetFollowerCount']
-_CMSGFSGETFOLLOWERCOUNTRESPONSE = DESCRIPTOR.message_types_by_name['CMsgFSGetFollowerCountResponse']
-_CMSGFSGETISFOLLOWING = DESCRIPTOR.message_types_by_name['CMsgFSGetIsFollowing']
-_CMSGFSGETISFOLLOWINGRESPONSE = DESCRIPTOR.message_types_by_name['CMsgFSGetIsFollowingResponse']
-_CMSGFSENUMERATEFOLLOWINGLIST = DESCRIPTOR.message_types_by_name['CMsgFSEnumerateFollowingList']
-_CMSGFSENUMERATEFOLLOWINGLISTRESPONSE = DESCRIPTOR.message_types_by_name['CMsgFSEnumerateFollowingListResponse']
-_CMSGDPGETNUMBEROFCURRENTPLAYERS = DESCRIPTOR.message_types_by_name['CMsgDPGetNumberOfCurrentPlayers']
-_CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE = DESCRIPTOR.message_types_by_name['CMsgDPGetNumberOfCurrentPlayersResponse']
-_CMSGCLIENTFRIENDUSERSTATUSPUBLISHED = DESCRIPTOR.message_types_by_name['CMsgClientFriendUserStatusPublished']
-_CMSGCLIENTSERVICEMETHODLEGACY = DESCRIPTOR.message_types_by_name['CMsgClientServiceMethodLegacy']
-_CMSGCLIENTSERVICEMETHODLEGACYRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientServiceMethodLegacyResponse']
-_CMSGCLIENTUIMODE = DESCRIPTOR.message_types_by_name['CMsgClientUIMode']
-_CMSGCLIENTVANITYURLCHANGEDNOTIFICATION = DESCRIPTOR.message_types_by_name['CMsgClientVanityURLChangedNotification']
-_CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST = DESCRIPTOR.message_types_by_name['CMsgClientAuthorizeLocalDeviceRequest']
-_CMSGCLIENTAUTHORIZELOCALDEVICE = DESCRIPTOR.message_types_by_name['CMsgClientAuthorizeLocalDevice']
-_CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION = DESCRIPTOR.message_types_by_name['CMsgClientAuthorizeLocalDeviceNotification']
-_CMSGCLIENTDEAUTHORIZEDEVICEREQUEST = DESCRIPTOR.message_types_by_name['CMsgClientDeauthorizeDeviceRequest']
-_CMSGCLIENTDEAUTHORIZEDEVICE = DESCRIPTOR.message_types_by_name['CMsgClientDeauthorizeDevice']
-_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS = DESCRIPTOR.message_types_by_name['CMsgClientUseLocalDeviceAuthorizations']
-_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN = _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS.nested_types_by_name['DeviceToken']
-_CMSGCLIENTGETAUTHORIZEDDEVICES = DESCRIPTOR.message_types_by_name['CMsgClientGetAuthorizedDevices']
-_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientGetAuthorizedDevicesResponse']
-_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE = _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE.nested_types_by_name['AuthorizedDevice']
-_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS = DESCRIPTOR.message_types_by_name['CMsgClientSharedLibraryLockStatus']
-_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY = _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS.nested_types_by_name['LockedLibrary']
-_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING = DESCRIPTOR.message_types_by_name['CMsgClientSharedLibraryStopPlaying']
-_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP = _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING.nested_types_by_name['StopApp']
-_CMSGCLIENTSERVICECALL = DESCRIPTOR.message_types_by_name['CMsgClientServiceCall']
-_CMSGCLIENTSERVICEMODULE = DESCRIPTOR.message_types_by_name['CMsgClientServiceModule']
-_CMSGCLIENTSERVICECALLRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientServiceCallResponse']
-_CMSGAMUNLOCKH264 = DESCRIPTOR.message_types_by_name['CMsgAMUnlockH264']
-_CMSGAMUNLOCKH264RESPONSE = DESCRIPTOR.message_types_by_name['CMsgAMUnlockH264Response']
-_CMSGCLIENTPLAYINGSESSIONSTATE = DESCRIPTOR.message_types_by_name['CMsgClientPlayingSessionState']
-_CMSGCLIENTKICKPLAYINGSESSION = DESCRIPTOR.message_types_by_name['CMsgClientKickPlayingSession']
-_CMSGCLIENTVOICECALLPREAUTHORIZE = DESCRIPTOR.message_types_by_name['CMsgClientVoiceCallPreAuthorize']
-_CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientVoiceCallPreAuthorizeResponse']
-_CMSGBADGECRAFTEDNOTIFICATION = DESCRIPTOR.message_types_by_name['CMsgBadgeCraftedNotification']
-_CMSGCLIENTSTARTPEERCONTENTSERVER = DESCRIPTOR.message_types_by_name['CMsgClientStartPeerContentServer']
-_CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientStartPeerContentServerResponse']
-_CMSGCLIENTGETPEERCONTENTINFO = DESCRIPTOR.message_types_by_name['CMsgClientGetPeerContentInfo']
-_CMSGCLIENTGETPEERCONTENTINFORESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientGetPeerContentInfoResponse']
-_CMSGCLIENTPENDINGGAMELAUNCH = DESCRIPTOR.message_types_by_name['CMsgClientPendingGameLaunch']
-_CMSGCLIENTPENDINGGAMELAUNCHRESPONSE = DESCRIPTOR.message_types_by_name['CMsgClientPendingGameLaunchResponse']
-_CMSGGCCLIENT_EFLAG = _CMSGGCCLIENT.enum_types_by_name['EFlag']
-CMsgClientUpdateUserGameInfo = _reflection.GeneratedProtocolMessageType('CMsgClientUpdateUserGameInfo', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTUPDATEUSERGAMEINFO,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUpdateUserGameInfo)
-  })
-_sym_db.RegisterMessage(CMsgClientUpdateUserGameInfo)
-
-CMsgClientRichPresenceUpload = _reflection.GeneratedProtocolMessageType('CMsgClientRichPresenceUpload', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTRICHPRESENCEUPLOAD,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRichPresenceUpload)
-  })
-_sym_db.RegisterMessage(CMsgClientRichPresenceUpload)
-
-CMsgClientRichPresenceRequest = _reflection.GeneratedProtocolMessageType('CMsgClientRichPresenceRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTRICHPRESENCEREQUEST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRichPresenceRequest)
-  })
-_sym_db.RegisterMessage(CMsgClientRichPresenceRequest)
-
-CMsgClientRichPresenceInfo = _reflection.GeneratedProtocolMessageType('CMsgClientRichPresenceInfo', (_message.Message,), {
-
-  'KV' : _reflection.GeneratedProtocolMessageType('KV', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTRICHPRESENCEINFO_KV,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientRichPresenceInfo.KV)
-    })
-  ,
-
-  'RichPresence' : _reflection.GeneratedProtocolMessageType('RichPresence', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientRichPresenceInfo.RichPresence)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTRICHPRESENCEINFO,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRichPresenceInfo)
-  })
-_sym_db.RegisterMessage(CMsgClientRichPresenceInfo)
-_sym_db.RegisterMessage(CMsgClientRichPresenceInfo.KV)
-_sym_db.RegisterMessage(CMsgClientRichPresenceInfo.RichPresence)
-
-CMsgClientCheckFileSignature = _reflection.GeneratedProtocolMessageType('CMsgClientCheckFileSignature', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCHECKFILESIGNATURE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientCheckFileSignature)
-  })
-_sym_db.RegisterMessage(CMsgClientCheckFileSignature)
-
-CMsgClientCheckFileSignatureResponse = _reflection.GeneratedProtocolMessageType('CMsgClientCheckFileSignatureResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCHECKFILESIGNATURERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientCheckFileSignatureResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientCheckFileSignatureResponse)
-
-CMsgClientRegisterKey = _reflection.GeneratedProtocolMessageType('CMsgClientRegisterKey', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREGISTERKEY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRegisterKey)
-  })
-_sym_db.RegisterMessage(CMsgClientRegisterKey)
-
-CMsgClientPurchaseResponse = _reflection.GeneratedProtocolMessageType('CMsgClientPurchaseResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTPURCHASERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientPurchaseResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientPurchaseResponse)
-
-CMsgClientActivateOEMLicense = _reflection.GeneratedProtocolMessageType('CMsgClientActivateOEMLicense', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTACTIVATEOEMLICENSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientActivateOEMLicense)
-  })
-_sym_db.RegisterMessage(CMsgClientActivateOEMLicense)
-
-CMsgClientRegisterOEMMachine = _reflection.GeneratedProtocolMessageType('CMsgClientRegisterOEMMachine', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREGISTEROEMMACHINE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRegisterOEMMachine)
-  })
-_sym_db.RegisterMessage(CMsgClientRegisterOEMMachine)
-
-CMsgClientRegisterOEMMachineResponse = _reflection.GeneratedProtocolMessageType('CMsgClientRegisterOEMMachineResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREGISTEROEMMACHINERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRegisterOEMMachineResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientRegisterOEMMachineResponse)
-
-CMsgClientPurchaseWithMachineID = _reflection.GeneratedProtocolMessageType('CMsgClientPurchaseWithMachineID', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTPURCHASEWITHMACHINEID,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientPurchaseWithMachineID)
-  })
-_sym_db.RegisterMessage(CMsgClientPurchaseWithMachineID)
-
-CMsgTrading_InitiateTradeRequest = _reflection.GeneratedProtocolMessageType('CMsgTrading_InitiateTradeRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGTRADING_INITIATETRADEREQUEST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgTrading_InitiateTradeRequest)
-  })
-_sym_db.RegisterMessage(CMsgTrading_InitiateTradeRequest)
-
-CMsgTrading_InitiateTradeResponse = _reflection.GeneratedProtocolMessageType('CMsgTrading_InitiateTradeResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGTRADING_INITIATETRADERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgTrading_InitiateTradeResponse)
-  })
-_sym_db.RegisterMessage(CMsgTrading_InitiateTradeResponse)
-
-CMsgTrading_CancelTradeRequest = _reflection.GeneratedProtocolMessageType('CMsgTrading_CancelTradeRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGTRADING_CANCELTRADEREQUEST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgTrading_CancelTradeRequest)
-  })
-_sym_db.RegisterMessage(CMsgTrading_CancelTradeRequest)
-
-CMsgTrading_StartSession = _reflection.GeneratedProtocolMessageType('CMsgTrading_StartSession', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGTRADING_STARTSESSION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgTrading_StartSession)
-  })
-_sym_db.RegisterMessage(CMsgTrading_StartSession)
-
-CMsgClientGetDepotDecryptionKey = _reflection.GeneratedProtocolMessageType('CMsgClientGetDepotDecryptionKey', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETDEPOTDECRYPTIONKEY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetDepotDecryptionKey)
-  })
-_sym_db.RegisterMessage(CMsgClientGetDepotDecryptionKey)
-
-CMsgClientGetDepotDecryptionKeyResponse = _reflection.GeneratedProtocolMessageType('CMsgClientGetDepotDecryptionKeyResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetDepotDecryptionKeyResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientGetDepotDecryptionKeyResponse)
-
-CMsgClientCheckAppBetaPassword = _reflection.GeneratedProtocolMessageType('CMsgClientCheckAppBetaPassword', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCHECKAPPBETAPASSWORD,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientCheckAppBetaPassword)
-  })
-_sym_db.RegisterMessage(CMsgClientCheckAppBetaPassword)
-
-CMsgClientCheckAppBetaPasswordResponse = _reflection.GeneratedProtocolMessageType('CMsgClientCheckAppBetaPasswordResponse', (_message.Message,), {
-
-  'BetaPassword' : _reflection.GeneratedProtocolMessageType('BetaPassword', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientCheckAppBetaPasswordResponse.BetaPassword)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientCheckAppBetaPasswordResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientCheckAppBetaPasswordResponse)
-_sym_db.RegisterMessage(CMsgClientCheckAppBetaPasswordResponse.BetaPassword)
-
-CMsgClientUGSGetGlobalStats = _reflection.GeneratedProtocolMessageType('CMsgClientUGSGetGlobalStats', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTUGSGETGLOBALSTATS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUGSGetGlobalStats)
-  })
-_sym_db.RegisterMessage(CMsgClientUGSGetGlobalStats)
-
-CMsgClientUGSGetGlobalStatsResponse = _reflection.GeneratedProtocolMessageType('CMsgClientUGSGetGlobalStatsResponse', (_message.Message,), {
-
-  'Day' : _reflection.GeneratedProtocolMessageType('Day', (_message.Message,), {
-
-    'Stat' : _reflection.GeneratedProtocolMessageType('Stat', (_message.Message,), {
-      'DESCRIPTOR' : _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT,
-      '__module__' : 'steammessages_clientserver_2_pb2'
-      # @@protoc_insertion_point(class_scope:CMsgClientUGSGetGlobalStatsResponse.Day.Stat)
-      })
-    ,
-    'DESCRIPTOR' : _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientUGSGetGlobalStatsResponse.Day)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUGSGetGlobalStatsResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientUGSGetGlobalStatsResponse)
-_sym_db.RegisterMessage(CMsgClientUGSGetGlobalStatsResponse.Day)
-_sym_db.RegisterMessage(CMsgClientUGSGetGlobalStatsResponse.Day.Stat)
-
-CMsgClientRedeemGuestPass = _reflection.GeneratedProtocolMessageType('CMsgClientRedeemGuestPass', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREDEEMGUESTPASS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRedeemGuestPass)
-  })
-_sym_db.RegisterMessage(CMsgClientRedeemGuestPass)
-
-CMsgClientRedeemGuestPassResponse = _reflection.GeneratedProtocolMessageType('CMsgClientRedeemGuestPassResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREDEEMGUESTPASSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRedeemGuestPassResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientRedeemGuestPassResponse)
-
-CMsgClientGetClanActivityCounts = _reflection.GeneratedProtocolMessageType('CMsgClientGetClanActivityCounts', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETCLANACTIVITYCOUNTS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetClanActivityCounts)
-  })
-_sym_db.RegisterMessage(CMsgClientGetClanActivityCounts)
-
-CMsgClientGetClanActivityCountsResponse = _reflection.GeneratedProtocolMessageType('CMsgClientGetClanActivityCountsResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetClanActivityCountsResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientGetClanActivityCountsResponse)
-
-CMsgClientOGSReportString = _reflection.GeneratedProtocolMessageType('CMsgClientOGSReportString', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTOGSREPORTSTRING,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientOGSReportString)
-  })
-_sym_db.RegisterMessage(CMsgClientOGSReportString)
-
-CMsgClientOGSReportBug = _reflection.GeneratedProtocolMessageType('CMsgClientOGSReportBug', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTOGSREPORTBUG,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientOGSReportBug)
-  })
-_sym_db.RegisterMessage(CMsgClientOGSReportBug)
-
-CMsgClientSentLogs = _reflection.GeneratedProtocolMessageType('CMsgClientSentLogs', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSENTLOGS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientSentLogs)
-  })
-_sym_db.RegisterMessage(CMsgClientSentLogs)
-
-CMsgGCClient = _reflection.GeneratedProtocolMessageType('CMsgGCClient', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGGCCLIENT,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgGCClient)
-  })
-_sym_db.RegisterMessage(CMsgGCClient)
-
-CMsgClientRequestFreeLicense = _reflection.GeneratedProtocolMessageType('CMsgClientRequestFreeLicense', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTFREELICENSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestFreeLicense)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestFreeLicense)
-
-CMsgClientRequestFreeLicenseResponse = _reflection.GeneratedProtocolMessageType('CMsgClientRequestFreeLicenseResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTFREELICENSERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestFreeLicenseResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestFreeLicenseResponse)
-
-CMsgDRMDownloadRequestWithCrashData = _reflection.GeneratedProtocolMessageType('CMsgDRMDownloadRequestWithCrashData', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGDRMDOWNLOADREQUESTWITHCRASHDATA,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgDRMDownloadRequestWithCrashData)
-  })
-_sym_db.RegisterMessage(CMsgDRMDownloadRequestWithCrashData)
-
-CMsgDRMDownloadResponse = _reflection.GeneratedProtocolMessageType('CMsgDRMDownloadResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGDRMDOWNLOADRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgDRMDownloadResponse)
-  })
-_sym_db.RegisterMessage(CMsgDRMDownloadResponse)
-
-CMsgDRMFinalResult = _reflection.GeneratedProtocolMessageType('CMsgDRMFinalResult', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGDRMFINALRESULT,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgDRMFinalResult)
-  })
-_sym_db.RegisterMessage(CMsgDRMFinalResult)
-
-CMsgClientDPCheckSpecialSurvey = _reflection.GeneratedProtocolMessageType('CMsgClientDPCheckSpecialSurvey', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDPCHECKSPECIALSURVEY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDPCheckSpecialSurvey)
-  })
-_sym_db.RegisterMessage(CMsgClientDPCheckSpecialSurvey)
-
-CMsgClientDPCheckSpecialSurveyResponse = _reflection.GeneratedProtocolMessageType('CMsgClientDPCheckSpecialSurveyResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDPCheckSpecialSurveyResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientDPCheckSpecialSurveyResponse)
-
-CMsgClientDPSendSpecialSurveyResponse = _reflection.GeneratedProtocolMessageType('CMsgClientDPSendSpecialSurveyResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDPSendSpecialSurveyResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientDPSendSpecialSurveyResponse)
-
-CMsgClientDPSendSpecialSurveyResponseReply = _reflection.GeneratedProtocolMessageType('CMsgClientDPSendSpecialSurveyResponseReply', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDPSendSpecialSurveyResponseReply)
-  })
-_sym_db.RegisterMessage(CMsgClientDPSendSpecialSurveyResponseReply)
-
-CMsgClientRequestForgottenPasswordEmail = _reflection.GeneratedProtocolMessageType('CMsgClientRequestForgottenPasswordEmail', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestForgottenPasswordEmail)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestForgottenPasswordEmail)
-
-CMsgClientRequestForgottenPasswordEmailResponse = _reflection.GeneratedProtocolMessageType('CMsgClientRequestForgottenPasswordEmailResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestForgottenPasswordEmailResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestForgottenPasswordEmailResponse)
-
-CMsgClientItemAnnouncements = _reflection.GeneratedProtocolMessageType('CMsgClientItemAnnouncements', (_message.Message,), {
-
-  'UnseenItem' : _reflection.GeneratedProtocolMessageType('UnseenItem', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientItemAnnouncements.UnseenItem)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTITEMANNOUNCEMENTS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientItemAnnouncements)
-  })
-_sym_db.RegisterMessage(CMsgClientItemAnnouncements)
-_sym_db.RegisterMessage(CMsgClientItemAnnouncements.UnseenItem)
-
-CMsgClientRequestItemAnnouncements = _reflection.GeneratedProtocolMessageType('CMsgClientRequestItemAnnouncements', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTITEMANNOUNCEMENTS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestItemAnnouncements)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestItemAnnouncements)
-
-CMsgClientUserNotifications = _reflection.GeneratedProtocolMessageType('CMsgClientUserNotifications', (_message.Message,), {
-
-  'Notification' : _reflection.GeneratedProtocolMessageType('Notification', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientUserNotifications.Notification)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTUSERNOTIFICATIONS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUserNotifications)
-  })
-_sym_db.RegisterMessage(CMsgClientUserNotifications)
-_sym_db.RegisterMessage(CMsgClientUserNotifications.Notification)
-
-CMsgClientCommentNotifications = _reflection.GeneratedProtocolMessageType('CMsgClientCommentNotifications', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCOMMENTNOTIFICATIONS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientCommentNotifications)
-  })
-_sym_db.RegisterMessage(CMsgClientCommentNotifications)
-
-CMsgClientRequestCommentNotifications = _reflection.GeneratedProtocolMessageType('CMsgClientRequestCommentNotifications', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestCommentNotifications)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestCommentNotifications)
-
-CMsgClientOfflineMessageNotification = _reflection.GeneratedProtocolMessageType('CMsgClientOfflineMessageNotification', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTOFFLINEMESSAGENOTIFICATION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientOfflineMessageNotification)
-  })
-_sym_db.RegisterMessage(CMsgClientOfflineMessageNotification)
-
-CMsgClientRequestOfflineMessageCount = _reflection.GeneratedProtocolMessageType('CMsgClientRequestOfflineMessageCount', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientRequestOfflineMessageCount)
-  })
-_sym_db.RegisterMessage(CMsgClientRequestOfflineMessageCount)
-
-CMsgClientChatGetFriendMessageHistory = _reflection.GeneratedProtocolMessageType('CMsgClientChatGetFriendMessageHistory', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientChatGetFriendMessageHistory)
-  })
-_sym_db.RegisterMessage(CMsgClientChatGetFriendMessageHistory)
-
-CMsgClientChatGetFriendMessageHistoryResponse = _reflection.GeneratedProtocolMessageType('CMsgClientChatGetFriendMessageHistoryResponse', (_message.Message,), {
-
-  'FriendMessage' : _reflection.GeneratedProtocolMessageType('FriendMessage', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientChatGetFriendMessageHistoryResponse.FriendMessage)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientChatGetFriendMessageHistoryResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientChatGetFriendMessageHistoryResponse)
-_sym_db.RegisterMessage(CMsgClientChatGetFriendMessageHistoryResponse.FriendMessage)
-
-CMsgClientChatGetFriendMessageHistoryForOfflineMessages = _reflection.GeneratedProtocolMessageType('CMsgClientChatGetFriendMessageHistoryForOfflineMessages', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientChatGetFriendMessageHistoryForOfflineMessages)
-  })
-_sym_db.RegisterMessage(CMsgClientChatGetFriendMessageHistoryForOfflineMessages)
-
-CMsgClientFSGetFriendsSteamLevels = _reflection.GeneratedProtocolMessageType('CMsgClientFSGetFriendsSteamLevels', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTFSGETFRIENDSSTEAMLEVELS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientFSGetFriendsSteamLevels)
-  })
-_sym_db.RegisterMessage(CMsgClientFSGetFriendsSteamLevels)
-
-CMsgClientFSGetFriendsSteamLevelsResponse = _reflection.GeneratedProtocolMessageType('CMsgClientFSGetFriendsSteamLevelsResponse', (_message.Message,), {
-
-  'Friend' : _reflection.GeneratedProtocolMessageType('Friend', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientFSGetFriendsSteamLevelsResponse.Friend)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientFSGetFriendsSteamLevelsResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientFSGetFriendsSteamLevelsResponse)
-_sym_db.RegisterMessage(CMsgClientFSGetFriendsSteamLevelsResponse.Friend)
-
-CMsgClientEmailAddrInfo = _reflection.GeneratedProtocolMessageType('CMsgClientEmailAddrInfo', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTEMAILADDRINFO,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientEmailAddrInfo)
-  })
-_sym_db.RegisterMessage(CMsgClientEmailAddrInfo)
-
-CMsgCREItemVoteSummary = _reflection.GeneratedProtocolMessageType('CMsgCREItemVoteSummary', (_message.Message,), {
-
-  'PublishedFileId' : _reflection.GeneratedProtocolMessageType('PublishedFileId', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgCREItemVoteSummary.PublishedFileId)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCREITEMVOTESUMMARY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREItemVoteSummary)
-  })
-_sym_db.RegisterMessage(CMsgCREItemVoteSummary)
-_sym_db.RegisterMessage(CMsgCREItemVoteSummary.PublishedFileId)
-
-CMsgCREItemVoteSummaryResponse = _reflection.GeneratedProtocolMessageType('CMsgCREItemVoteSummaryResponse', (_message.Message,), {
-
-  'ItemVoteSummary' : _reflection.GeneratedProtocolMessageType('ItemVoteSummary', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgCREItemVoteSummaryResponse.ItemVoteSummary)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCREITEMVOTESUMMARYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREItemVoteSummaryResponse)
-  })
-_sym_db.RegisterMessage(CMsgCREItemVoteSummaryResponse)
-_sym_db.RegisterMessage(CMsgCREItemVoteSummaryResponse.ItemVoteSummary)
-
-CMsgCREUpdateUserPublishedItemVote = _reflection.GeneratedProtocolMessageType('CMsgCREUpdateUserPublishedItemVote', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCREUPDATEUSERPUBLISHEDITEMVOTE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREUpdateUserPublishedItemVote)
-  })
-_sym_db.RegisterMessage(CMsgCREUpdateUserPublishedItemVote)
-
-CMsgCREUpdateUserPublishedItemVoteResponse = _reflection.GeneratedProtocolMessageType('CMsgCREUpdateUserPublishedItemVoteResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREUpdateUserPublishedItemVoteResponse)
-  })
-_sym_db.RegisterMessage(CMsgCREUpdateUserPublishedItemVoteResponse)
-
-CMsgCREGetUserPublishedItemVoteDetails = _reflection.GeneratedProtocolMessageType('CMsgCREGetUserPublishedItemVoteDetails', (_message.Message,), {
-
-  'PublishedFileId' : _reflection.GeneratedProtocolMessageType('PublishedFileId', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgCREGetUserPublishedItemVoteDetails.PublishedFileId)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREGetUserPublishedItemVoteDetails)
-  })
-_sym_db.RegisterMessage(CMsgCREGetUserPublishedItemVoteDetails)
-_sym_db.RegisterMessage(CMsgCREGetUserPublishedItemVoteDetails.PublishedFileId)
-
-CMsgCREGetUserPublishedItemVoteDetailsResponse = _reflection.GeneratedProtocolMessageType('CMsgCREGetUserPublishedItemVoteDetailsResponse', (_message.Message,), {
-
-  'UserItemVoteDetail' : _reflection.GeneratedProtocolMessageType('UserItemVoteDetail', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgCREGetUserPublishedItemVoteDetailsResponse.UserItemVoteDetail)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgCREGetUserPublishedItemVoteDetailsResponse)
-  })
-_sym_db.RegisterMessage(CMsgCREGetUserPublishedItemVoteDetailsResponse)
-_sym_db.RegisterMessage(CMsgCREGetUserPublishedItemVoteDetailsResponse.UserItemVoteDetail)
-
-CMsgFSGetFollowerCount = _reflection.GeneratedProtocolMessageType('CMsgFSGetFollowerCount', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSGETFOLLOWERCOUNT,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSGetFollowerCount)
-  })
-_sym_db.RegisterMessage(CMsgFSGetFollowerCount)
-
-CMsgFSGetFollowerCountResponse = _reflection.GeneratedProtocolMessageType('CMsgFSGetFollowerCountResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSGETFOLLOWERCOUNTRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSGetFollowerCountResponse)
-  })
-_sym_db.RegisterMessage(CMsgFSGetFollowerCountResponse)
-
-CMsgFSGetIsFollowing = _reflection.GeneratedProtocolMessageType('CMsgFSGetIsFollowing', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSGETISFOLLOWING,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSGetIsFollowing)
-  })
-_sym_db.RegisterMessage(CMsgFSGetIsFollowing)
-
-CMsgFSGetIsFollowingResponse = _reflection.GeneratedProtocolMessageType('CMsgFSGetIsFollowingResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSGETISFOLLOWINGRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSGetIsFollowingResponse)
-  })
-_sym_db.RegisterMessage(CMsgFSGetIsFollowingResponse)
-
-CMsgFSEnumerateFollowingList = _reflection.GeneratedProtocolMessageType('CMsgFSEnumerateFollowingList', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSENUMERATEFOLLOWINGLIST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSEnumerateFollowingList)
-  })
-_sym_db.RegisterMessage(CMsgFSEnumerateFollowingList)
-
-CMsgFSEnumerateFollowingListResponse = _reflection.GeneratedProtocolMessageType('CMsgFSEnumerateFollowingListResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGFSENUMERATEFOLLOWINGLISTRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgFSEnumerateFollowingListResponse)
-  })
-_sym_db.RegisterMessage(CMsgFSEnumerateFollowingListResponse)
-
-CMsgDPGetNumberOfCurrentPlayers = _reflection.GeneratedProtocolMessageType('CMsgDPGetNumberOfCurrentPlayers', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGDPGETNUMBEROFCURRENTPLAYERS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgDPGetNumberOfCurrentPlayers)
-  })
-_sym_db.RegisterMessage(CMsgDPGetNumberOfCurrentPlayers)
-
-CMsgDPGetNumberOfCurrentPlayersResponse = _reflection.GeneratedProtocolMessageType('CMsgDPGetNumberOfCurrentPlayersResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgDPGetNumberOfCurrentPlayersResponse)
-  })
-_sym_db.RegisterMessage(CMsgDPGetNumberOfCurrentPlayersResponse)
-
-CMsgClientFriendUserStatusPublished = _reflection.GeneratedProtocolMessageType('CMsgClientFriendUserStatusPublished', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTFRIENDUSERSTATUSPUBLISHED,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientFriendUserStatusPublished)
-  })
-_sym_db.RegisterMessage(CMsgClientFriendUserStatusPublished)
-
-CMsgClientServiceMethodLegacy = _reflection.GeneratedProtocolMessageType('CMsgClientServiceMethodLegacy', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSERVICEMETHODLEGACY,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientServiceMethodLegacy)
-  })
-_sym_db.RegisterMessage(CMsgClientServiceMethodLegacy)
-
-CMsgClientServiceMethodLegacyResponse = _reflection.GeneratedProtocolMessageType('CMsgClientServiceMethodLegacyResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSERVICEMETHODLEGACYRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientServiceMethodLegacyResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientServiceMethodLegacyResponse)
-
-CMsgClientUIMode = _reflection.GeneratedProtocolMessageType('CMsgClientUIMode', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTUIMODE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUIMode)
-  })
-_sym_db.RegisterMessage(CMsgClientUIMode)
-
-CMsgClientVanityURLChangedNotification = _reflection.GeneratedProtocolMessageType('CMsgClientVanityURLChangedNotification', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTVANITYURLCHANGEDNOTIFICATION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientVanityURLChangedNotification)
-  })
-_sym_db.RegisterMessage(CMsgClientVanityURLChangedNotification)
-
-CMsgClientAuthorizeLocalDeviceRequest = _reflection.GeneratedProtocolMessageType('CMsgClientAuthorizeLocalDeviceRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientAuthorizeLocalDeviceRequest)
-  })
-_sym_db.RegisterMessage(CMsgClientAuthorizeLocalDeviceRequest)
-
-CMsgClientAuthorizeLocalDevice = _reflection.GeneratedProtocolMessageType('CMsgClientAuthorizeLocalDevice', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTAUTHORIZELOCALDEVICE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientAuthorizeLocalDevice)
-  })
-_sym_db.RegisterMessage(CMsgClientAuthorizeLocalDevice)
-
-CMsgClientAuthorizeLocalDeviceNotification = _reflection.GeneratedProtocolMessageType('CMsgClientAuthorizeLocalDeviceNotification', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientAuthorizeLocalDeviceNotification)
-  })
-_sym_db.RegisterMessage(CMsgClientAuthorizeLocalDeviceNotification)
-
-CMsgClientDeauthorizeDeviceRequest = _reflection.GeneratedProtocolMessageType('CMsgClientDeauthorizeDeviceRequest', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDEAUTHORIZEDEVICEREQUEST,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDeauthorizeDeviceRequest)
-  })
-_sym_db.RegisterMessage(CMsgClientDeauthorizeDeviceRequest)
-
-CMsgClientDeauthorizeDevice = _reflection.GeneratedProtocolMessageType('CMsgClientDeauthorizeDevice', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTDEAUTHORIZEDEVICE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientDeauthorizeDevice)
-  })
-_sym_db.RegisterMessage(CMsgClientDeauthorizeDevice)
-
-CMsgClientUseLocalDeviceAuthorizations = _reflection.GeneratedProtocolMessageType('CMsgClientUseLocalDeviceAuthorizations', (_message.Message,), {
-
-  'DeviceToken' : _reflection.GeneratedProtocolMessageType('DeviceToken', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientUseLocalDeviceAuthorizations.DeviceToken)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientUseLocalDeviceAuthorizations)
-  })
-_sym_db.RegisterMessage(CMsgClientUseLocalDeviceAuthorizations)
-_sym_db.RegisterMessage(CMsgClientUseLocalDeviceAuthorizations.DeviceToken)
-
-CMsgClientGetAuthorizedDevices = _reflection.GeneratedProtocolMessageType('CMsgClientGetAuthorizedDevices', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETAUTHORIZEDDEVICES,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetAuthorizedDevices)
-  })
-_sym_db.RegisterMessage(CMsgClientGetAuthorizedDevices)
-
-CMsgClientGetAuthorizedDevicesResponse = _reflection.GeneratedProtocolMessageType('CMsgClientGetAuthorizedDevicesResponse', (_message.Message,), {
-
-  'AuthorizedDevice' : _reflection.GeneratedProtocolMessageType('AuthorizedDevice', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientGetAuthorizedDevicesResponse.AuthorizedDevice)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetAuthorizedDevicesResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientGetAuthorizedDevicesResponse)
-_sym_db.RegisterMessage(CMsgClientGetAuthorizedDevicesResponse.AuthorizedDevice)
-
-CMsgClientSharedLibraryLockStatus = _reflection.GeneratedProtocolMessageType('CMsgClientSharedLibraryLockStatus', (_message.Message,), {
-
-  'LockedLibrary' : _reflection.GeneratedProtocolMessageType('LockedLibrary', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientSharedLibraryLockStatus.LockedLibrary)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientSharedLibraryLockStatus)
-  })
-_sym_db.RegisterMessage(CMsgClientSharedLibraryLockStatus)
-_sym_db.RegisterMessage(CMsgClientSharedLibraryLockStatus.LockedLibrary)
-
-CMsgClientSharedLibraryStopPlaying = _reflection.GeneratedProtocolMessageType('CMsgClientSharedLibraryStopPlaying', (_message.Message,), {
-
-  'StopApp' : _reflection.GeneratedProtocolMessageType('StopApp', (_message.Message,), {
-    'DESCRIPTOR' : _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP,
-    '__module__' : 'steammessages_clientserver_2_pb2'
-    # @@protoc_insertion_point(class_scope:CMsgClientSharedLibraryStopPlaying.StopApp)
-    })
-  ,
-  'DESCRIPTOR' : _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientSharedLibraryStopPlaying)
-  })
-_sym_db.RegisterMessage(CMsgClientSharedLibraryStopPlaying)
-_sym_db.RegisterMessage(CMsgClientSharedLibraryStopPlaying.StopApp)
-
-CMsgClientServiceCall = _reflection.GeneratedProtocolMessageType('CMsgClientServiceCall', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSERVICECALL,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientServiceCall)
-  })
-_sym_db.RegisterMessage(CMsgClientServiceCall)
-
-CMsgClientServiceModule = _reflection.GeneratedProtocolMessageType('CMsgClientServiceModule', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSERVICEMODULE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientServiceModule)
-  })
-_sym_db.RegisterMessage(CMsgClientServiceModule)
-
-CMsgClientServiceCallResponse = _reflection.GeneratedProtocolMessageType('CMsgClientServiceCallResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSERVICECALLRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientServiceCallResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientServiceCallResponse)
-
-CMsgAMUnlockH264 = _reflection.GeneratedProtocolMessageType('CMsgAMUnlockH264', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGAMUNLOCKH264,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgAMUnlockH264)
-  })
-_sym_db.RegisterMessage(CMsgAMUnlockH264)
-
-CMsgAMUnlockH264Response = _reflection.GeneratedProtocolMessageType('CMsgAMUnlockH264Response', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGAMUNLOCKH264RESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgAMUnlockH264Response)
-  })
-_sym_db.RegisterMessage(CMsgAMUnlockH264Response)
-
-CMsgClientPlayingSessionState = _reflection.GeneratedProtocolMessageType('CMsgClientPlayingSessionState', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTPLAYINGSESSIONSTATE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientPlayingSessionState)
-  })
-_sym_db.RegisterMessage(CMsgClientPlayingSessionState)
-
-CMsgClientKickPlayingSession = _reflection.GeneratedProtocolMessageType('CMsgClientKickPlayingSession', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTKICKPLAYINGSESSION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientKickPlayingSession)
-  })
-_sym_db.RegisterMessage(CMsgClientKickPlayingSession)
-
-CMsgClientVoiceCallPreAuthorize = _reflection.GeneratedProtocolMessageType('CMsgClientVoiceCallPreAuthorize', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTVOICECALLPREAUTHORIZE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientVoiceCallPreAuthorize)
-  })
-_sym_db.RegisterMessage(CMsgClientVoiceCallPreAuthorize)
-
-CMsgClientVoiceCallPreAuthorizeResponse = _reflection.GeneratedProtocolMessageType('CMsgClientVoiceCallPreAuthorizeResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientVoiceCallPreAuthorizeResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientVoiceCallPreAuthorizeResponse)
-
-CMsgBadgeCraftedNotification = _reflection.GeneratedProtocolMessageType('CMsgBadgeCraftedNotification', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGBADGECRAFTEDNOTIFICATION,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgBadgeCraftedNotification)
-  })
-_sym_db.RegisterMessage(CMsgBadgeCraftedNotification)
-
-CMsgClientStartPeerContentServer = _reflection.GeneratedProtocolMessageType('CMsgClientStartPeerContentServer', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSTARTPEERCONTENTSERVER,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientStartPeerContentServer)
-  })
-_sym_db.RegisterMessage(CMsgClientStartPeerContentServer)
-
-CMsgClientStartPeerContentServerResponse = _reflection.GeneratedProtocolMessageType('CMsgClientStartPeerContentServerResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientStartPeerContentServerResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientStartPeerContentServerResponse)
-
-CMsgClientGetPeerContentInfo = _reflection.GeneratedProtocolMessageType('CMsgClientGetPeerContentInfo', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETPEERCONTENTINFO,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetPeerContentInfo)
-  })
-_sym_db.RegisterMessage(CMsgClientGetPeerContentInfo)
-
-CMsgClientGetPeerContentInfoResponse = _reflection.GeneratedProtocolMessageType('CMsgClientGetPeerContentInfoResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTGETPEERCONTENTINFORESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientGetPeerContentInfoResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientGetPeerContentInfoResponse)
-
-CMsgClientPendingGameLaunch = _reflection.GeneratedProtocolMessageType('CMsgClientPendingGameLaunch', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTPENDINGGAMELAUNCH,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientPendingGameLaunch)
-  })
-_sym_db.RegisterMessage(CMsgClientPendingGameLaunch)
-
-CMsgClientPendingGameLaunchResponse = _reflection.GeneratedProtocolMessageType('CMsgClientPendingGameLaunchResponse', (_message.Message,), {
-  'DESCRIPTOR' : _CMSGCLIENTPENDINGGAMELAUNCHRESPONSE,
-  '__module__' : 'steammessages_clientserver_2_pb2'
-  # @@protoc_insertion_point(class_scope:CMsgClientPendingGameLaunchResponse)
-  })
-_sym_db.RegisterMessage(CMsgClientPendingGameLaunchResponse)
-
+_globals = globals()
+_builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'steammessages_clientserver_2_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
-  DESCRIPTOR._options = None
-  DESCRIPTOR._serialized_options = b'H\001\220\001\000'
-  _CMSGCLIENTUPDATEUSERGAMEINFO._serialized_start=64
-  _CMSGCLIENTUPDATEUSERGAMEINFO._serialized_end=183
-  _CMSGCLIENTRICHPRESENCEUPLOAD._serialized_start=185
-  _CMSGCLIENTRICHPRESENCEUPLOAD._serialized_end=268
-  _CMSGCLIENTRICHPRESENCEREQUEST._serialized_start=270
-  _CMSGCLIENTRICHPRESENCEREQUEST._serialized_end=326
-  _CMSGCLIENTRICHPRESENCEINFO._serialized_start=329
-  _CMSGCLIENTRICHPRESENCEINFO._serialized_end=575
-  _CMSGCLIENTRICHPRESENCEINFO_KV._serialized_start=424
-  _CMSGCLIENTRICHPRESENCEINFO_KV._serialized_end=456
-  _CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE._serialized_start=458
-  _CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE._serialized_end=575
-  _CMSGCLIENTCHECKFILESIGNATURE._serialized_start=577
-  _CMSGCLIENTCHECKFILESIGNATURE._serialized_end=623
-  _CMSGCLIENTCHECKFILESIGNATURERESPONSE._serialized_start=626
-  _CMSGCLIENTCHECKFILESIGNATURERESPONSE._serialized_end=873
-  _CMSGCLIENTREGISTERKEY._serialized_start=875
-  _CMSGCLIENTREGISTERKEY._serialized_end=911
-  _CMSGCLIENTPURCHASERESPONSE._serialized_start=913
-  _CMSGCLIENTPURCHASERESPONSE._serialized_end=1025
-  _CMSGCLIENTACTIVATEOEMLICENSE._serialized_start=1028
-  _CMSGCLIENTACTIVATEOEMLICENSE._serialized_end=1225
-  _CMSGCLIENTREGISTEROEMMACHINE._serialized_start=1227
-  _CMSGCLIENTREGISTEROEMMACHINE._serialized_end=1284
-  _CMSGCLIENTREGISTEROEMMACHINERESPONSE._serialized_start=1286
-  _CMSGCLIENTREGISTEROEMMACHINERESPONSE._serialized_end=1341
-  _CMSGCLIENTPURCHASEWITHMACHINEID._serialized_start=1343
-  _CMSGCLIENTPURCHASEWITHMACHINEID._serialized_end=1418
-  _CMSGTRADING_INITIATETRADEREQUEST._serialized_start=1420
-  _CMSGTRADING_INITIATETRADEREQUEST._serialized_end=1523
-  _CMSGTRADING_INITIATETRADERESPONSE._serialized_start=1526
-  _CMSGTRADING_INITIATETRADERESPONSE._serialized_end=1864
-  _CMSGTRADING_CANCELTRADEREQUEST._serialized_start=1866
-  _CMSGTRADING_CANCELTRADEREQUEST._serialized_end=1921
-  _CMSGTRADING_STARTSESSION._serialized_start=1923
-  _CMSGTRADING_STARTSESSION._serialized_end=1972
-  _CMSGCLIENTGETDEPOTDECRYPTIONKEY._serialized_start=1974
-  _CMSGCLIENTGETDEPOTDECRYPTIONKEY._serialized_end=2041
-  _CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE._serialized_start=2043
-  _CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE._serialized_end=2152
-  _CMSGCLIENTCHECKAPPBETAPASSWORD._serialized_start=2154
-  _CMSGCLIENTCHECKAPPBETAPASSWORD._serialized_end=2242
-  _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE._serialized_start=2245
-  _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE._serialized_end=2463
-  _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD._serialized_start=2384
-  _CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD._serialized_end=2463
-  _CMSGCLIENTUGSGETGLOBALSTATS._serialized_start=2466
-  _CMSGCLIENTUGSGETGLOBALSTATS._serialized_end=2619
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE._serialized_start=2622
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE._serialized_end=2899
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY._serialized_start=2777
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY._serialized_end=2899
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT._serialized_start=2862
-  _CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT._serialized_end=2899
-  _CMSGCLIENTREDEEMGUESTPASS._serialized_start=2901
-  _CMSGCLIENTREDEEMGUESTPASS._serialized_end=2951
-  _CMSGCLIENTREDEEMGUESTPASSRESPONSE._serialized_start=2953
-  _CMSGCLIENTREDEEMGUESTPASSRESPONSE._serialized_end=3052
-  _CMSGCLIENTGETCLANACTIVITYCOUNTS._serialized_start=3054
-  _CMSGCLIENTGETCLANACTIVITYCOUNTS._serialized_end=3110
-  _CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE._serialized_start=3112
-  _CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE._serialized_end=3173
-  _CMSGCLIENTOGSREPORTSTRING._serialized_start=3175
-  _CMSGCLIENTOGSREPORTSTRING._serialized_end=3296
-  _CMSGCLIENTOGSREPORTBUG._serialized_start=3298
-  _CMSGCLIENTOGSREPORTBUG._serialized_end=3378
-  _CMSGCLIENTSENTLOGS._serialized_start=3380
-  _CMSGCLIENTSENTLOGS._serialized_end=3400
-  _CMSGGCCLIENT._serialized_start=3403
-  _CMSGGCCLIENT._serialized_end=3549
-  _CMSGGCCLIENT_EFLAG._serialized_start=3528
-  _CMSGGCCLIENT_EFLAG._serialized_end=3549
-  _CMSGCLIENTREQUESTFREELICENSE._serialized_start=3551
-  _CMSGCLIENTREQUESTFREELICENSE._serialized_end=3597
-  _CMSGCLIENTREQUESTFREELICENSERESPONSE._serialized_start=3599
-  _CMSGCLIENTREQUESTFREELICENSERESPONSE._serialized_end=3709
-  _CMSGDRMDOWNLOADREQUESTWITHCRASHDATA._serialized_start=3712
-  _CMSGDRMDOWNLOADREQUESTWITHCRASHDATA._serialized_end=3923
-  _CMSGDRMDOWNLOADRESPONSE._serialized_start=3926
-  _CMSGDRMDOWNLOADRESPONSE._serialized_end=4145
-  _CMSGDRMFINALRESULT._serialized_start=4148
-  _CMSGDRMFINALRESULT._serialized_end=4363
-  _CMSGCLIENTDPCHECKSPECIALSURVEY._serialized_start=4365
-  _CMSGCLIENTDPCHECKSPECIALSURVEY._serialized_end=4416
-  _CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE._serialized_start=4419
-  _CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE._serialized_end=4569
-  _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE._serialized_start=4571
-  _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE._serialized_end=4643
-  _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY._serialized_start=4645
-  _CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY._serialized_end=4724
-  _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL._serialized_start=4726
-  _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL._serialized_end=4813
-  _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE._serialized_start=4815
-  _CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE._serialized_end=4910
-  _CMSGCLIENTITEMANNOUNCEMENTS._serialized_start=4913
-  _CMSGCLIENTITEMANNOUNCEMENTS._serialized_end=5159
-  _CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM._serialized_start=5032
-  _CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM._serialized_end=5159
-  _CMSGCLIENTREQUESTITEMANNOUNCEMENTS._serialized_start=5161
-  _CMSGCLIENTREQUESTITEMANNOUNCEMENTS._serialized_end=5197
-  _CMSGCLIENTUSERNOTIFICATIONS._serialized_start=5200
-  _CMSGCLIENTUSERNOTIFICATIONS._serialized_end=5358
-  _CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION._serialized_start=5297
-  _CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION._serialized_end=5358
-  _CMSGCLIENTCOMMENTNOTIFICATIONS._serialized_start=5361
-  _CMSGCLIENTCOMMENTNOTIFICATIONS._serialized_end=5497
-  _CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS._serialized_start=5499
-  _CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS._serialized_end=5538
-  _CMSGCLIENTOFFLINEMESSAGENOTIFICATION._serialized_start=5540
-  _CMSGCLIENTOFFLINEMESSAGENOTIFICATION._serialized_end=5643
-  _CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT._serialized_start=5645
-  _CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT._serialized_end=5683
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY._serialized_start=5685
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY._serialized_end=5741
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE._serialized_start=5744
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE._serialized_end=5993
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE._serialized_start=5907
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE._serialized_end=5993
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES._serialized_start=5995
-  _CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES._serialized_end=6052
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELS._serialized_start=6054
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELS._serialized_end=6109
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE._serialized_start=6112
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE._serialized_end=6267
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND._serialized_start=6225
-  _CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND._serialized_end=6267
-  _CMSGCLIENTEMAILADDRINFO._serialized_start=6270
-  _CMSGCLIENTEMAILADDRINFO._serialized_end=6472
-  _CMSGCREITEMVOTESUMMARY._serialized_start=6475
-  _CMSGCREITEMVOTESUMMARY._serialized_end=6614
-  _CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID._serialized_start=6570
-  _CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID._serialized_end=6614
-  _CMSGCREITEMVOTESUMMARYRESPONSE._serialized_start=6617
-  _CMSGCREITEMVOTESUMMARYRESPONSE._serialized_end=6867
-  _CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY._serialized_start=6749
-  _CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY._serialized_end=6867
-  _CMSGCREUPDATEUSERPUBLISHEDITEMVOTE._serialized_start=6869
-  _CMSGCREUPDATEUSERPUBLISHEDITEMVOTE._serialized_end=6949
-  _CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE._serialized_start=6951
-  _CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE._serialized_end=7015
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS._serialized_start=7018
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS._serialized_end=7189
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID._serialized_start=6570
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID._serialized_end=6614
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE._serialized_start=7192
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE._serialized_end=7426
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL._serialized_start=7362
-  _CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL._serialized_end=7426
-  _CMSGFSGETFOLLOWERCOUNT._serialized_start=7428
-  _CMSGFSGETFOLLOWERCOUNT._serialized_end=7470
-  _CMSGFSGETFOLLOWERCOUNTRESPONSE._serialized_start=7472
-  _CMSGFSGETFOLLOWERCOUNTRESPONSE._serialized_end=7542
-  _CMSGFSGETISFOLLOWING._serialized_start=7544
-  _CMSGFSGETISFOLLOWING._serialized_end=7584
-  _CMSGFSGETISFOLLOWINGRESPONSE._serialized_start=7586
-  _CMSGFSGETISFOLLOWINGRESPONSE._serialized_end=7665
-  _CMSGFSENUMERATEFOLLOWINGLIST._serialized_start=7667
-  _CMSGFSENUMERATEFOLLOWINGLIST._serialized_end=7718
-  _CMSGFSENUMERATEFOLLOWINGLISTRESPONSE._serialized_start=7720
-  _CMSGFSENUMERATEFOLLOWINGLISTRESPONSE._serialized_end=7820
-  _CMSGDPGETNUMBEROFCURRENTPLAYERS._serialized_start=7822
-  _CMSGDPGETNUMBEROFCURRENTPLAYERS._serialized_end=7870
-  _CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE._serialized_start=7872
-  _CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE._serialized_end=7955
-  _CMSGCLIENTFRIENDUSERSTATUSPUBLISHED._serialized_start=7957
-  _CMSGCLIENTFRIENDUSERSTATUSPUBLISHED._serialized_end=8054
-  _CMSGCLIENTSERVICEMETHODLEGACY._serialized_start=8056
-  _CMSGCLIENTSERVICEMETHODLEGACY._serialized_end=8160
-  _CMSGCLIENTSERVICEMETHODLEGACYRESPONSE._serialized_start=8162
-  _CMSGCLIENTSERVICEMETHODLEGACYRESPONSE._serialized_end=8258
-  _CMSGCLIENTUIMODE._serialized_start=8260
-  _CMSGCLIENTUIMODE._serialized_end=8313
-  _CMSGCLIENTVANITYURLCHANGEDNOTIFICATION._serialized_start=8315
-  _CMSGCLIENTVANITYURLCHANGEDNOTIFICATION._serialized_end=8375
-  _CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST._serialized_start=8377
-  _CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST._serialized_end=8498
-  _CMSGCLIENTAUTHORIZELOCALDEVICE._serialized_start=8500
-  _CMSGCLIENTAUTHORIZELOCALDEVICE._serialized_end=8607
-  _CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION._serialized_start=8609
-  _CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION._serialized_end=8727
-  _CMSGCLIENTDEAUTHORIZEDEVICEREQUEST._serialized_start=8729
-  _CMSGCLIENTDEAUTHORIZEDEVICEREQUEST._serialized_end=8839
-  _CMSGCLIENTDEAUTHORIZEDEVICE._serialized_start=8841
-  _CMSGCLIENTDEAUTHORIZEDEVICE._serialized_end=8926
-  _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS._serialized_start=8929
-  _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS._serialized_end=9138
-  _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN._serialized_start=9081
-  _CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN._serialized_end=9138
-  _CMSGCLIENTGETAUTHORIZEDDEVICES._serialized_start=9140
-  _CMSGCLIENTGETAUTHORIZEDDEVICES._serialized_end=9172
-  _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE._serialized_start=9175
-  _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE._serialized_end=9476
-  _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE._serialized_start=9323
-  _CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE._serialized_end=9476
-  _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS._serialized_start=9479
-  _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS._serialized_end=9673
-  _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY._serialized_start=9621
-  _CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY._serialized_end=9673
-  _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING._serialized_start=9676
-  _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING._serialized_end=9843
-  _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP._serialized_start=9800
-  _CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP._serialized_end=9843
-  _CMSGCLIENTSERVICECALL._serialized_start=9846
-  _CMSGCLIENTSERVICECALL._serialized_end=10103
-  _CMSGCLIENTSERVICEMODULE._serialized_start=10105
-  _CMSGCLIENTSERVICEMODULE._serialized_end=10195
-  _CMSGCLIENTSERVICECALLRESPONSE._serialized_start=10198
-  _CMSGCLIENTSERVICECALLRESPONSE._serialized_end=10766
-  _CMSGAMUNLOCKH264._serialized_start=10768
-  _CMSGAMUNLOCKH264._serialized_end=10835
-  _CMSGAMUNLOCKH264RESPONSE._serialized_start=10837
-  _CMSGAMUNLOCKH264RESPONSE._serialized_end=10907
-  _CMSGCLIENTPLAYINGSESSIONSTATE._serialized_start=10909
-  _CMSGCLIENTPLAYINGSESSIONSTATE._serialized_end=10986
-  _CMSGCLIENTKICKPLAYINGSESSION._serialized_start=10988
-  _CMSGCLIENTKICKPLAYINGSESSION._serialized_end=11042
-  _CMSGCLIENTVOICECALLPREAUTHORIZE._serialized_start=11044
-  _CMSGCLIENTVOICECALLPREAUTHORIZE._serialized_end=11162
-  _CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE._serialized_start=11165
-  _CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE._serialized_end=11295
-  _CMSGBADGECRAFTEDNOTIFICATION._serialized_start=11297
-  _CMSGBADGECRAFTEDNOTIFICATION._serialized_end=11363
-  _CMSGCLIENTSTARTPEERCONTENTSERVER._serialized_start=11365
-  _CMSGCLIENTSTARTPEERCONTENTSERVER._serialized_end=11484
-  _CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE._serialized_start=11486
-  _CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE._serialized_end=11613
-  _CMSGCLIENTGETPEERCONTENTINFO._serialized_start=11615
-  _CMSGCLIENTGETPEERCONTENTINFO._serialized_end=11717
-  _CMSGCLIENTGETPEERCONTENTINFORESPONSE._serialized_start=11719
-  _CMSGCLIENTGETPEERCONTENTINFORESPONSE._serialized_end=11787
-  _CMSGCLIENTPENDINGGAMELAUNCH._serialized_start=11789
-  _CMSGCLIENTPENDINGGAMELAUNCH._serialized_end=11834
-  _CMSGCLIENTPENDINGGAMELAUNCHRESPONSE._serialized_start=11836
-  _CMSGCLIENTPENDINGGAMELAUNCHRESPONSE._serialized_end=11925
+  _globals['DESCRIPTOR']._options = None
+  _globals['DESCRIPTOR']._serialized_options = b'H\001\220\001\000'
+  _globals['_CMSGCLIENTUPDATEUSERGAMEINFO']._serialized_start=64
+  _globals['_CMSGCLIENTUPDATEUSERGAMEINFO']._serialized_end=183
+  _globals['_CMSGCLIENTRICHPRESENCEUPLOAD']._serialized_start=185
+  _globals['_CMSGCLIENTRICHPRESENCEUPLOAD']._serialized_end=268
+  _globals['_CMSGCLIENTRICHPRESENCEREQUEST']._serialized_start=270
+  _globals['_CMSGCLIENTRICHPRESENCEREQUEST']._serialized_end=326
+  _globals['_CMSGCLIENTRICHPRESENCEINFO']._serialized_start=329
+  _globals['_CMSGCLIENTRICHPRESENCEINFO']._serialized_end=575
+  _globals['_CMSGCLIENTRICHPRESENCEINFO_KV']._serialized_start=424
+  _globals['_CMSGCLIENTRICHPRESENCEINFO_KV']._serialized_end=456
+  _globals['_CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE']._serialized_start=458
+  _globals['_CMSGCLIENTRICHPRESENCEINFO_RICHPRESENCE']._serialized_end=575
+  _globals['_CMSGCLIENTCHECKFILESIGNATURE']._serialized_start=577
+  _globals['_CMSGCLIENTCHECKFILESIGNATURE']._serialized_end=623
+  _globals['_CMSGCLIENTCHECKFILESIGNATURERESPONSE']._serialized_start=626
+  _globals['_CMSGCLIENTCHECKFILESIGNATURERESPONSE']._serialized_end=873
+  _globals['_CMSGCLIENTREGISTERKEY']._serialized_start=875
+  _globals['_CMSGCLIENTREGISTERKEY']._serialized_end=911
+  _globals['_CMSGCLIENTPURCHASERESPONSE']._serialized_start=913
+  _globals['_CMSGCLIENTPURCHASERESPONSE']._serialized_end=1025
+  _globals['_CMSGCLIENTACTIVATEOEMLICENSE']._serialized_start=1028
+  _globals['_CMSGCLIENTACTIVATEOEMLICENSE']._serialized_end=1225
+  _globals['_CMSGCLIENTREGISTEROEMMACHINE']._serialized_start=1227
+  _globals['_CMSGCLIENTREGISTEROEMMACHINE']._serialized_end=1284
+  _globals['_CMSGCLIENTREGISTEROEMMACHINERESPONSE']._serialized_start=1286
+  _globals['_CMSGCLIENTREGISTEROEMMACHINERESPONSE']._serialized_end=1341
+  _globals['_CMSGCLIENTPURCHASEWITHMACHINEID']._serialized_start=1343
+  _globals['_CMSGCLIENTPURCHASEWITHMACHINEID']._serialized_end=1418
+  _globals['_CMSGTRADING_INITIATETRADEREQUEST']._serialized_start=1420
+  _globals['_CMSGTRADING_INITIATETRADEREQUEST']._serialized_end=1523
+  _globals['_CMSGTRADING_INITIATETRADERESPONSE']._serialized_start=1526
+  _globals['_CMSGTRADING_INITIATETRADERESPONSE']._serialized_end=1864
+  _globals['_CMSGTRADING_CANCELTRADEREQUEST']._serialized_start=1866
+  _globals['_CMSGTRADING_CANCELTRADEREQUEST']._serialized_end=1921
+  _globals['_CMSGTRADING_STARTSESSION']._serialized_start=1923
+  _globals['_CMSGTRADING_STARTSESSION']._serialized_end=1972
+  _globals['_CMSGCLIENTGETDEPOTDECRYPTIONKEY']._serialized_start=1974
+  _globals['_CMSGCLIENTGETDEPOTDECRYPTIONKEY']._serialized_end=2041
+  _globals['_CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE']._serialized_start=2043
+  _globals['_CMSGCLIENTGETDEPOTDECRYPTIONKEYRESPONSE']._serialized_end=2152
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORD']._serialized_start=2154
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORD']._serialized_end=2242
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE']._serialized_start=2245
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE']._serialized_end=2463
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD']._serialized_start=2384
+  _globals['_CMSGCLIENTCHECKAPPBETAPASSWORDRESPONSE_BETAPASSWORD']._serialized_end=2463
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATS']._serialized_start=2466
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATS']._serialized_end=2619
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE']._serialized_start=2622
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE']._serialized_end=2899
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY']._serialized_start=2777
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY']._serialized_end=2899
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT']._serialized_start=2862
+  _globals['_CMSGCLIENTUGSGETGLOBALSTATSRESPONSE_DAY_STAT']._serialized_end=2899
+  _globals['_CMSGCLIENTREDEEMGUESTPASS']._serialized_start=2901
+  _globals['_CMSGCLIENTREDEEMGUESTPASS']._serialized_end=2951
+  _globals['_CMSGCLIENTREDEEMGUESTPASSRESPONSE']._serialized_start=2953
+  _globals['_CMSGCLIENTREDEEMGUESTPASSRESPONSE']._serialized_end=3052
+  _globals['_CMSGCLIENTGETCLANACTIVITYCOUNTS']._serialized_start=3054
+  _globals['_CMSGCLIENTGETCLANACTIVITYCOUNTS']._serialized_end=3110
+  _globals['_CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE']._serialized_start=3112
+  _globals['_CMSGCLIENTGETCLANACTIVITYCOUNTSRESPONSE']._serialized_end=3173
+  _globals['_CMSGCLIENTOGSREPORTSTRING']._serialized_start=3175
+  _globals['_CMSGCLIENTOGSREPORTSTRING']._serialized_end=3296
+  _globals['_CMSGCLIENTOGSREPORTBUG']._serialized_start=3298
+  _globals['_CMSGCLIENTOGSREPORTBUG']._serialized_end=3378
+  _globals['_CMSGCLIENTSENTLOGS']._serialized_start=3380
+  _globals['_CMSGCLIENTSENTLOGS']._serialized_end=3400
+  _globals['_CMSGGCCLIENT']._serialized_start=3403
+  _globals['_CMSGGCCLIENT']._serialized_end=3549
+  _globals['_CMSGGCCLIENT_EFLAG']._serialized_start=3528
+  _globals['_CMSGGCCLIENT_EFLAG']._serialized_end=3549
+  _globals['_CMSGCLIENTREQUESTFREELICENSE']._serialized_start=3551
+  _globals['_CMSGCLIENTREQUESTFREELICENSE']._serialized_end=3597
+  _globals['_CMSGCLIENTREQUESTFREELICENSERESPONSE']._serialized_start=3599
+  _globals['_CMSGCLIENTREQUESTFREELICENSERESPONSE']._serialized_end=3709
+  _globals['_CMSGDRMDOWNLOADREQUESTWITHCRASHDATA']._serialized_start=3712
+  _globals['_CMSGDRMDOWNLOADREQUESTWITHCRASHDATA']._serialized_end=3923
+  _globals['_CMSGDRMDOWNLOADRESPONSE']._serialized_start=3926
+  _globals['_CMSGDRMDOWNLOADRESPONSE']._serialized_end=4145
+  _globals['_CMSGDRMFINALRESULT']._serialized_start=4148
+  _globals['_CMSGDRMFINALRESULT']._serialized_end=4363
+  _globals['_CMSGCLIENTDPCHECKSPECIALSURVEY']._serialized_start=4365
+  _globals['_CMSGCLIENTDPCHECKSPECIALSURVEY']._serialized_end=4416
+  _globals['_CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE']._serialized_start=4419
+  _globals['_CMSGCLIENTDPCHECKSPECIALSURVEYRESPONSE']._serialized_end=4569
+  _globals['_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE']._serialized_start=4571
+  _globals['_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSE']._serialized_end=4643
+  _globals['_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY']._serialized_start=4645
+  _globals['_CMSGCLIENTDPSENDSPECIALSURVEYRESPONSEREPLY']._serialized_end=4724
+  _globals['_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL']._serialized_start=4726
+  _globals['_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAIL']._serialized_end=4813
+  _globals['_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE']._serialized_start=4815
+  _globals['_CMSGCLIENTREQUESTFORGOTTENPASSWORDEMAILRESPONSE']._serialized_end=4910
+  _globals['_CMSGCLIENTITEMANNOUNCEMENTS']._serialized_start=4913
+  _globals['_CMSGCLIENTITEMANNOUNCEMENTS']._serialized_end=5159
+  _globals['_CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM']._serialized_start=5032
+  _globals['_CMSGCLIENTITEMANNOUNCEMENTS_UNSEENITEM']._serialized_end=5159
+  _globals['_CMSGCLIENTREQUESTITEMANNOUNCEMENTS']._serialized_start=5161
+  _globals['_CMSGCLIENTREQUESTITEMANNOUNCEMENTS']._serialized_end=5197
+  _globals['_CMSGCLIENTUSERNOTIFICATIONS']._serialized_start=5200
+  _globals['_CMSGCLIENTUSERNOTIFICATIONS']._serialized_end=5358
+  _globals['_CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION']._serialized_start=5297
+  _globals['_CMSGCLIENTUSERNOTIFICATIONS_NOTIFICATION']._serialized_end=5358
+  _globals['_CMSGCLIENTCOMMENTNOTIFICATIONS']._serialized_start=5361
+  _globals['_CMSGCLIENTCOMMENTNOTIFICATIONS']._serialized_end=5497
+  _globals['_CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS']._serialized_start=5499
+  _globals['_CMSGCLIENTREQUESTCOMMENTNOTIFICATIONS']._serialized_end=5538
+  _globals['_CMSGCLIENTOFFLINEMESSAGENOTIFICATION']._serialized_start=5540
+  _globals['_CMSGCLIENTOFFLINEMESSAGENOTIFICATION']._serialized_end=5643
+  _globals['_CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT']._serialized_start=5645
+  _globals['_CMSGCLIENTREQUESTOFFLINEMESSAGECOUNT']._serialized_end=5683
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY']._serialized_start=5685
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORY']._serialized_end=5741
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE']._serialized_start=5744
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE']._serialized_end=5993
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE']._serialized_start=5907
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYRESPONSE_FRIENDMESSAGE']._serialized_end=5993
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES']._serialized_start=5995
+  _globals['_CMSGCLIENTCHATGETFRIENDMESSAGEHISTORYFOROFFLINEMESSAGES']._serialized_end=6052
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELS']._serialized_start=6054
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELS']._serialized_end=6109
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE']._serialized_start=6112
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE']._serialized_end=6267
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND']._serialized_start=6225
+  _globals['_CMSGCLIENTFSGETFRIENDSSTEAMLEVELSRESPONSE_FRIEND']._serialized_end=6267
+  _globals['_CMSGCLIENTEMAILADDRINFO']._serialized_start=6270
+  _globals['_CMSGCLIENTEMAILADDRINFO']._serialized_end=6472
+  _globals['_CMSGCREITEMVOTESUMMARY']._serialized_start=6475
+  _globals['_CMSGCREITEMVOTESUMMARY']._serialized_end=6614
+  _globals['_CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID']._serialized_start=6570
+  _globals['_CMSGCREITEMVOTESUMMARY_PUBLISHEDFILEID']._serialized_end=6614
+  _globals['_CMSGCREITEMVOTESUMMARYRESPONSE']._serialized_start=6617
+  _globals['_CMSGCREITEMVOTESUMMARYRESPONSE']._serialized_end=6867
+  _globals['_CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY']._serialized_start=6749
+  _globals['_CMSGCREITEMVOTESUMMARYRESPONSE_ITEMVOTESUMMARY']._serialized_end=6867
+  _globals['_CMSGCREUPDATEUSERPUBLISHEDITEMVOTE']._serialized_start=6869
+  _globals['_CMSGCREUPDATEUSERPUBLISHEDITEMVOTE']._serialized_end=6949
+  _globals['_CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE']._serialized_start=6951
+  _globals['_CMSGCREUPDATEUSERPUBLISHEDITEMVOTERESPONSE']._serialized_end=7015
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS']._serialized_start=7018
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS']._serialized_end=7189
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID']._serialized_start=6570
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILS_PUBLISHEDFILEID']._serialized_end=6614
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE']._serialized_start=7192
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE']._serialized_end=7426
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL']._serialized_start=7362
+  _globals['_CMSGCREGETUSERPUBLISHEDITEMVOTEDETAILSRESPONSE_USERITEMVOTEDETAIL']._serialized_end=7426
+  _globals['_CMSGFSGETFOLLOWERCOUNT']._serialized_start=7428
+  _globals['_CMSGFSGETFOLLOWERCOUNT']._serialized_end=7470
+  _globals['_CMSGFSGETFOLLOWERCOUNTRESPONSE']._serialized_start=7472
+  _globals['_CMSGFSGETFOLLOWERCOUNTRESPONSE']._serialized_end=7542
+  _globals['_CMSGFSGETISFOLLOWING']._serialized_start=7544
+  _globals['_CMSGFSGETISFOLLOWING']._serialized_end=7584
+  _globals['_CMSGFSGETISFOLLOWINGRESPONSE']._serialized_start=7586
+  _globals['_CMSGFSGETISFOLLOWINGRESPONSE']._serialized_end=7665
+  _globals['_CMSGFSENUMERATEFOLLOWINGLIST']._serialized_start=7667
+  _globals['_CMSGFSENUMERATEFOLLOWINGLIST']._serialized_end=7718
+  _globals['_CMSGFSENUMERATEFOLLOWINGLISTRESPONSE']._serialized_start=7720
+  _globals['_CMSGFSENUMERATEFOLLOWINGLISTRESPONSE']._serialized_end=7820
+  _globals['_CMSGDPGETNUMBEROFCURRENTPLAYERS']._serialized_start=7822
+  _globals['_CMSGDPGETNUMBEROFCURRENTPLAYERS']._serialized_end=7870
+  _globals['_CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE']._serialized_start=7872
+  _globals['_CMSGDPGETNUMBEROFCURRENTPLAYERSRESPONSE']._serialized_end=7955
+  _globals['_CMSGCLIENTFRIENDUSERSTATUSPUBLISHED']._serialized_start=7957
+  _globals['_CMSGCLIENTFRIENDUSERSTATUSPUBLISHED']._serialized_end=8054
+  _globals['_CMSGCLIENTSERVICEMETHODLEGACY']._serialized_start=8056
+  _globals['_CMSGCLIENTSERVICEMETHODLEGACY']._serialized_end=8160
+  _globals['_CMSGCLIENTSERVICEMETHODLEGACYRESPONSE']._serialized_start=8162
+  _globals['_CMSGCLIENTSERVICEMETHODLEGACYRESPONSE']._serialized_end=8258
+  _globals['_CMSGCLIENTUIMODE']._serialized_start=8260
+  _globals['_CMSGCLIENTUIMODE']._serialized_end=8313
+  _globals['_CMSGCLIENTVANITYURLCHANGEDNOTIFICATION']._serialized_start=8315
+  _globals['_CMSGCLIENTVANITYURLCHANGEDNOTIFICATION']._serialized_end=8375
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST']._serialized_start=8377
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICEREQUEST']._serialized_end=8498
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICE']._serialized_start=8500
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICE']._serialized_end=8607
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION']._serialized_start=8609
+  _globals['_CMSGCLIENTAUTHORIZELOCALDEVICENOTIFICATION']._serialized_end=8727
+  _globals['_CMSGCLIENTDEAUTHORIZEDEVICEREQUEST']._serialized_start=8729
+  _globals['_CMSGCLIENTDEAUTHORIZEDEVICEREQUEST']._serialized_end=8839
+  _globals['_CMSGCLIENTDEAUTHORIZEDEVICE']._serialized_start=8841
+  _globals['_CMSGCLIENTDEAUTHORIZEDEVICE']._serialized_end=8926
+  _globals['_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS']._serialized_start=8929
+  _globals['_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS']._serialized_end=9138
+  _globals['_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN']._serialized_start=9081
+  _globals['_CMSGCLIENTUSELOCALDEVICEAUTHORIZATIONS_DEVICETOKEN']._serialized_end=9138
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICES']._serialized_start=9140
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICES']._serialized_end=9172
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE']._serialized_start=9175
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE']._serialized_end=9476
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE']._serialized_start=9323
+  _globals['_CMSGCLIENTGETAUTHORIZEDDEVICESRESPONSE_AUTHORIZEDDEVICE']._serialized_end=9476
+  _globals['_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS']._serialized_start=9479
+  _globals['_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS']._serialized_end=9673
+  _globals['_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY']._serialized_start=9621
+  _globals['_CMSGCLIENTSHAREDLIBRARYLOCKSTATUS_LOCKEDLIBRARY']._serialized_end=9673
+  _globals['_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING']._serialized_start=9676
+  _globals['_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING']._serialized_end=9843
+  _globals['_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP']._serialized_start=9800
+  _globals['_CMSGCLIENTSHAREDLIBRARYSTOPPLAYING_STOPAPP']._serialized_end=9843
+  _globals['_CMSGCLIENTSERVICECALL']._serialized_start=9846
+  _globals['_CMSGCLIENTSERVICECALL']._serialized_end=10103
+  _globals['_CMSGCLIENTSERVICEMODULE']._serialized_start=10105
+  _globals['_CMSGCLIENTSERVICEMODULE']._serialized_end=10195
+  _globals['_CMSGCLIENTSERVICECALLRESPONSE']._serialized_start=10198
+  _globals['_CMSGCLIENTSERVICECALLRESPONSE']._serialized_end=10766
+  _globals['_CMSGAMUNLOCKH264']._serialized_start=10768
+  _globals['_CMSGAMUNLOCKH264']._serialized_end=10835
+  _globals['_CMSGAMUNLOCKH264RESPONSE']._serialized_start=10837
+  _globals['_CMSGAMUNLOCKH264RESPONSE']._serialized_end=10907
+  _globals['_CMSGCLIENTPLAYINGSESSIONSTATE']._serialized_start=10909
+  _globals['_CMSGCLIENTPLAYINGSESSIONSTATE']._serialized_end=10986
+  _globals['_CMSGCLIENTKICKPLAYINGSESSION']._serialized_start=10988
+  _globals['_CMSGCLIENTKICKPLAYINGSESSION']._serialized_end=11042
+  _globals['_CMSGCLIENTVOICECALLPREAUTHORIZE']._serialized_start=11044
+  _globals['_CMSGCLIENTVOICECALLPREAUTHORIZE']._serialized_end=11162
+  _globals['_CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE']._serialized_start=11165
+  _globals['_CMSGCLIENTVOICECALLPREAUTHORIZERESPONSE']._serialized_end=11295
+  _globals['_CMSGBADGECRAFTEDNOTIFICATION']._serialized_start=11297
+  _globals['_CMSGBADGECRAFTEDNOTIFICATION']._serialized_end=11363
+  _globals['_CMSGCLIENTSTARTPEERCONTENTSERVER']._serialized_start=11365
+  _globals['_CMSGCLIENTSTARTPEERCONTENTSERVER']._serialized_end=11484
+  _globals['_CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE']._serialized_start=11486
+  _globals['_CMSGCLIENTSTARTPEERCONTENTSERVERRESPONSE']._serialized_end=11613
+  _globals['_CMSGCLIENTGETPEERCONTENTINFO']._serialized_start=11615
+  _globals['_CMSGCLIENTGETPEERCONTENTINFO']._serialized_end=11717
+  _globals['_CMSGCLIENTGETPEERCONTENTINFORESPONSE']._serialized_start=11719
+  _globals['_CMSGCLIENTGETPEERCONTENTINFORESPONSE']._serialized_end=11787
+  _globals['_CMSGCLIENTPENDINGGAMELAUNCH']._serialized_start=11789
+  _globals['_CMSGCLIENTPENDINGGAMELAUNCH']._serialized_end=11834
+  _globals['_CMSGCLIENTPENDINGGAMELAUNCHRESPONSE']._serialized_start=11836
+  _globals['_CMSGCLIENTPENDINGGAMELAUNCHRESPONSE']._serialized_end=11925
 # @@protoc_insertion_point(module_scope)

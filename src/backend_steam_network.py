@@ -37,7 +37,7 @@ from steam_network.friends_cache import FriendsCache
 from steam_network.games_cache import GamesCache
 from steam_network.local_machine_cache import LocalMachineCache
 from steam_network.presence import presence_from_user_info
-from steam_network.protocol.steam_types import ProtoUserInfo  # TODO accessing inner module
+from steam_network.protocol import ProtoUserInfo
 from steam_network.stats_cache import StatsCache
 from steam_network.steam_http_client import SteamHttpClient
 from steam_network.times_cache import TimesCache
@@ -75,7 +75,7 @@ def avatar_url_from_avatar_hash(a_hash: str):
 
 class SteamNetworkBackend(BackendInterface):
     def __init__(self, http_client: HttpClient, ssl_context: ssl.SSLContext, 
-                 persistent_storage_state: PersistentCacheState, persistent_cache: Dict[str, Any], update_user_presence: Callable[[UserPresence], None], 
+                 persistent_storage_state: PersistentCacheState, persistent_cache: Dict[str, Any], update_user_presence: Callable[[str, UserPresence], None], 
                  store_credentials: Callable[[Dict[str, Any]], None], add_game: Callable[[Game], None]):
 
         self._add_game : Callable[[Game], None] = add_game
@@ -93,9 +93,11 @@ class SteamNetworkBackend(BackendInterface):
         self._friends_cache : FriendsCache = FriendsCache()
 
         async def user_presence_update_handler(user_id: str, proto_user_info: ProtoUserInfo):
-            update_user_presence(
-                await presence_from_user_info(proto_user_info, self._translations_cache),
-            )
+            # Convert proto_user_info to a UserPresence object and pass both the
+            # user_id and the presence object to the callback provided by the
+            # plugin. The plugin expects signature (user_id, presence).
+            presence = await presence_from_user_info(proto_user_info, self._translations_cache)
+            update_user_presence(user_id, presence)
 
         self._friends_cache.updated_handler = user_presence_update_handler
 

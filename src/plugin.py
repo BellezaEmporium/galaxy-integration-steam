@@ -110,7 +110,7 @@ class SteamPlugin(Plugin):
         store_credentials=self.store_credentials
         ssl_context=self._ssl_context
         raw_update_user_presence = self.update_user_presence
-        update_user_presence = lambda presence: raw_update_user_presence(presence.user_id, presence)
+        update_user_presence = lambda user_id, presence: raw_update_user_presence(user_id, presence)
         add_game=self.add_game
 
         return SteamNetworkBackend(http_client, ssl_context, persistent_storage_state, persistent_cache, update_user_presence, store_credentials, add_game)

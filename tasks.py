@@ -1,18 +1,18 @@
+from io import BytesIO
 import os
 import sys
 import json
-import requests
 import tempfile
-import zipfile
-from shutil import rmtree, copy2, which
+from shutil import rmtree, which
 from distutils.dir_util import copy_tree
-from io import BytesIO
 
 from urllib.request import urlopen #used to retrieve the proto files from github.
 from http.client import HTTPResponse
+import zipfile
 
-from invoke import task
+from invoke.tasks import task
 from galaxy.tools import zip_folder_to_file
+import requests
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROTOC_DIR = os.path.join(BASE_DIR, "protoc")
@@ -31,7 +31,7 @@ if sys.platform == 'win32':
 
     PROTOC_EXE = os.path.join(PROTOC_DIR, "bin", "protoc.exe")
     PROTOC_INCLUDE_DIR = os.path.join(PROTOC_DIR, "include")
-    PROTOC_DOWNLOAD_URL = "https://github.com/protocolbuffers/protobuf/releases/download/v3.19.5/protoc-3.19.5-win32.zip"
+    PROTOC_DOWNLOAD_URL = "https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protoc-24.4-win32.zip"
 
 elif sys.platform == 'darwin':
     DIST_DIR = os.path.realpath(os.path.expanduser("~/Library/Application Support/GOG.com/Galaxy/plugins/installed"))
@@ -40,7 +40,7 @@ elif sys.platform == 'darwin':
 
     PROTOC_EXE = os.path.join(PROTOC_DIR, "bin", "protoc")
     PROTOC_INCLUDE_DIR = os.path.join(PROTOC_DIR, "include")
-    PROTOC_DOWNLOAD_URL = "https://github.com/protocolbuffers/protobuf/releases/download/v3.19.5/protoc-3.19.5-osx-x86_64.zip"
+    PROTOC_DOWNLOAD_URL = "https://github.com/protocolbuffers/protobuf/releases/download/v24.4/protoc-24.4-osx-x86_64.zip"
 
 
 @task
@@ -53,7 +53,7 @@ def build(c, output='output', ziparchive=None):
     # as pip requires --no-deps if --platform is used.
     print('--> Flattening dependencies to temporary requirements file')
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
-        c.run(f'pip-compile requirements/app.txt --output-file=-', out_stream=tmp)
+        c.run(f'pip-compile requirements/app.txt --resolver=backtracking --output-file=-', out_stream=tmp)
 
     # Then install all stuff with pip to output folder
     print('--> Installing with pip for specific version')
