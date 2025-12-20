@@ -27,7 +27,7 @@ async def test_multiple_friends(authenticated_plugin, websocket_client):
     websocket_client.get_friends_info.return_value = {
         "76561198040630463": ProtoUserInfo(
             name="Test1",
-            avatar_hash=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            avatar_hash="00000000000000000000000000000000000000000",
             state=EPersonaState.Invisible,
             game_id=0,
             game_name="",
@@ -35,7 +35,7 @@ async def test_multiple_friends(authenticated_plugin, websocket_client):
         ),
         "76561198053830887": ProtoUserInfo(
             name="Test2",
-            avatar_hash=b"\x22\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11",
+            avatar_hash="2200000000000000000000000000000000000011",
             state=None,
             game_id=None,
             game_name=None,
@@ -69,7 +69,7 @@ async def test_multiple_friends_with_nicknames(authenticated_plugin, websocket_c
     websocket_client.get_friends_info.return_value = {
         "76561198040630463": ProtoUserInfo(
             name="Test1",
-            avatar_hash=b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            avatar_hash="00000000000000000000000000000000000000000",
             state=EPersonaState.Invisible,
             game_id=0,
             game_name="",
@@ -77,7 +77,7 @@ async def test_multiple_friends_with_nicknames(authenticated_plugin, websocket_c
         ),
         "76561198053830887": ProtoUserInfo(
             name="Test2",
-            avatar_hash=b"\x22\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11",
+            avatar_hash="2200000000000000000000000000000000000011",
             state=None,
             game_id=None,
             game_name=None,

@@ -64,7 +64,7 @@ class translations_cache_values_fitting_partially_dataclass:
         ),
         # User playing a game with translatable rich presence which is parametrized
         (
-            ProtoUserInfo(state=EPersonaState.Online, game_id=1513, game_name="abc", rich_presence={"status": "#menu", "num_params": 1, "param0": "#EN"}),
+            ProtoUserInfo(state=EPersonaState.Online, game_id=1513, game_name="abc", rich_presence={"status": "#menu", "num_params": "1", "param0": "#EN"}),
             UserPresence(
                 presence_state=PresenceState.Online, game_id="1513", game_title="abc", in_game_status="translated_menu english"
             )

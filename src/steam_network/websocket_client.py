@@ -1,16 +1,15 @@
 import asyncio
-from asyncio.futures import Future
 import logging
+from asyncio import Future
 import ssl
 from contextlib import suppress
 from typing import Callable, Optional, Any, Dict, Mapping, Union
 
 import websockets
-from typing import Any as _Any
 from websockets.client import WebSocketClientProtocol
 from galaxy.api.errors import BackendNotAvailable, BackendTimeout, BackendError, InvalidCredentials, NetworkError, AccessDenied, AuthenticationRequired
 
-from rsa import PublicKey, encrypt
+from rsa import encrypt
 
 from .authentication_cache import AuthenticationCache
 
@@ -25,7 +24,6 @@ from .user_info_cache import UserInfoCache
 
 from .enums import AuthCall, TwoFactorMethod, UserActionRequired, to_helpful_string, to_UserAction
 
-from .steam_public_key import SteamPublicKey
 from .steam_auth_polling_data import SteamPollingData
 
 from traceback import format_exc
@@ -45,7 +43,7 @@ async def sleep(seconds: int):
 
 
 def asyncio_future() -> Future:
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return loop.create_future()
 
 
@@ -226,7 +224,7 @@ class WebSocketClient:
 
     async def _ensure_connected(self):
         if self._protocol_client is not None:
-            return # already connected
+            return  # already connected
 
         while True:
             async for ws_address in self._websocket_list.get(self.used_server_cell_id):

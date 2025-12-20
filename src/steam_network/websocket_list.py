@@ -24,7 +24,9 @@ class WebSocketList:
     
     @staticmethod 
     def __host_name(url: str) -> HostName:
-        return yarl.URL(url).host
+        host = yarl.URL(url).host
+        assert host is not None
+        return host
     
     def add_server_to_ignored(self, socket_addr: str, timeout_sec: int):
         self._servers_blacklist[self.__host_name(socket_addr)] = current_time() + timeout_sec

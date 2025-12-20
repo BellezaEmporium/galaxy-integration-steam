@@ -76,7 +76,7 @@ async def presence_from_user_info(user_info: ProtoUserInfo, translations_cache: 
             status = user_info.rich_presence.get("status")
         if status:
             try:
-                if int(game_id) in translations_cache and translations_cache[int(game_id)]:
+                if game_id is not None and int(game_id) in translations_cache and translations_cache[int(game_id)]:
                     try:
                         status = await asyncio.wait_for(_translate_presence(user_info,status, translations_cache[int(game_id)]), timeout=1)
                     except asyncio.TimeoutError:

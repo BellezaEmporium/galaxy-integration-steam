@@ -1,7 +1,12 @@
-__version__ = "1.2.3"
+__version__ = "1.2.3-alt"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.2.3-alt": """
+    - Bump up Galaxy API to v70, retarget dependencies to Python 3.13.
+    - Major code overhaul to support new Galaxy API features and changes.
+    - Major code overhaul to better tinker with Python's newest editions.
+    """,
     "1.2.3": """
     - Bumped up dependencies.
     - Resolved lint errors linked to potential breakpoints, add safe checkpoints on rumbly aspects.

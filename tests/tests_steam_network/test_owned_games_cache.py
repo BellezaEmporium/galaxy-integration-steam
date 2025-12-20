@@ -24,7 +24,7 @@ def cache(mocker, cache_version):
 
 
 def test_packages_import_clean(cache):
-    cache._storing_map.licenses = [License(package_id=111, shared=True)]
+    cache._storing_map.licenses = [License(package_id='111', shared=True)]
     licenses = [SteamLicense(ProtoResponse(123), True),
                 SteamLicense(ProtoResponse(321), False)]
     cache.reset_storing_map()

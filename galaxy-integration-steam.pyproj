@@ -182,8 +182,8 @@
   <ItemGroup>
     <Interpreter Include="env1\">
       <Id>env1</Id>
-      <Version>3.7</Version>
-      <Description>env1 (Python 3.7 (64-bit))</Description>
+      <Version>3.13</Version>
+      <Description>env1 (Python 3.13 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>

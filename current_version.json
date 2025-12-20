@@ -1,12 +1,12 @@
 {
-	"tag_name": "v1.2.3",
+	"tag_name": "v1.2.3-alt",
 	"assets": [
 		{
-			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.3/windows.zip",
+			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.3-alt/windows.zip",
 			"name": "windows.zip"
 		},
 		{
-			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.3/mac.zip",
+			"browser_download_url": "https://github.com/BellezaEmporium/galaxy-integration-steam/releases/download/v1.2.3-alt/mac.zip",
 			"name": "mac.zip"
 		}
 	]

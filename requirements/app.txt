@@ -1,10 +1,10 @@
-galaxy.plugin.api==0.69
+galaxy.plugin.api==0.70
 
 # steam_network backend
-protobuf==4.24.4
+protobuf==6.33.2
 vdf==3.4
-pyobjc-framework-CoreServices==9.2; sys_platform == 'darwin'
-websockets==11.0.3
+pyobjc-framework-CoreServices==12.1; sys_platform == 'darwin'
+websockets==15.0.1
 dataclasses-json==0.6.7
 rsa==4.9.1
 certifi

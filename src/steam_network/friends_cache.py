@@ -77,7 +77,7 @@ class FriendsCache(ProtoCache):
 
         if available_info is None:
             if changed and self.updated_handler is not None:
-                await self.updated_handler(user_id, current_info)
+                self.updated_handler(user_id, current_info)
         else:
             if user_info.name is not None:
                 available_info.personal_info = True
