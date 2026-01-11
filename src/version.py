@@ -1,7 +1,12 @@
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.2.4": """
+    - Updated protobuf files to latest versions.
+    - Few more safeguards related to users.
+    - Gracefully handle cases where user info cache fails to load stored credentials.
+    """,
     "1.2.3": """
     - Bumped up dependencies.
     - Resolved lint errors linked to potential breakpoints, add safe checkpoints on rumbly aspects.
@@ -9,7 +14,7 @@ __changelog__ = {
     - Improved user presence updates to include user IDs.
     - Slight rewrite on the protobuf client and client protocol to use the latest features.
     - Bumped protobuf/protoc, using new protobuf messages from Steam to prevent failure points.
-     """,
+    """,
     "1.0.7": """
     - Fixes issues when SteamGuard is disabled. Made it so 2FA codes would ignore leading or trailing whitespace.
     - Code cleanup
