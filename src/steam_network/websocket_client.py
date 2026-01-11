@@ -247,7 +247,7 @@ class WebSocketClient:
                         self.used_server_cell_id
                     )
                     logger.info(f'Connected to Steam on CM {ws_address} on cell_id {self.used_server_cell_id}. Sending Hello')
-                    await self._protocol_client.finish_handshake()
+                    await self._protocol_client.say_hello()
                     return
                 except (asyncio.TimeoutError, OSError, websockets.exceptions.InvalidURI, websockets.exceptions.InvalidHandshake):
                     self._websocket_list.add_server_to_ignored(self._current_ws_address, timeout_sec=BLACKLISTED_CM_EXPIRATION_SEC)
@@ -263,17 +263,6 @@ class WebSocketClient:
         async def auth_lost_handler(error):
             logger.warning("WebSocket client authentication lost")
             auth_lost_future.set_exception(error)
-
-        # Wait for the server to acknowledge our ClientHello before sending auth requests
-        if self._protocol_client is not None:
-            try:
-                logger.info("Waiting for handshake to complete before auth...")
-                await self._protocol_client.wait_for_handshake_complete(timeout=15.0)
-                logger.info("Handshake complete, proceeding with authentication")
-            except asyncio.TimeoutError:
-                logger.error("Timeout waiting for handshake to complete")
-                auth_lost_future.set_exception(RuntimeError("Handshake timeout"))
-                return
 
         ret_code : Optional[UserActionRequired] = None
         while ret_code != UserActionRequired.NoActionRequired:

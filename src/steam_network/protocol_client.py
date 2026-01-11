@@ -142,12 +142,9 @@ class ProtocolClient:
     async def register_auth_ticket_with_cm(self, ticket: bytes):
         await self._protobuf_client.register_auth_ticket_with_cm(ticket)
 
-    async def finish_handshake(self):
+    async def say_hello(self):
+        """Send ClientHello to the server. Required before authentication."""
         await self._protobuf_client.say_hello()
-
-    async def wait_for_handshake_complete(self, timeout: float = 10.0):
-        """Wait until the server has acknowledged our ClientHello by sending a response."""
-        await asyncio.wait_for(self._protobuf_client.hello_received.wait(), timeout=timeout)
 
     async def get_rsa_public_key(self, username:str, auth_lost_handler) -> Tuple[bool, SteamPublicKey]:
         loop = asyncio.get_running_loop()

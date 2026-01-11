@@ -136,8 +136,6 @@ class ProtobufClient:
         self.collections = {'event': asyncio.Event(),
                             'collections': dict()}
         self._recv_task: Optional[asyncio.Task[Any]] = None
-        # Event that signals the server has acknowledged our ClientHello (first message received)
-        self.hello_received: asyncio.Event = asyncio.Event()
     async def close(self, send_log_off):
         if (self._recv_task is not None):
             self._recv_task.cancel()
@@ -173,10 +171,6 @@ class ProtobufClient:
                 packet = await asyncio.wait_for(self._recv_task, 10)
                 self._recv_task = None
                 await self._process_packet(packet)
-                # Signal that we've received a message from the server (handshake acknowledged)
-                if not self.hello_received.is_set():
-                    logger.info("First message received from server, handshake complete")
-                    self.hello_received.set()
                 if jobs_to_process > 0:
                     jobs_to_process -= 1
             except asyncio.TimeoutError:
