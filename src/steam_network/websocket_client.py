@@ -264,6 +264,17 @@ class WebSocketClient:
             logger.warning("WebSocket client authentication lost")
             auth_lost_future.set_exception(error)
 
+        # Wait for the server to acknowledge our ClientHello before sending auth requests
+        if self._protocol_client is not None:
+            try:
+                logger.info("Waiting for handshake to complete before auth...")
+                await self._protocol_client.wait_for_handshake_complete(timeout=15.0)
+                logger.info("Handshake complete, proceeding with authentication")
+            except asyncio.TimeoutError:
+                logger.error("Timeout waiting for handshake to complete")
+                auth_lost_future.set_exception(RuntimeError("Handshake timeout"))
+                return
+
         ret_code : Optional[UserActionRequired] = None
         while ret_code != UserActionRequired.NoActionRequired:
             if ret_code != None:

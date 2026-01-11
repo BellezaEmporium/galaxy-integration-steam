@@ -136,6 +136,8 @@ class ProtobufClient:
         self.collections = {'event': asyncio.Event(),
                             'collections': dict()}
         self._recv_task: Optional[asyncio.Task[Any]] = None
+        # Event that signals the server has acknowledged our ClientHello (first message received)
+        self.hello_received: asyncio.Event = asyncio.Event()
     async def close(self, send_log_off):
         if (self._recv_task is not None):
             self._recv_task.cancel()
@@ -171,6 +173,10 @@ class ProtobufClient:
                 packet = await asyncio.wait_for(self._recv_task, 10)
                 self._recv_task = None
                 await self._process_packet(packet)
+                # Signal that we've received a message from the server (handshake acknowledged)
+                if not self.hello_received.is_set():
+                    logger.info("First message received from server, handshake complete")
+                    self.hello_received.set()
                 if jobs_to_process > 0:
                     jobs_to_process -= 1
             except asyncio.TimeoutError:
@@ -780,16 +786,23 @@ class ProtobufClient:
                 app_content = vdf.loads(info.buffer[:-1].decode('utf-8', 'replace'))
                 appid = str(app_content['appinfo']['appid'])
                 try:
-                    type_ = app_content['appinfo']['common']['type'].lower()
-                    title = app_content['appinfo']['common']['name']
-                    parent = None
-                    if 'extended' in app_content['appinfo'] and type_ == 'dlc':
-                        parent = app_content['appinfo']['extended']['dlcforappid']
-                        logger.debug(f"Retrieved dlc {title} for {parent}")
-                    if type == 'game':
-                        logger.debug(f"Retrieved game {title}")
-                    if self.app_info_handler:
-                        self.app_info_handler(appid=appid, title=title, type=type_, parent=parent)
+                    if 'common' in app_content['appinfo']:
+                        type_ = app_content['appinfo']['common']['type'].lower()
+                        title = app_content['appinfo']['common']['name']
+                        parent = None
+                        if 'extended' in app_content['appinfo'] and type_ == 'dlc':
+                            parent = app_content['appinfo']['extended']['dlcforappid']
+                            logger.debug(f"Retrieved dlc {title} for {parent}")
+                        if type == 'game':
+                            logger.debug(f"Retrieved game {title}")
+                        if self.app_info_handler:
+                            self.app_info_handler(appid=appid, title=title, type=type_, parent=parent)
+                    # Certain applications do not contain any detailed informations.
+                    # Could be tools, Proton versions etc...
+                    # Acknowledge their existence, but we can't do much with them.
+                    elif 'public_only' in app_content['appinfo']:
+                        logger.debug(f'AppID {appid} found with no specific structure (limited public info)')
+                        continue
                 except KeyError:
                     logger.warning(f"Unrecognized app structure {app_content}")
                     if self.app_info_handler:

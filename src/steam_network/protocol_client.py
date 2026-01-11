@@ -145,6 +145,10 @@ class ProtocolClient:
     async def finish_handshake(self):
         await self._protobuf_client.say_hello()
 
+    async def wait_for_handshake_complete(self, timeout: float = 10.0):
+        """Wait until the server has acknowledged our ClientHello by sending a response."""
+        await asyncio.wait_for(self._protobuf_client.hello_received.wait(), timeout=timeout)
+
     async def get_rsa_public_key(self, username:str, auth_lost_handler) -> Tuple[bool, SteamPublicKey]:
         loop = asyncio.get_running_loop()
         self._rsa_future = loop.create_future()
