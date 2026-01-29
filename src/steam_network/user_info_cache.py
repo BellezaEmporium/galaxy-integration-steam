@@ -34,10 +34,10 @@ class UserInfoCache:
         creds = {}
         if self.is_initialized():
             creds = {
-                'steam_id': base64.b64encode(str(self._steam_id).encode('utf-8')).decode('utf-8'),
-                'refresh_token': base64.b64encode(self._refresh_token.encode('utf-8')).decode('utf-8') if self._refresh_token else '',
-                'account_username': base64.b64encode(self._account_username.encode('utf-8')).decode('utf-8') if self._account_username else '',
-                'persona_name': base64.b64encode(self._persona_name.encode('utf-8')).decode('utf-8') if self._persona_name else '',
+                'steam_id': str(self._steam_id),
+                'refresh_token': self._refresh_token,
+                'account_username': self._account_username,
+                'persona_name': self._persona_name,
             }
         return creds
 
@@ -49,21 +49,20 @@ class UserInfoCache:
         try:
             item = lookup.get('steam_id')
             if item is not None:
-                self._steam_id = int(base64.b64decode(item).decode('utf-8'))
+                self._steam_id = int(item)
 
             item = lookup.get('account_username')
             if item is not None:
-                self._account_username = base64.b64decode(item).decode('utf-8')
-
+                self._account_username = item
             item = lookup.get('persona_name')
             if item is not None:
-                self._persona_name = base64.b64decode(item).decode('utf-8')
+                self._persona_name = item
 
             item = lookup.get('refresh_token')
             if item is not None:
-                self._refresh_token = base64.b64decode(item).decode('utf-8')
+                self._refresh_token = item
         except (UnicodeDecodeError, ValueError, TypeError) as e:
-            logger.warning(f"Failed to decode stored credentials (possibly corrupted or old format): {e}")
+            logger.warning(f"Failed to decode stored credentials (possibly corrupted or old format): {e}. Re-authentication will be required.")
             self.Clear()
 
     @property

@@ -3,9 +3,10 @@ from asyncio.futures import Future
 import logging
 import ssl
 from contextlib import suppress
-from typing import Callable, Optional, Any, Dict, Mapping, Union
+from typing import Callable, Optional, Any, Dict, Mapping, Union, cast
 
 import websockets
+import websockets.exceptions
 from typing import Any as _Any
 from websockets.client import WebSocketClientProtocol
 from galaxy.api.errors import BackendNotAvailable, BackendTimeout, BackendError, InvalidCredentials, NetworkError, AccessDenied, AuthenticationRequired
@@ -56,7 +57,7 @@ class WebSocketClient:
         ssl_context: ssl.SSLContext,
         friends_cache: FriendsCache,
         games_cache: GamesCache,
-        translations_cache: Mapping[int, Union[str, None]],
+        translations_cache: Dict[int, str],
         stats_cache: StatsCache,
         times_cache: TimesCache,
         authentication_cache: AuthenticationCache,
@@ -71,8 +72,8 @@ class WebSocketClient:
 
         self._friends_cache : FriendsCache = friends_cache
         self._games_cache : GamesCache = games_cache
-        self._translations_cache : Mapping[int, Union[str, None]] = translations_cache
-        self._stats_cache :StatsCache = stats_cache
+        self._translations_cache : Dict[int, Optional[str]] = translations_cache
+        self._stats_cache : StatsCache = stats_cache
         self._authentication_cache : AuthenticationCache = authentication_cache
         self._user_info_cache : UserInfoCache = user_info_cache
         self._local_machine_cache : LocalMachineCache = local_machine_cache
@@ -238,7 +239,7 @@ class WebSocketClient:
                         self._websocket,
                         self._friends_cache,
                         self._games_cache,
-                        dict(self._translations_cache),
+                        self._translations_cache,
                         self._stats_cache,
                         self._times_cache,
                         self._authentication_cache,
@@ -264,110 +265,116 @@ class WebSocketClient:
             logger.warning("WebSocket client authentication lost")
             auth_lost_future.set_exception(error)
 
-        ret_code : Optional[UserActionRequired] = None
-        while ret_code != UserActionRequired.NoActionRequired:
-            if ret_code != None:
-                await self.communication_queues['plugin'].put({'auth_result': ret_code})
-                logger.info(f"Put {ret_code} in the queue, waiting for other side to receive")
+        try:
+            ret_code : Optional[UserActionRequired] = None
+            while ret_code != UserActionRequired.NoActionRequired:
+                if ret_code != None:
+                    await self.communication_queues['plugin'].put({'auth_result': ret_code})
+                    logger.info(f"Put {ret_code} in the queue, waiting for other side to receive")
 
-            ret_code = None
-            response : Dict[str,Any] = await self.communication_queues['websocket'].get()
-            logger.info(f" Got {response.keys()} from queue")
+                ret_code = None
+                response : Dict[str,Any] = await self.communication_queues['websocket'].get()
+                logger.info(f" Got {response.keys()} from queue")
 
-            #auth flow changes (version 1.0.4+): Now, instead of just using the client login call, we need to do a few more steps. 
-            #Each of these steps is represented by an AuthCall enum value, and the backend sends us this value along with what they want us to do.
+                #auth flow changes (version 1.0.4+): Now, instead of just using the client login call, we need to do a few more steps. 
+                #Each of these steps is represented by an AuthCall enum value, and the backend sends us this value along with what they want us to do.
 
-            mode = response.get('mode', AuthCall.RSA_AND_LOGIN)
-            if (mode == AuthCall.RSA_AND_LOGIN):
-                ret_code = UserActionRequired.InvalidAuthData
+                mode = response.get('mode', AuthCall.RSA_AND_LOGIN)
+                if (mode == AuthCall.RSA_AND_LOGIN):
+                    ret_code = UserActionRequired.InvalidAuthData
 
-                username : Optional[str] = response.get('username', None)
-                password : Optional[str] = response.get('password', None)
+                    username : Optional[str] = response.get('username', None)
+                    password : Optional[str] = response.get('password', None)
 
-                if (username is not None and username and password is not None and password):
-                    if self._protocol_client is None:
-                        logger.error("Protocol client is not initialized before RSA public key request.")
+                    if (username is not None and username and password is not None and password):
+                        if self._protocol_client is None:
+                            logger.error("Protocol client is not initialized before RSA public key request.")
+                            ret_code = UserActionRequired.InvalidAuthData
+                        else:
+                            logger.info("Retrieving a uniquely generated RSA public key from steam")
+                            (successful, key) = await self._protocol_client.get_rsa_public_key(username, auth_lost_handler)
+                            if (successful and key is not None and hasattr(key, "rsa_public_key") and key.rsa_public_key is not None):
+                                enciphered = encrypt(password.encode('utf-8', errors="ignore"), key.rsa_public_key)
+                                logger.info(f'Authenticating with user credentials (user password is encrpyted)')
+                                self._steam_polling_data = await self._protocol_client.authenticate_password(username, enciphered, key.timestamp, auth_lost_handler)
+                                if (self._steam_polling_data is not None and self._steam_polling_data.has_valid_confirmation_method()):
+                                    
+                                    self._user_info_cache.account_username = username
+                                    self._authentication_cache.update_authentication_cache(self._steam_polling_data.allowed_confirmations, self._steam_polling_data.extended_error_message)
+
+                                    if (
+                                        self._authentication_cache.two_factor_allowed_methods is not None
+                                        and len(self._authentication_cache.two_factor_allowed_methods) > 0
+                                        and isinstance(self._authentication_cache.two_factor_allowed_methods[0], tuple)
+                                    ):
+                                        two_factor_method = self._authentication_cache.two_factor_allowed_methods[0][0]
+                                        ret_code = to_UserAction(two_factor_method)
+                                    else:
+                                        ret_code = UserActionRequired.InvalidAuthData
+
+                                if (ret_code != UserActionRequired.InvalidAuthData):
+                                    logger.info("GOT THE LOGIN DONE! ON TO 2FA")
+                                else:
+                                    logger.info("LOGIN FAILED :( But hey, at least you're here!")
+                            else:
+                                logger.error("Failed to retrieve a valid RSA public key for encryption.")
+                                ret_code = UserActionRequired.InvalidAuthData
+
+                elif (mode == AuthCall.UPDATE_TWO_FACTOR):
+                    code : Optional[UserActionRequired] = response.get('two-factor-code', None)
+                    method : Optional[UserActionRequired] = response.get('two-factor-method', None)
+                    if (
+                        self._steam_polling_data is None
+                        or not self._steam_polling_data.has_valid_confirmation_method()
+                        or not code
+                        or not method
+                        or self._protocol_client is None
+                    ):
                         ret_code = UserActionRequired.InvalidAuthData
                     else:
-                        logger.info("Retrieving a uniquely generated RSA public key from steam")
-                        (successful, key) = await self._protocol_client.get_rsa_public_key(username, auth_lost_handler)
-                        if (successful and key is not None and hasattr(key, "rsa_public_key") and key.rsa_public_key is not None):
-                            enciphered = encrypt(password.encode('utf-8', errors="ignore"), key.rsa_public_key)
-                            logger.info(f'Authenticating with user credentials (user password is encrpyted)')
-                            self._steam_polling_data = await self._protocol_client.authenticate_password(username, enciphered, key.timestamp, auth_lost_handler)
-                            if (self._steam_polling_data is not None and self._steam_polling_data.has_valid_confirmation_method()):
-                                
-                                self._user_info_cache.account_username = username
-                                self._authentication_cache.update_authentication_cache(self._steam_polling_data.allowed_confirmations, self._steam_polling_data.extended_error_message)
-
-                                if (
-                                    self._authentication_cache.two_factor_allowed_methods is not None
-                                    and len(self._authentication_cache.two_factor_allowed_methods) > 0
-                                    and isinstance(self._authentication_cache.two_factor_allowed_methods[0], tuple)
-                                ):
-                                    two_factor_method = self._authentication_cache.two_factor_allowed_methods[0][0]
-                                    ret_code = to_UserAction(two_factor_method)
-                                else:
-                                    ret_code = UserActionRequired.InvalidAuthData
-
-                            if (ret_code != UserActionRequired.InvalidAuthData):
-                                logger.info("GOT THE LOGIN DONE! ON TO 2FA")
-                            else:
-                                logger.info("LOGIN FAILED :( But hey, at least you're here!")
-                        else:
-                            logger.error("Failed to retrieve a valid RSA public key for encryption.")
-                            ret_code = UserActionRequired.InvalidAuthData
-
-            elif (mode == AuthCall.UPDATE_TWO_FACTOR):
-                code : Optional[str] = response.get('two-factor-code', None)
-                method : Optional[UserActionRequired] = response.get('two-factor-method', None)
-                if (
-                    self._steam_polling_data is None
-                    or not self._steam_polling_data.has_valid_confirmation_method()
-                    or not code
-                    or not method
-                    or self._protocol_client is None
-                ):
-                    ret_code = UserActionRequired.InvalidAuthData
+                        # Convert method to TwoFactorMethod before passing
+                        two_factor_method = TwoFactorMethod(method)
+                        logger.info(f'Updating two-factor with provided ' + to_helpful_string(two_factor_method))
+                        ret_code = await self._protocol_client.update_two_factor(self._steam_polling_data.client_id, self._steam_polling_data.steam_id, str(code), two_factor_method, auth_lost_handler)
+                elif (mode == AuthCall.POLL_TWO_FACTOR):
+                    is_confirm : bool = response.get('is-confirm', False)
+                    logger.info("Polling to see if the user has completed any steam-guard related stuff")
+                    if (
+                        self._steam_polling_data is None
+                        or self._protocol_client is None
+                    ):
+                        ret_code = UserActionRequired.InvalidAuthData
+                    else:
+                        (ret_code, new_client_id) = await self._protocol_client.check_auth_status(self._steam_polling_data.client_id, self._steam_polling_data.request_id, is_confirm, auth_lost_handler)
+                        if (new_client_id is not None):
+                            self._steam_polling_data.client_id = new_client_id
+                elif (mode == AuthCall.TOKEN):
+                    logger.info("Finalizing Log in using the new auth refresh token and the classic login call")
+                    if (
+                        self._protocol_client is not None
+                        and self._user_info_cache.account_username is not None
+                        and self._user_info_cache.steam_id is not None
+                        and self._user_info_cache.refresh_token is not None
+                    ):
+                        ret_code = await self._protocol_client.finalize_login(
+                            self._user_info_cache.account_username,
+                            self._user_info_cache.steam_id,
+                            self._user_info_cache.refresh_token,
+                            auth_lost_handler
+                        )
+                    else:
+                        logger.error("Protocol client or required user info is not initialized before finalize_login call.")
+                        ret_code = UserActionRequired.InvalidAuthData
                 else:
-                    # Convert method to TwoFactorMethod before passing
-                    two_factor_method = TwoFactorMethod(method)
-                    logger.info(f'Updating two-factor with provided ' + to_helpful_string(two_factor_method))
-                    ret_code = await self._protocol_client.update_two_factor(self._steam_polling_data.client_id, self._steam_polling_data.steam_id, str(code), two_factor_method, auth_lost_handler)
-            elif (mode == AuthCall.POLL_TWO_FACTOR):
-                is_confirm : bool = response.get('is-confirm', False)
-                logger.info("Polling to see if the user has completed any steam-guard related stuff")
-                if (
-                    self._steam_polling_data is None
-                    or self._protocol_client is None
-                ):
                     ret_code = UserActionRequired.InvalidAuthData
-                else:
-                    (ret_code, new_client_id) = await self._protocol_client.check_auth_status(self._steam_polling_data.client_id, self._steam_polling_data.request_id, is_confirm, auth_lost_handler)
-                    if (new_client_id is not None):
-                        self._steam_polling_data.client_id = new_client_id
-            elif (mode == AuthCall.TOKEN):
-                logger.info("Finalizing Log in using the new auth refresh token and the classic login call")
-                if (
-                    self._protocol_client is not None
-                    and self._user_info_cache.account_username is not None
-                    and self._user_info_cache.steam_id is not None
-                    and self._user_info_cache.refresh_token is not None
-                ):
-                    ret_code = await self._protocol_client.finalize_login(
-                        self._user_info_cache.account_username,
-                        self._user_info_cache.steam_id,
-                        self._user_info_cache.refresh_token,
-                        auth_lost_handler
-                    )
-                else:
-                    logger.error("Protocol client or required user info is not initialized before finalize_login call.")
-                    ret_code = UserActionRequired.InvalidAuthData
-            else:
-                ret_code = UserActionRequired.InvalidAuthData
 
-            logger.info(f"Response from auth {ret_code}")
+                logger.info(f"Response from auth {ret_code}")
 
-        logger.info("Finished authentication")
+            logger.info("Finished authentication")
 
-        await self.communication_queues['plugin'].put({'auth_result': ret_code})
+            await self.communication_queues['plugin'].put({'auth_result': ret_code})
+        except (websockets.exceptions.ConnectionClosedOK, websockets.exceptions.ConnectionClosedError) as e:
+            logger.warning(f"WebSocket connection closed during authentication: {e}")
+            # Signal auth lost so the main loop can handle reconnection
+            if not auth_lost_future.done():
+                auth_lost_future.set_exception(AuthenticationRequired())

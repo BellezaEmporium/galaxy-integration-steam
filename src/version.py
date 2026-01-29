@@ -1,7 +1,13 @@
-__version__ = "1.2.4"
+__version__ = "1.3.1"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.3.1": """
+    [I have to call it 1.3.1 due to the fact that FriendsOfGalaxy has uploaded version 1.3, to prevent confusion. Apparently, their version is buggy on login callbacks.]
+    - Reverted a change that could create potential issues when trying to decode stored user credentials.
+    - Updated ptotobuf files to latest versions.
+    - Minor code cleanups and optimizations.
+    """,
     "1.2.4": """
     - Updated protobuf files to latest versions.
     - Few more safeguards related to users.
