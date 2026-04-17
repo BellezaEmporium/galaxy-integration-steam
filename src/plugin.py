@@ -6,9 +6,8 @@ import ssl
 import sys
 import webbrowser
 import time
-from functools import partial
 from contextlib import suppress
-from typing import List, Optional, NewType, Dict, AsyncGenerator, Any, Callable, Type
+from typing import List, Optional, NewType, Dict, AsyncGenerator, Any, Type
 
 import traceback
 
@@ -224,7 +223,7 @@ class SteamPlugin(Plugin):
         self._persistent_storage_state.modified = False
         await asyncio.sleep(
             COOLDOWN_TIME
-        )  # lower pushing cache rate to do not clog socket in case of big cache
+        ) 
 
     def tick(self):
         self._backend.tick()

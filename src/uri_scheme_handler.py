@@ -1,12 +1,17 @@
 import platform
 
 if platform.system().lower() == "windows":
-
     import winreg
     import shlex
     import os
 
-    def is_uri_handler_installed(protocol):
+elif platform.system().lower() == "darwin":
+    from CoreServices.LaunchServices import LSCopyDefaultHandlerForURLScheme
+    from AppKit import NSWorkspace
+
+
+def is_uri_handler_installed(protocol):
+    if platform.system().lower() == "windows":
         key = None
         try:
             key = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, r"{}\shell\open\command".format(protocol))
@@ -22,19 +27,10 @@ if platform.system().lower() == "windows":
         finally:
             if key:
                 winreg.CloseKey(key)
-
-elif platform.system().lower() == "darwin":
-
-    from CoreServices.LaunchServices import LSCopyDefaultHandlerForURLScheme
-    from AppKit import NSWorkspace
-
-    def is_uri_handler_installed(protocol):
+    elif platform.system().lower() == "darwin":
         bundle_id = LSCopyDefaultHandlerForURLScheme(protocol)
         if not bundle_id:
             return False
         return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier_(bundle_id) is not None
-
-else:
-
-    def is_uri_handler_installed(protocol):
+    else:
         return False

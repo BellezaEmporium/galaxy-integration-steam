@@ -12,7 +12,7 @@ import base64
 
 import vdf
 
-from websockets.client import WebSocketClientProtocol
+from websockets.client import ClientConnection
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 
 from steam_network.protocol.messages.enums_pb2 import ESessionPersistence
@@ -106,8 +106,8 @@ class ProtobufClient:
     _MSG_PROTOCOL_VERSION = 65580
     _MSG_CLIENT_PACKAGE_VERSION = 1561159470
 
-    def __init__(self, set_socket : WebSocketClientProtocol):
-        self._socket :                      WebSocketClientProtocol = set_socket
+    def __init__(self, set_socket : ClientConnection):
+        self._socket :                      ClientConnection = set_socket
         #new auth flow
         self.rsa_handler:                   Optional[Callable[[EResult, int, int, int], Awaitable[None]]] = None
         self.login_handler:                 Optional[Callable[[EResult, object], Awaitable[None]]] = None  # object instead of the complex type

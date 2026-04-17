@@ -3,15 +3,15 @@ from asyncio.futures import Future
 import logging
 import ssl
 from contextlib import suppress
-from typing import Callable, Optional, Any, Dict, Mapping, Union, cast
+from typing import Callable, Optional, Any, Dict
 
 import websockets
 import websockets.exceptions
-from typing import Any as _Any
-from websockets.client import WebSocketClientProtocol
+from typing import Any
+from websockets.client import ClientConnection
 from galaxy.api.errors import BackendNotAvailable, BackendTimeout, BackendError, InvalidCredentials, NetworkError, AccessDenied, AuthenticationRequired
 
-from rsa import PublicKey, encrypt
+from rsa import encrypt
 
 from .authentication_cache import AuthenticationCache
 
@@ -26,7 +26,6 @@ from .user_info_cache import UserInfoCache
 
 from .enums import AuthCall, TwoFactorMethod, UserActionRequired, to_helpful_string, to_UserAction
 
-from .steam_public_key import SteamPublicKey
 from .steam_auth_polling_data import SteamPollingData
 
 from traceback import format_exc
@@ -66,7 +65,7 @@ class WebSocketClient:
     ):
         self._ssl_context : ssl.SSLContext = ssl_context
         # Use a tolerant typing for the websocket protocol to work across websockets versions
-        self._websocket: Optional[WebSocketClientProtocol] = None
+        self._websocket: Optional[ClientConnection] = None
         self._protocol_client: Optional[ProtocolClient] = None
         self._websocket_list : WebSocketList = websocket_list
 
