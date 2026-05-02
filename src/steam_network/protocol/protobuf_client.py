@@ -125,7 +125,7 @@ class ProtobufClient:
         self.app_info_handler:              Optional[Callable] = None
         self.package_info_handler:          Optional[Callable[[], None]] = None
         self.translations_handler:          Optional[Callable[[int, Any], Awaitable[None]]] = None
-        self.stats_handler:                 Optional[Callable[[Any, Any, Any, Any], Awaitable[None]]] = None
+        self.stats_handler:                 Optional[Callable[[Any, Any, Any, Any], Any]] = None
         self.confirmed_steam_id:            Optional[int] = None #this should only be set when the steam id is confirmed. this occurs when we actually complete the login. before then, it will cause errors.
         self.times_handler:                 Optional[Callable[[int, int, int], Awaitable[None]]] = None
         self.times_import_finished_handler: Optional[Callable[[bool], Awaitable[None]]] = None
@@ -148,42 +148,32 @@ class ProtobufClient:
         pass
 
     async def run(self):
-        jobs_to_process = 0
         while True:
-            if jobs_to_process < 2:
-                for job in self.job_list[:2].copy():
-                    logger.info(f"New job on list {job}")
-                    jobs_to_process += 1
-                    if job['job_name'] == "import_game_stats":
-                        await self._import_game_stats(job['game_id'])
-                        self.job_list.remove(job)
-                    elif job['job_name'] == "import_collections":
-                        await self._import_collections()
-                        self.job_list.remove(job)
-                    elif job['job_name'] == "import_game_times":
-                        await self._import_game_time()
-                        self.job_list.remove(job)
-                    else:
-                        self.job_list.remove(job)
-                        logger.warning(f'Unknown job {job}')
+            for job in self.job_list[:2].copy():
+                logger.info(f"New job on list {job}")
+                job_name = job['job_name']
+                self.job_list.remove(job)
+                if job_name == "import_game_stats":
+                    await self._import_game_stats(job['game_id'])
+                elif job_name == "import_collections":
+                    await self._import_collections()
+                elif job_name == "import_game_times":
+                    await self._import_game_time()
+                else:
+                    logger.warning(f'Unknown job {job}')
             try:
                 self._recv_task = asyncio.create_task(self._socket.recv())
                 packet = await asyncio.wait_for(self._recv_task, 10)
                 self._recv_task = None
                 await self._process_packet(packet)
-                if jobs_to_process > 0:
-                    jobs_to_process -= 1
             except asyncio.TimeoutError:
-                # no incoming data within timeout, loop and check job list again
                 pass
-            except asyncio.CancelledError: #occurs when we cancel the recv. only should occur if the socket is closing anyway.
+            except asyncio.CancelledError:
                 break
             except (ConnectionClosedOK, ConnectionClosedError) as e:
-                # Websocket closed gracefully or with an error. Stop the loop.
                 logger.info("Websocket connection closed: %s", repr(e))
                 break
             except Exception as e:
-                # Catch unexpected errors from recv/processing to avoid bubbling and crashing callers
                 logger.exception("Unexpected error in protobuf client run loop: %s", e)
                 break
             finally:
@@ -405,10 +395,11 @@ class ProtobufClient:
         message.machine_name = sock.gethostname() 
         message.access_token = access_token 
         logger.info("Sending log on message using access token")
-        awaitMe = self._send(EMsg.ClientLogon, message)
-        if (resetSteamIDAfterThisCall):
-            self.confirmed_steam_id = None
-        await awaitMe
+        try:
+            await self._send(EMsg.ClientLogon, message)
+        finally:
+            if resetSteamIDAfterThisCall:
+                self.confirmed_steam_id = None
 
 
     async def _heartbeat(self, interval):
@@ -649,7 +640,9 @@ class ProtobufClient:
         message.ParseFromString(body) 
         result = message.eresult 
 
-        assert self._heartbeat_task is not None
+        if self._heartbeat_task is None:
+            logger.error("Logged off but heartbeat task was never started")
+            return
         self._heartbeat_task.cancel()
 
         if self.log_off_handler is not None:
@@ -704,7 +697,7 @@ class ProtobufClient:
                 user_info.game_id = user.gameid
                 rich_presence: Dict[str, str] = {}
                 for element in user.rich_presence:
-                    if type(element.value) == bytes:
+                    if isinstance(element.value, bytes):
                         logger.warning(f"Unsupported presence type: {type(element.value)} {element.value}")
                         rich_presence = {}
                         break
@@ -747,7 +740,7 @@ class ProtobufClient:
             if int(license.owner_id) == int((self.confirmed_steam_id or 0) - self._ACCOUNT_ID_MASK):
                 licenses_to_check.append(SteamLicense(license=license, shared=False))
             else:
-                if license.package_id in licenses_to_check:
+                if any(steam_license.license.package_id == license.package_id for steam_license in licenses_to_check):
                     continue
                 licenses_to_check.append(SteamLicense(license=license, shared=True))
 
@@ -778,6 +771,7 @@ class ProtobufClient:
 
             for info in apps:
                 app_content = vdf.loads(info.buffer[:-1].decode('utf-8', 'replace'))
+                appid = None
                 try:
                     appinfo = app_content['appinfo']
                     appid = str(appinfo['appid'])
@@ -787,11 +781,12 @@ class ProtobufClient:
                         title = appinfo['common']['name']
                         parent = None
 
-                        if type_ == 'dlc' and 'extended' in appinfo:
-                            parent = appinfo['extended']['dlcforappid']
-                            logger.debug(f"Retrieved dlc {title} for {parent}")
+                        if type_ == 'dlc':
+                            logger.debug(f"Example DLC response: {appinfo}")
+                            parent = appinfo.get('extended', {}).get('dlcforappid')
+                            logger.debug(f"Retrieved dlc {title!r}, parent={parent}")
                         elif type_ == 'game':
-                            logger.debug(f"Retrieved game {title}")
+                            logger.debug(f"Retrieved game {title!r}")
 
                         if self.app_info_handler:
                             self.app_info_handler(appid=appid, title=title, type=type_, parent=parent)
@@ -825,15 +820,17 @@ class ProtobufClient:
     async def _process_user_stats_response(self, body):
         logger.debug("Processing message ClientGetUserStatsResponse")
         message = CMsgClientGetUserStatsResponse()
-        message.ParseFromString(body) 
+        message.ParseFromString(body)
 
-        game_id = str(message.game_id) 
-        stats = message.stats 
-        achievement_blocks = message.achievement_blocks 
-        achievements_schema = vdf.binary_loads(message.schema, merge_duplicate_keys=False) 
+        game_id = str(message.game_id)
+        stats = message.stats
+        achievement_blocks = message.achievement_blocks
+        achievements_schema = vdf.binary_loads(message.schema, merge_duplicate_keys=False)
 
         if self.stats_handler:
-            self.stats_handler(game_id, stats, achievement_blocks, achievements_schema)
+            result = self.stats_handler(game_id, stats, achievement_blocks, achievements_schema)
+            if asyncio.iscoroutine(result):
+                await result
 
     async def _process_user_time_response(self, body):
         message = CPlayer_GetLastPlayedTimes_Response()
@@ -854,8 +851,8 @@ class ProtobufClient:
                 try:
                     loaded_val = json.loads(entry.value)
                     self.collections['collections'][loaded_val['name']] = loaded_val['added']
-                except:
-                    pass
+                except Exception:
+                    logger.debug("Failed to parse collection entry", exc_info=True)
         self.collections['event'].set()
 
     async def _process_service_method_response(self, target_job_name, target_job_id, eresult, body):

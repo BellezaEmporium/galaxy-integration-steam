@@ -7,9 +7,10 @@ logger = logging.getLogger(__name__)
 
 class TimesCache(ProtoCache):
     def __init__(self):
-        super(TimesCache, self).__init__()
         self._games_to_import = []
         self._times_imported = True
+        super(TimesCache, self).__init__()
+        self._update_ready_state()
 
     def start_game_times_import(self):
         self._info_map = dict()
@@ -18,7 +19,6 @@ class TimesCache(ProtoCache):
 
     @property
     def import_in_progress(self):
-        self._update_ready_state()
         return not self._ready_event.is_set()
 
     def __iter__(self):

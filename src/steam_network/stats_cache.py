@@ -7,8 +7,9 @@ logger = logging.getLogger(__name__)
 
 class StatsCache(ProtoCache):
     def __init__(self):
-        super(StatsCache, self).__init__()
         self._games_to_import = []
+        super(StatsCache, self).__init__()
+        self._update_ready_state()
 
     def start_game_stats_import(self, game_ids):
         for game_id in game_ids:
@@ -18,7 +19,6 @@ class StatsCache(ProtoCache):
 
     @property
     def import_in_progress(self):
-        self._update_ready_state()
         return not self._ready_event.is_set()
 
     def __iter__(self):

@@ -1,7 +1,18 @@
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.3.3": """
+    - Replaces steammessages_webui_friends with SteamTracking's community.proto, lines up the whole project to one specific resource.
+    - Added a safeguard for the backend, potentially not initializing on startup due to silent handshake errors.
+    - Added a safeguard for the cache subclasses, potentially crashing on initialization.
+    - Fix games cache timing out on load; cached games now load significantly faster.
+    - Fix DLCs not linked to their parent games. (thanks to Hustlefan for the bug report !)
+    - Fix game stats being silently discarded instead of processed.
+    - Fix cache push running every tick instead of being debounced.
+    - Fix games cache getting permanently stuck when an app belongs to multiple licenses.
+    - Minor bug fixes and stability improvements.
+    """,
     "1.3.2": """
     - Update protobuf files to latest versions.
     - Upgrade websocket client usage to new asyncio compatible version, should improve stability and performance.

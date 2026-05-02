@@ -16,6 +16,7 @@ class ProtoCache:
         self.updated_handler = None
         self.added_handler = None
         self.removed_handler = None
+        self._update_ready_state()
 
     @abstractmethod
     def _reset(self, args):

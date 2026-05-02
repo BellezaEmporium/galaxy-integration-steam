@@ -27,6 +27,7 @@ class FriendsCache(ProtoCache):
 
         self._nicknames_parsed = asyncio.Event()
         self._nicknames = {}
+        self._update_ready_state()
 
     async def wait_nicknames_ready(self, timeout=None):
         try:

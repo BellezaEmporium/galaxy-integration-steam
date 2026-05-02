@@ -49,6 +49,7 @@ class GamesCache(ProtoCache):
     _VERSION = "1.0.0"
 
     def __init__(self):
+        self._parsing_status = ParsingStatus()
         super(GamesCache, self).__init__()
         self._storing_map: LicensesCache = LicensesCache()
 
@@ -56,8 +57,6 @@ class GamesCache(ProtoCache):
 
         self._apps_added: List[App] = []
         self.add_game_lever: bool = False
-
-        self._parsing_status = ParsingStatus()
 
     @property
     def version(self):
@@ -158,10 +157,14 @@ class GamesCache(ProtoCache):
                 license.app_ids.add(appid)
 
     def update_app_title(self, appid, title, type, parent):
+        already_counted = False
         for license in self._storing_map.licenses:
             if appid in license.app_ids:
-                if self._parsing_status.apps_to_parse is not None:
-                    self._parsing_status.apps_to_parse -= 1
+                if not already_counted:
+                    if self._parsing_status.apps_to_parse is not None:
+                        self._parsing_status.apps_to_parse -= 1
+                    already_counted = True
+
         new_app = App(appid=appid, title=title, type=type, parent=parent)
         self._storing_map.apps[appid] = new_app
         if self.add_game_lever and new_app not in self._sent_apps:
@@ -170,7 +173,10 @@ class GamesCache(ProtoCache):
         self._update_ready_state()
 
     def _update_ready_state(self):
-        if self._parsing_status.packages_to_parse == 0 and self._parsing_status.apps_to_parse == 0:
+        if (self._parsing_status.packages_to_parse is not None and
+            self._parsing_status.packages_to_parse <= 0 and
+            self._parsing_status.apps_to_parse is not None and
+            self._parsing_status.apps_to_parse <= 0):
             if self._ready_event.is_set():
                 return
             logger.info("Setting state to ready")
@@ -186,10 +192,14 @@ class GamesCache(ProtoCache):
 
     def loads(self, persistent_cache):
         cache = json.loads(persistent_cache)
-
         if 'version' not in cache or cache['version'] != self.version:
             logging.error("New plugin version, refreshing cache")
             return
-
         self._storing_map = LicensesCache.from_json(cache['licenses'])
+        for app in self._storing_map.apps.values():
+            if app.parent is not None:
+                app.parent = str(app.parent)
         logging.info(f"Loaded games from cache {self._storing_map}")
+        self._parsing_status.packages_to_parse = 0
+        self._parsing_status.apps_to_parse = 0
+        self._update_ready_state()

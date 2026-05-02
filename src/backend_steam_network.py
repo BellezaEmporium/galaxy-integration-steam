@@ -15,6 +15,7 @@ from galaxy.api.errors import (
     BackendTimeout,
 )
 from galaxy.api.types import (
+    Dlc,
     Game,
     LicenseInfo,
     LicenseType,
@@ -356,22 +357,27 @@ class SteamNetworkBackend(BackendInterface):
     # features implementation
 
     async def get_owned_games(self) -> List[Game]:
-        if self._user_info_cache.steam_id is None:
-            raise AuthenticationRequired()
-
         await self._games_cache.wait_ready(GAME_CACHE_IS_READY_TIMEOUT)
-        self._games_cache.add_game_lever = True
 
         owned_games = []
         owned_witcher_3_dlcs = set()
 
+        # build parent → [dlc, ...] map first
+        dlcs_by_parent: Dict[str, List[Dlc]] = {}
+        async for app in self._games_cache.get_dlcs():
+            if app.parent is not None:
+                parent_id = str(app.parent)
+                dlc_game = Dlc(str(app.appid), app.title, LicenseInfo(LicenseType.SinglePurchase, None))
+                dlcs_by_parent.setdefault(parent_id, []).append(dlc_game)
+
         try:
             async for app in self._games_cache.get_owned_games():
+                dlcs = dlcs_by_parent.get(str(app.appid), [])
                 owned_games.append(
                     Game(
                         str(app.appid),
                         app.title,
-                        [],
+                        dlcs,              
                         LicenseInfo(LicenseType.SinglePurchase, None),
                     )
                 )
@@ -391,7 +397,6 @@ class SteamNetworkBackend(BackendInterface):
         except (KeyError, ValueError):
             logger.exception("Cannot parse backend response")
             raise UnknownBackendResponse()
-
         finally:
             self._owned_games_parsed = True
 

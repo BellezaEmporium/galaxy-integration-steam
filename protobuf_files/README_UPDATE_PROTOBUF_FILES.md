@@ -30,5 +30,4 @@ Now that we have protoc, we need to actually do the conversion. This process is 
 ## Sources
 
 * <https://github.com/steamdatabase/protobufs>
-* <https://github.com/ValvePython/steam>
-* Uses [BetterProto](https://pypi.org/project/betterproto/) version 1.2.5. There are some manual fixes we have made to clean up the code generated here, but it is mostly the same. 
+* Uses [protobuf](https://pypi.org/project/protobuf/) version 4.24.4.
