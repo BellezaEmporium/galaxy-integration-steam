@@ -72,7 +72,7 @@ from .messages.service_cloudconfigstore_pb2 import (
     CCloudConfigStore_Download_Response,
     CCloudConfigStore_NamespaceVersion,
 )
-from .messages.steammessages_webui_friends_pb2 import (
+from .messages.service_community_pb2 import (
     CCommunity_GetAppRichPresenceLocalization_Request,
     CCommunity_GetAppRichPresenceLocalization_Response,
 )

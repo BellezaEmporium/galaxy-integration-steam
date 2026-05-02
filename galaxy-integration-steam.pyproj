@@ -44,7 +44,7 @@
     <Content Include="protobuf_files\proto\steammessages_client_objects.proto" />
     <Content Include="protobuf_files\proto\steammessages_player.proto" />
     <Content Include="protobuf_files\proto\steammessages_unified_base.proto" />
-    <Content Include="protobuf_files\proto\steammessages_webui_friends.proto" />
+    <Content Include="protobuf_files\proto\service_community.proto" />
     <Content Include="pytest.ini" />
     <Content Include="README_ALPHA.md" />
     <Content Include="README.md" />
@@ -102,7 +102,7 @@
     <Compile Include="src\steam_network\protocol\messages\steammessages_client_objects_pb2.py" />
     <Compile Include="src\steam_network\protocol\messages\steammessages_player_pb2.py" />
     <Compile Include="src\steam_network\protocol\messages\steammessages_unified_base_pb2.py" />
-    <Compile Include="src\steam_network\protocol\messages\steammessages_webui_friends_pb2.py" />
+    <Compile Include="src\steam_network\protocol\messages\service_community_pb2.py" />
     <Compile Include="src\steam_network\protocol\messages\__init__.py" />
     <Compile Include="src\steam_network\protocol\protobuf_client.py" />
     <Compile Include="src\steam_network\protocol\steam_types.py" />
