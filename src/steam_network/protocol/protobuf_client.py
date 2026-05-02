@@ -778,25 +778,27 @@ class ProtobufClient:
 
             for info in apps:
                 app_content = vdf.loads(info.buffer[:-1].decode('utf-8', 'replace'))
-                appid = str(app_content['appinfo']['appid'])
                 try:
-                    if 'common' in app_content['appinfo']:
-                        type_ = app_content['appinfo']['common']['type'].lower()
-                        title = app_content['appinfo']['common']['name']
+                    appinfo = app_content['appinfo']
+                    appid = str(appinfo['appid'])
+
+                    if 'common' in appinfo:
+                        type_ = appinfo['common']['type'].lower()
+                        title = appinfo['common']['name']
                         parent = None
-                        if 'extended' in app_content['appinfo'] and type_ == 'dlc':
-                            parent = app_content['appinfo']['extended']['dlcforappid']
+
+                        if type_ == 'dlc' and 'extended' in appinfo:
+                            parent = appinfo['extended']['dlcforappid']
                             logger.debug(f"Retrieved dlc {title} for {parent}")
-                        if type == 'game':
+                        elif type_ == 'game':
                             logger.debug(f"Retrieved game {title}")
+
                         if self.app_info_handler:
                             self.app_info_handler(appid=appid, title=title, type=type_, parent=parent)
-                    # Certain applications do not contain any detailed informations.
-                    # Could be tools, Proton versions etc...
-                    # Acknowledge their existence, but we can't do much with them.
-                    elif 'public_only' in app_content['appinfo']:
+
+                    elif 'public_only' in appinfo:
                         logger.debug(f'AppID {appid} found with no specific structure (limited public info)')
-                        continue
+
                 except KeyError:
                     logger.warning(f"Unrecognized app structure {app_content}")
                     if self.app_info_handler:

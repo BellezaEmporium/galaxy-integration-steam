@@ -3,8 +3,8 @@ from textwrap import dedent
 
 import pytest
 
-from backend_configuration import (
-    BackendMode,
+from plugin import (
+    SteamNetworkBackend,
     BackendConfiguration,
     USER_CONFIG_LOCATION,
     ConfigParseError,
@@ -19,7 +19,7 @@ HEADER_END_MARK = "; === end of generated part ==="
 
 @pytest.fixture
 def default_initial_backend(register_mock_backend):
-    return register_mock_backend(BackendMode.SteamNetwork)
+    return register_mock_backend(SteamNetworkBackend.SteamNetwork).return_value 
 
 
 # test fixtures
@@ -35,7 +35,7 @@ async def test_patch_config_location_fixture_file_existence(patch_config_locatio
 async def test_register_mock_backend_fixture_produces_not_called_backend(
     register_mock_backend,
 ):
-    steam_network_backend_cls = register_mock_backend(BackendMode.SteamNetwork)
+    steam_network_backend_cls = register_mock_backend(SteamNetworkBackend.SteamNetwork)
     steam_network_backend_cls.assert_not_called()
 
 
@@ -177,8 +177,8 @@ async def test_config_not_accesible_for_read_and_write(
 @pytest.mark.parametrize(
     "expected_mode, config_content",
     [
-        (BackendMode.PublicProfiles, "[BackendMode]\n initial=public_profiles"),
-        (BackendMode.SteamNetwork, "[BackendMode]\n initial=steam_network"),
+        (SteamNetworkBackend.PublicProfiles, "[BackendMode]\n initial=public_profiles"),
+        (SteamNetworkBackend.SteamNetwork, "[BackendMode]\n initial=steam_network"),
     ],
 )
 async def test_load_backend_initial_mode(
@@ -246,8 +246,8 @@ async def test_valid_config(create_plugin, mocker, content):
 @pytest.mark.parametrize(
     "expected_mode, config_content",
     [
-        (BackendMode.PublicProfiles, "[BackendMode]\n fallback=public_profiles"),
-        (BackendMode.SteamNetwork, "[BackendMode]\n fallback=steam_network"),
+        (SteamNetworkBackend.PublicProfiles, "[BackendMode]\n fallback=public_profiles"),
+        (SteamNetworkBackend.SteamNetwork, "[BackendMode]\n fallback=steam_network"),
         pytest.param(None, "[BackendMode]\n fallback=none", id="disabled fallback"),
     ],
 )
@@ -265,13 +265,13 @@ async def test_load_backend_fallback_mode(tmp_path, config_content, expected_mod
     "initial_mode, fallback_mode, config_content",
     [
         pytest.param(
-            BackendMode.SteamNetwork,
-            BackendMode.PublicProfiles,
+            SteamNetworkBackend.SteamNetwork,
+            SteamNetworkBackend.PublicProfiles,
             "[BackendMode]\n fallback=public_profiles\n initial=steam_network",
             id="steam_network with public_profiles as a fallback",
         ),
         pytest.param(
-            BackendMode.PublicProfiles,
+            SteamNetworkBackend.PublicProfiles,
             None,
             "[BackendMode]\n fallback=none \n initial=public_profiles",
             id="hardcoded to use only public profiles",
