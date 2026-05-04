@@ -1,10 +1,10 @@
 from io import BytesIO
 import os
+import shutil
 import sys
 import json
 import tempfile
-from shutil import rmtree, which
-from distutils.dir_util import copy_tree
+from shutil import copytree, rmtree, which
 
 from urllib.request import urlopen #used to retrieve the proto files from github.
 from http.client import HTTPResponse
@@ -70,7 +70,7 @@ def build(c, output='output', ziparchive=None):
     os.unlink(tmp.name)
 
     print('--> Copying source files')
-    copy_tree("src", output)
+    copytree("src", output, dirs_exist_ok=True)
 
     if ziparchive is not None:
         print('--> Compressing to {}'.format(ziparchive))
