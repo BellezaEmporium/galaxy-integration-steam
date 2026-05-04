@@ -149,21 +149,23 @@ class ProtobufClient:
 
     async def run(self):
         while True:
-            for job in self.job_list[:2].copy():
-                logger.info(f"New job on list {job}")
+            jobs_dispatched = 0
+            for job in self.job_list[:5].copy():
                 job_name = job['job_name']
                 self.job_list.remove(job)
                 if job_name == "import_game_stats":
                     await self._import_game_stats(job['game_id'])
+                    jobs_dispatched += 1
+                    if jobs_dispatched % 5 == 0:
+                        await asyncio.sleep(0.2)
                 elif job_name == "import_collections":
                     await self._import_collections()
                 elif job_name == "import_game_times":
                     await self._import_game_time()
-                else:
-                    logger.warning(f'Unknown job {job}')
+
             try:
                 self._recv_task = asyncio.create_task(self._socket.recv())
-                packet = await asyncio.wait_for(self._recv_task, 10)
+                packet = await asyncio.wait_for(self._recv_task, 2)
                 self._recv_task = None
                 await self._process_packet(packet)
             except asyncio.TimeoutError:
@@ -682,6 +684,7 @@ class ProtobufClient:
         message = CMsgClientPersonaState()
         message.ParseFromString(body) 
 
+        translation_appids = set()
         for user in message.friends: 
             user_id = user.friendid
             if user_id == self.confirmed_steam_id and int(user.game_played_app_id) != 0:
@@ -697,20 +700,11 @@ class ProtobufClient:
                 user_info.game_id = user.gameid
                 rich_presence: Dict[str, str] = {}
                 for element in user.rich_presence:
-                    if isinstance(element.value, bytes):
-                        logger.warning(f"Unsupported presence type: {type(element.value)} {element.value}")
-                        rich_presence = {}
-                        break
-                    rich_presence[element.key] = element.value
-                    if element.key == 'status' and element.value:
-                        if "#" in element.value:
-                            if self.translations_handler:
-                                await self.translations_handler(int(user.gameid), None)
-                    if element.key == 'steam_display' and element.value:
-                        if "#" in element.value:
-                            if self.translations_handler:
-                                await self.translations_handler(int(user.gameid), None)
+                    if element.key in ('status', 'steam_display') and "#" in element.value:
+                        translation_appids.add(int(user.gameid))
                 user_info.rich_presence = rich_presence
+                if translation_appids and self.translations_handler:
+                    await asyncio.gather(*(self.translations_handler(appid, None) for appid in translation_appids))
             if user.HasField("game_name"):
                 user_info.game_name = user.game_name
 

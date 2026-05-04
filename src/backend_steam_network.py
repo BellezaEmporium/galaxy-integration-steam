@@ -93,6 +93,11 @@ class SteamNetworkBackend(BackendInterface):
         self._times_cache : TimesCache = TimesCache()
         self._friends_cache : FriendsCache = FriendsCache()
 
+        # Maps parent game appid (str) -> list of owned DLC appids (str).
+        # Populated once in get_owned_games, reused for achievement expansion
+        # without re-iterating the games cache (_sent_apps side effects).
+        self._dlcs_by_parent: Dict[str, List[str]] = {}
+
         async def user_presence_update_handler(user_id: str, proto_user_info: ProtoUserInfo):
             # Convert proto_user_info to a UserPresence object and pass both the
             # user_id and the presence object to the callback provided by the
@@ -364,11 +369,15 @@ class SteamNetworkBackend(BackendInterface):
 
         # build parent → [dlc, ...] map first
         dlcs_by_parent: Dict[str, List[Dlc]] = {}
+        self._dlcs_by_parent = {}
         async for app in self._games_cache.get_dlcs():
             if app.parent is not None:
                 parent_id = str(app.parent)
-                dlc_game = Dlc(str(app.appid), app.title, LicenseInfo(LicenseType.SinglePurchase, None))
-                dlcs_by_parent.setdefault(parent_id, []).append(dlc_game)
+                dlc_appid = str(app.appid)
+                dlcs_by_parent.setdefault(parent_id, []).append(
+                    Dlc(dlc_appid, app.title, LicenseInfo(LicenseType.SinglePurchase, None))
+                )
+                self._dlcs_by_parent.setdefault(parent_id, []).append(dlc_appid)
 
         try:
             async for app in self._games_cache.get_owned_games():
@@ -457,34 +466,42 @@ class SteamNetworkBackend(BackendInterface):
         if self._user_info_cache.steam_id is None:
             raise AuthenticationRequired()
 
+        expanded_ids = list(game_ids)
+        base_ids_set = set(game_ids)
+        for parent_id, dlc_appids in self._dlcs_by_parent.items():
+            if parent_id in base_ids_set:
+                expanded_ids.extend(dlc_appids)
+
         if not self._stats_cache.import_in_progress:
-            await self._websocket_client.refresh_game_stats(game_ids.copy())
+            await self._websocket_client.refresh_game_stats(expanded_ids)
         else:
             logger.info("Game stats import already in progress")
-        await self._stats_cache.wait_ready(
-            10 * 60
-        )  # Don't block future imports in case we somehow don't receive one of the responses
-        logger.info("Finished achievements context prepare")
+        await self._stats_cache.wait_ready(10 * 60)
+        logger.info("Finished preparing the achievements context")
 
     async def get_unlocked_achievements(self, game_id: str, context: Any) -> List[Achievement]:
         logger.info(f"Asked for achievs for {game_id}")
-        game_stats = self._stats_cache.get(game_id)
-        achievements = []
-        if game_stats and "achievements" in game_stats:
-            for achievement in game_stats["achievements"]:
-                # Fix for trailing whitespace in some achievement names which resulted in achievements not matching with website data
-                achievement_name = achievement["name"]
-                achievement_name = achievement_name.strip()
-                if not achievement_name:
-                    achievement_name = achievement["name"]
 
-                achievements.append(
-                    Achievement(
-                        achievement["unlock_time"],
-                        achievement_id=None,
-                        achievement_name=achievement_name,
-                    )
+        raw_achievements = []
+        game_stats = self._stats_cache.get(game_id)
+        if game_stats and "achievements" in game_stats:
+            raw_achievements.extend(game_stats["achievements"])
+
+        for dlc_appid in self._dlcs_by_parent.get(game_id, []):
+            dlc_stats = self._stats_cache.get(dlc_appid)
+            if dlc_stats and "achievements" in dlc_stats:
+                raw_achievements.extend(dlc_stats["achievements"])
+
+        achievements = []
+        for achievement in raw_achievements:
+            achievement_name = achievement["name"].strip() or achievement["name"]
+            achievements.append(
+                Achievement(
+                    achievement["unlock_time"],
+                    achievement_id=None,
+                    achievement_name=achievement_name,
                 )
+            )
         return achievements
 
     async def prepare_game_times_context(self, game_ids: List[str]) -> Any:

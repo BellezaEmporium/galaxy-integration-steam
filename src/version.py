@@ -2,6 +2,10 @@ __version__ = "1.3.3"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.3.3 hotfix 1": """
+    - Fixes achievements linked to DLCs not being imported
+    - Load up user game stats faster, should provide an overall smoother experience for people with big libraries
+    """,
     "1.3.3": """
     - Replaces steammessages_webui_friends with SteamTracking's community.proto, lines up the whole project to one specific resource.
     - Added a safeguard for the backend, potentially not initializing on startup due to silent handshake errors.
