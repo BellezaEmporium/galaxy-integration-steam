@@ -1,8 +1,7 @@
 import asyncio
 import logging
 import secrets
-import base64
-from typing import Callable, List, Optional, Tuple, Dict
+from typing import Callable, List, Optional, Set, Tuple, Dict
 
 from .steam_public_key import SteamPublicKey
 from .steam_auth_polling_data import SteamPollingData
@@ -23,7 +22,6 @@ from asyncio import Future
 
 from .protocol.messages.steammessages_auth_pb2 import (
     CAuthentication_BeginAuthSessionViaCredentials_Response,
-    CAuthentication_AllowedConfirmation,
     CAuthentication_PollAuthSessionStatus_Response,
 )
 
@@ -101,6 +99,8 @@ class ProtocolClient:
         # other state
         self._used_server_cell_id: int = used_server_cell_id
         self._local_machine_cache: LocalMachineCache = local_machine_cache
+        self._pending_translations: Set[int] = set()
+
 
         if not self._local_machine_cache.machine_id:
             self._local_machine_cache.machine_id = self._generate_machine_id()
@@ -482,7 +482,9 @@ class ProtocolClient:
     async def _translations_handler(self, appid, translations=None):
         if appid and translations:
             self._translations_cache[appid] = translations[0]
-        elif appid not in self._translations_cache:
+            self._pending_translations.discard(appid)
+        elif appid not in self._translations_cache and appid not in self._pending_translations:
+            self._pending_translations.add(appid)
             self._translations_cache[appid] = None
             await self._protobuf_client.get_presence_localization(appid)
 

@@ -52,9 +52,9 @@ class GamesCache(ProtoCache):
         self._parsing_status = ParsingStatus()
         super(GamesCache, self).__init__()
         self._storing_map: LicensesCache = LicensesCache()
-
-        self._sent_apps = []
-
+        self._license_by_package: Dict[str, License] = {}
+        self._license_by_appid: Dict[str, License] = {}
+        self._sent_apps: List[App] = []
         self._apps_added: List[App] = []
         self.add_game_lever: bool = False
 
@@ -63,17 +63,20 @@ class GamesCache(ProtoCache):
         return self._VERSION
 
     def reset_storing_map(self):
-        self._storing_map: LicensesCache = LicensesCache()
+        self._storing_map = LicensesCache()
+        self._license_by_package = {}
+        self._license_by_appid = {}
 
     def start_packages_import(self, steam_licenses: List[SteamLicense]):
         package_ids = self.get_package_ids()
         self._parsing_status.packages_to_parse = 0
-        logger.debug('Licenses to parse: %d, cached package_ids: %d', len(steam_licenses), package_ids)
         for steam_license in steam_licenses:
-            if steam_license.license.package_id in package_ids:
+            pkg_id = str(steam_license.license.package_id)
+            if pkg_id in package_ids:
                 continue
-            self._storing_map.licenses.append(License(package_id=str(steam_license.license.package_id),
-                                             shared=steam_license.shared))
+            lic = License(package_id=pkg_id, shared=steam_license.shared)
+            self._storing_map.licenses.append(lic)
+            self._license_by_package[pkg_id] = lic
             self._parsing_status.packages_to_parse += 1
         self._parsing_status.apps_to_parse = 0
         self._update_ready_state()
@@ -89,24 +92,18 @@ class GamesCache(ProtoCache):
         return games
 
     def get_package_ids(self) -> Set[str]:
-        if not self._storing_map:
+        if not self._storing_map.licenses:
             return set()
-        return set([license.package_id for license in copy.copy(self._storing_map).licenses])
+        return {lic.package_id for lic in self._storing_map.licenses}
 
     def get_resolved_packages(self) -> Set[str]:
-        if not self._storing_map:
+        if not self._storing_map.licenses:
             return set()
-        packages = set()
-        storing_map = copy.copy(self._storing_map)
-        for license in storing_map.licenses:
-            if license.app_ids:
-                resolved = True
-                for app in license.app_ids:
-                    if app not in storing_map.apps:
-                        resolved = False
-                if resolved:
-                    packages.add(license.package_id)
-        return packages
+        return {
+            lic.package_id
+            for lic in self._storing_map.licenses
+            if lic.app_ids and all(app in self._storing_map.apps for app in lic.app_ids)
+        }
 
     def update_packages(self):
         if self._parsing_status.packages_to_parse is not None:
@@ -152,18 +149,17 @@ class GamesCache(ProtoCache):
         if self._parsing_status.apps_to_parse is None:
             self._parsing_status.apps_to_parse = 0
         self._parsing_status.apps_to_parse += 1
-        for license in self._storing_map.licenses:
-            if license.package_id == package_id:
-                license.app_ids.add(appid)
+        lic = self._license_by_package.get(str(package_id))
+        if lic is not None:
+            lic.app_ids.add(appid)
+            self._license_by_appid[str(appid)] = lic
 
     def update_app_title(self, appid, title, type, parent):
-        already_counted = False
-        for license in self._storing_map.licenses:
-            if appid in license.app_ids:
-                if not already_counted:
-                    if self._parsing_status.apps_to_parse is not None:
-                        self._parsing_status.apps_to_parse -= 1
-                    already_counted = True
+        appid = str(appid)
+        lic = self._license_by_appid.get(appid)
+        if lic is not None:
+            if self._parsing_status.apps_to_parse is not None:
+                self._parsing_status.apps_to_parse -= 1
 
         new_app = App(appid=appid, title=title, type=type, parent=parent)
         self._storing_map.apps[appid] = new_app
@@ -196,6 +192,12 @@ class GamesCache(ProtoCache):
             logging.error("New plugin version, refreshing cache")
             return
         self._storing_map = LicensesCache.from_json(cache['licenses'])
+        self._license_by_package = {}
+        self._license_by_appid = {}
+        for lic in self._storing_map.licenses:
+            self._license_by_package[lic.package_id] = lic
+            for appid in lic.app_ids:
+                self._license_by_appid[str(appid)] = lic
         for app in self._storing_map.apps.values():
             if app.parent is not None:
                 app.parent = str(app.parent)

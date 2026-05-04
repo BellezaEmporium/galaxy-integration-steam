@@ -1,4 +1,5 @@
 import asyncio
+from collections import deque
 import gzip
 import json
 import logging
@@ -131,7 +132,7 @@ class ProtobufClient:
         self.times_import_finished_handler: Optional[Callable[[bool], Awaitable[None]]] = None
         self._session_id:                   Optional[int] = None
         self._job_id_iterator:              Iterator[int] = count(1) #this is actually clever. A lazy iterator that increments every time you call next.
-        self.job_list : List[Dict[str,str]] = []
+        self.job_list: deque = deque()
 
         self.collections = {'event': asyncio.Event(),
                             'collections': dict()}
@@ -150,9 +151,9 @@ class ProtobufClient:
     async def run(self):
         while True:
             jobs_dispatched = 0
-            for job in self.job_list[:5].copy():
+            for _ in range(min(5, len(self.job_list))):
+                job = self.job_list.popleft()
                 job_name = job['job_name']
-                self.job_list.remove(job)
                 if job_name == "import_game_stats":
                     await self._import_game_stats(job['game_id'])
                     jobs_dispatched += 1
