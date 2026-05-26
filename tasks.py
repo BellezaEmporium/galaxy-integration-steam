@@ -93,6 +93,36 @@ def _get_filename_from_url(url: str) -> str:
     return url.split("/")[-1]
 
 
+def _remove_top_level_message_block(source_text: str, message_name: str) -> str:
+    start_marker = f"message {message_name} {{"
+    start_index = source_text.find(start_marker)
+
+    if start_index == -1:
+        return source_text
+
+    open_brace_index = source_text.find("{", start_index)
+    if open_brace_index == -1:
+        return source_text
+
+    depth = 0
+    end_index = open_brace_index
+
+    for index in range(open_brace_index, len(source_text)):
+        character = source_text[index]
+        if character == "{":
+            depth += 1
+        elif character == "}":
+            depth -= 1
+            if depth == 0:
+                end_index = index + 1
+                break
+
+    while end_index < len(source_text) and source_text[end_index] in "\r\n":
+        end_index += 1
+
+    return source_text[:start_index] + source_text[end_index:]
+
+
 def _pull_protobufs_internal(selection: str, silent: bool = False, clear_directory: bool = False):
     target_dir = os.path.join(BASE_DIR, "protobuf_files", "proto")
     list_file = os.path.join(BASE_DIR, "protobuf_files", f"protobuf_{selection}.txt")
@@ -198,9 +228,37 @@ def GenerateProtobufMessages(c):
     with open(os.path.join(out_dir, "__init__.py"), "wb") as fp:
         fp.write(b"")
 
-    all_files = " ".join(map(lambda x: '"' + os.path.join(proto_files_dir, x) + '"', os.listdir(proto_files_dir)))
-    print(f'"{PROTOC_EXE}" -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
-    c.run(f'"{PROTOC_EXE}" -I "{proto_files_dir}" --python_out="{out_dir}" {all_files}')
+    # The last protobuf updates actually are having duplicate areas. 
+    # To avoid the issue of protoc generating multiple files with the same name, 
+    # we will remove the duplicate message definitions before running protoc. 
+    # This is not ideal, but it is a lot easier than trying to rename the messages 
+    # and then update all the references to them.
+    with tempfile.TemporaryDirectory() as temp_proto_dir:
+        duplicate_message_names = (
+            "CCDDBAppDetailCommon",
+            "CClanEventUserNewsTuple",
+            "CClanMatchEventByRange",
+        )
+
+        for file_name in os.listdir(proto_files_dir):
+            source_path = os.path.join(proto_files_dir, file_name)
+            temp_path = os.path.join(temp_proto_dir, file_name)
+
+            if file_name == "service_community.proto":
+                with open(source_path, "r", encoding="utf-8") as source_file:
+                    source_text = source_file.read()
+
+                for message_name in duplicate_message_names:
+                    source_text = _remove_top_level_message_block(source_text, message_name)
+
+                with open(temp_path, "w", encoding="utf-8") as temp_file:
+                    temp_file.write(source_text)
+            else:
+                copy2(source_path, temp_path)
+
+        all_files = " ".join(map(lambda x: '"' + os.path.join(temp_proto_dir, x) + '"', os.listdir(temp_proto_dir)))
+        print(f'"{PROTOC_EXE}" -I "{temp_proto_dir}" --python_out="{out_dir}" {all_files}')
+        c.run(f'"{PROTOC_EXE}" -I "{temp_proto_dir}" --python_out="{out_dir}" {all_files}')
 
 
 @task

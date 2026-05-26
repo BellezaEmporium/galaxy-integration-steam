@@ -302,6 +302,7 @@ message CClanEventData {
 	optional uint32 build_id = 29;
 	optional string build_branch = 30;
 	optional bool unlisted = 31;
+	optional uint32 rtime_created = 32;
 }
 
 message CBilling_Address {
@@ -369,4 +370,20 @@ message UserSystemInformation {
 	optional uint32 vram_size = 17;
 	optional uint32 screen_width = 18;
 	optional uint32 screen_height = 19;
+	optional bool precise_frame_rate = 20;
+}
+
+message GamePerformanceSettings {
+	enum EGamePerformanceSetting {
+		k_EGamePerformanceSetting_NotSet = 0;
+		k_EGamePerformanceSetting_Low = 1;
+		k_EGamePerformanceSetting_Medium = 2;
+		k_EGamePerformanceSetting_High = 3;
+		k_EGamePerformanceSetting_Ultra = 4;
+		k_EGamePerformanceSetting_Custom = 5;
+	}
+
+	optional .GamePerformanceSettings.EGamePerformanceSetting setting = 1 [default = k_EGamePerformanceSetting_NotSet];
+	optional uint32 game_resolution_width = 2;
+	optional uint32 game_resolution_height = 3;
 }

@@ -44,7 +44,7 @@ def inject_nethook(steam_ps=None):
         steam_ps = find_steam_ps(steam_ps)
         assert steam_ps, 'NetHook requires Steam running'
         if time.time() > timeout:
-            print('timeout on loading steamclint.dll by Steam')
+            print('timeout on loading steamclient.dll by Steam')
             break
         if [dll for dll in steam_ps.memory_maps() if 'steamclient.dll' in dll.path]:
             print('steamclient.dll loaded. Injecting nethook')

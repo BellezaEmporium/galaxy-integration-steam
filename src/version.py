@@ -1,7 +1,11 @@
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "1.3.4": """
+    - Updated protobufs to their latest version.
+    - Minor bug fixes and stability improvements.
+    """,
     "1.3.3 hotfix 1": """
     - Fixes achievements linked to DLCs not being imported
     - Load up user game stats faster, should provide an overall smoother experience for people with big libraries

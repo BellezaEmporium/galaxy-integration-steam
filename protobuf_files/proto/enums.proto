@@ -24,6 +24,8 @@ enum EPublishedFileQueryType {
 	k_PublishedFileQueryType_RankedByInappropriateContentRating = 19;
 	k_PublishedFileQueryType_RankedByBanContentCheck = 20;
 	k_PublishedFileQueryType_RankedByLastUpdatedDate = 21;
+	k_PublishedFileQueryType_RankedByNumParentItems = 22;
+	k_PublishedFileQueryType_RankedByNumParentCollections = 23;
 }
 
 enum EPublishedFileInappropriateProvider {
@@ -130,14 +132,6 @@ enum ESystemFanControlMode {
 	k_SystemFanControlMode_Default = 2;
 }
 
-enum EStartupMovieVariant {
-	k_EStartupMovieVariant_Invalid = 0;
-	k_EStartupMovieVariant_Generic = 1;
-	k_EStartupMovieVariant_DeckBlue = 2;
-	k_EStartupMovieVariant_DeckOrange = 3;
-	k_EStartupMovieVariant_Machine = 4;
-}
-
 enum EColorGamutLabelSet {
 	k_ColorGamutLabelSet_Default = 0;
 	k_ColorGamutLabelSet_sRGB_Native = 1;
@@ -163,6 +157,13 @@ enum EBluetoothDeviceType {
 	k_BluetoothDeviceType_Joystick = 9;
 	k_BluetoothDeviceType_Gamepad = 10;
 	k_BluetoothDeviceType_Keyboard = 11;
+}
+
+enum ESpeakerConfiguration {
+	k_ESpeakerConfiguration_Other = 0;
+	k_ESpeakerConfiguration_Stereo = 1;
+	k_ESpeakerConfiguration_51 = 2;
+	k_ESpeakerConfiguration_71 = 3;
 }
 
 enum ESystemAudioDirection {
@@ -774,6 +775,7 @@ enum EContentReportSubjectAction {
 	k_EContentReportSubjectAction_Claimed = 20;
 	k_EContentReportSubjectAction_Released = 21;
 	k_EContentReportSubjectAction_PrivateMessaged = 22;
+	k_EContentReportSubjectAction_OwnerDisputed = 23;
 }
 
 enum EContentReportReason {

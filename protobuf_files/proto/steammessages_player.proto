@@ -425,6 +425,7 @@ message CPlayer_GetAchievementsProgress_Response {
 message CPlayer_GetGameAchievements_Request {
 	optional uint32 appid = 1;
 	optional string language = 2;
+	optional bool hash_only = 3;
 }
 
 message CPlayer_GetGameAchievements_Response {
@@ -436,9 +437,26 @@ message CPlayer_GetGameAchievements_Response {
 		optional string icon_gray = 5;
 		optional bool hidden = 6;
 		optional string player_percent_unlocked = 7;
+		optional uint32 internal_key = 8;
+		optional uint32 min_progress = 9;
+		optional uint32 max_progress = 10;
+		optional uint32 groupid = 11;
+		optional bool archived = 12;
+	}
+
+	message Group {
+		optional uint32 groupid = 1;
+		optional string localized_name = 2;
+		optional uint32 dlcappid = 3;
+		optional bool archived = 4;
+		optional bool developeronly = 5;
+		optional uint32 order = 6;
 	}
 
 	repeated .CPlayer_GetGameAchievements_Response.Achievement achievements = 1;
+	optional int32 schema_version = 2;
+	repeated .CPlayer_GetGameAchievements_Response.Group groups = 3;
+	optional uint32 schema_hash = 4;
 }
 
 message CPlayer_GetUserStats_Request {
