@@ -89,7 +89,7 @@ class SteamNetworkBackend(BackendInterface):
 
         self._games_cache : GamesCache = GamesCache()
         self._translations_cache : Dict[int, str] = dict()
-        self._stats_cache :StatsCache = StatsCache()
+        self._stats_cache : StatsCache = StatsCache()
         self._times_cache : TimesCache = TimesCache()
         self._friends_cache : FriendsCache = FriendsCache()
 

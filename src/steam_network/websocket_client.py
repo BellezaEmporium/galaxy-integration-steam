@@ -11,7 +11,7 @@ from typing import Any
 from websockets.client import ClientConnection
 from galaxy.api.errors import BackendNotAvailable, BackendTimeout, BackendError, InvalidCredentials, NetworkError, AccessDenied, AuthenticationRequired
 
-from rsa import encrypt
+from cryptography.hazmat.primitives.asymmetric import padding
 
 from .authentication_cache import AuthenticationCache
 
@@ -157,8 +157,14 @@ class WebSocketClient:
                 logger.error(format_exc())
                 raise
 
-            await self._close_socket()
-            await self._close_protocol_client()
+            finally:
+                with suppress(asyncio.CancelledError):
+                    if pending is not None:
+                        for task in pending:
+                            task.cancel()
+                            await task
+                await self._close_socket()
+                await self._close_protocol_client()
 
     async def _close_socket(self):
         if self._websocket is not None:
@@ -249,7 +255,8 @@ class WebSocketClient:
                     logger.info(f'Connected to Steam on CM {ws_address} on cell_id {self.used_server_cell_id}. Sending Hello')
                     await self._protocol_client.say_hello()
                     return
-                except (asyncio.TimeoutError, OSError, websockets.exceptions.InvalidURI, websockets.exceptions.InvalidHandshake):
+                except (asyncio.TimeoutError, OSError, websockets.exceptions.InvalidURI, websockets.exceptions.InvalidHandshake) as e:
+                    logger.warning(f"Connection to {ws_address} failed: {type(e).__name__}: {e}")
                     self._websocket_list.add_server_to_ignored(self._current_ws_address, timeout_sec=BLACKLISTED_CM_EXPIRATION_SEC)
                     continue
 
@@ -293,7 +300,10 @@ class WebSocketClient:
                             logger.info("Retrieving a uniquely generated RSA public key from steam")
                             (successful, key) = await self._protocol_client.get_rsa_public_key(username, auth_lost_handler)
                             if (successful and key is not None and hasattr(key, "rsa_public_key") and key.rsa_public_key is not None):
-                                enciphered = encrypt(password.encode('utf-8', errors="ignore"), key.rsa_public_key)
+                                enciphered = key.rsa_public_key.encrypt(
+                                    password.encode('utf-8', errors="ignore"),
+                                    padding.PKCS1v15()
+                                )
                                 logger.info(f'Authenticating with user credentials (user password is encrpyted)')
                                 self._steam_polling_data = await self._protocol_client.authenticate_password(username, enciphered, key.timestamp, auth_lost_handler)
                                 if (self._steam_polling_data is not None and self._steam_polling_data.has_valid_confirmation_method()):

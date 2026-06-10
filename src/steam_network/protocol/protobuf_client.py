@@ -1,5 +1,6 @@
 import asyncio
 from collections import deque
+from contextlib import suppress
 import gzip
 import json
 import logging
@@ -46,6 +47,10 @@ from .messages.steammessages_auth_pb2 import (
 from .messages.steammessages_player_pb2 import (
     CPlayer_GetLastPlayedTimes_Request,
     CPlayer_GetLastPlayedTimes_Response,
+    CPlayer_GetUserAchievements_Request,
+    CPlayer_GetUserAchievements_Response,
+    CPlayer_GetGameAchievements_Request,
+    CPlayer_GetGameAchievements_Response,
 )
 from .messages.steammessages_clientserver_friends_pb2 import (
     CMsgClientChangeStatus,
@@ -59,10 +64,6 @@ from .messages.steammessages_clientserver_pb2 import (
 )
 from .messages.steammessages_chat_pb2 import (
     CChat_RequestFriendPersonaStates_Request,
-)
-from .messages.steammessages_clientserver_userstats_pb2 import (
-    CMsgClientGetUserStats,
-    CMsgClientGetUserStatsResponse,
 )
 from .messages.steammessages_clientserver_appinfo_pb2 import (
     CMsgClientPICSProductInfoRequest,
@@ -92,6 +93,8 @@ GET_RSA_KEY = "Authentication.GetPasswordRSAPublicKey#1"
 LOGIN_CREDENTIALS = "Authentication.BeginAuthSessionViaCredentials#1"
 UPDATE_TWO_FACTOR = "Authentication.UpdateAuthSessionWithSteamGuardCode#1"
 CHECK_AUTHENTICATION_STATUS = "Authentication.PollAuthSessionStatus#1"
+GET_USER_ACHIEVEMENTS = "Player.GetUserAchievements#1"
+GET_GAME_ACHIEVEMENTS = "Player.GetGameAchievements#1"
 
 
 class SteamLicense(NamedTuple):
@@ -126,12 +129,15 @@ class ProtobufClient:
         self.app_info_handler:              Optional[Callable] = None
         self.package_info_handler:          Optional[Callable[[], None]] = None
         self.translations_handler:          Optional[Callable[[int, Any], Awaitable[None]]] = None
-        self.stats_handler:                 Optional[Callable[[Any, Any, Any, Any], Any]] = None
+        self.user_achievements_handler:     Optional[Callable[[Any, Any], Any]] = None
+        self.game_achievements_handler:     Optional[Callable[[Any, Any], Any]] = None
+        self._job_context_map:              Dict[int, tuple] = {}
         self.confirmed_steam_id:            Optional[int] = None #this should only be set when the steam id is confirmed. this occurs when we actually complete the login. before then, it will cause errors.
         self.times_handler:                 Optional[Callable[[int, int, int], Awaitable[None]]] = None
         self.times_import_finished_handler: Optional[Callable[[bool], Awaitable[None]]] = None
         self._session_id:                   Optional[int] = None
         self._job_id_iterator:              Iterator[int] = count(1) #this is actually clever. A lazy iterator that increments every time you call next.
+        self._run_finished:                 Optional[asyncio.Future] = None
         self.job_list: deque = deque()
 
         self.collections = {'event': asyncio.Event(),
@@ -146,41 +152,51 @@ class ProtobufClient:
             self._heartbeat_task.cancel()
 
     async def wait_closed(self):
-        pass
+        if self._run_finished is not None:
+            await self._run_finished
 
     async def run(self):
-        while True:
-            jobs_dispatched = 0
-            for _ in range(min(5, len(self.job_list))):
-                job = self.job_list.popleft()
-                job_name = job['job_name']
-                if job_name == "import_game_stats":
-                    await self._import_game_stats(job['game_id'])
-                    jobs_dispatched += 1
-                    if jobs_dispatched % 5 == 0:
-                        await asyncio.sleep(0.2)
-                elif job_name == "import_collections":
-                    await self._import_collections()
-                elif job_name == "import_game_times":
-                    await self._import_game_time()
+        self._run_finished = asyncio.get_running_loop().create_future()
+        try:
+            while True:
+                jobs_dispatched = 0
+                for _ in range(min(5, len(self.job_list))):
+                    job = self.job_list.popleft()
+                    job_name = job['job_name']
+                    if job_name == "import_game_stats":
+                        await self._import_game_stats(job['game_id'])
+                        jobs_dispatched += 1
+                        if jobs_dispatched % 5 == 0:
+                            await asyncio.sleep(0.2)
+                    elif job_name == "import_collections":
+                        await self._import_collections()
+                    elif job_name == "import_game_times":
+                        await self._import_game_time()
 
-            try:
-                self._recv_task = asyncio.create_task(self._socket.recv())
-                packet = await asyncio.wait_for(self._recv_task, 2)
-                self._recv_task = None
-                await self._process_packet(packet)
-            except asyncio.TimeoutError:
-                pass
-            except asyncio.CancelledError:
-                break
-            except (ConnectionClosedOK, ConnectionClosedError) as e:
-                logger.info("Websocket connection closed: %s", repr(e))
-                break
-            except Exception as e:
-                logger.exception("Unexpected error in protobuf client run loop: %s", e)
-                break
-            finally:
-                self._recv_task = None
+                try:
+                    self._recv_task = asyncio.create_task(self._socket.recv())
+                    packet = await asyncio.wait_for(self._recv_task, 2)
+                    self._recv_task = None
+                    await self._process_packet(packet)
+                except asyncio.TimeoutError:
+                    recv_task = self._recv_task
+                    if recv_task is not None:
+                        recv_task.cancel()
+                        with suppress(asyncio.CancelledError):
+                            await recv_task
+                except asyncio.CancelledError:
+                    break
+                except (ConnectionClosedOK, ConnectionClosedError) as e:
+                    logger.info("Websocket connection closed: %s", repr(e))
+                    break
+                except Exception as e:
+                    logger.exception("Unexpected error in protobuf client run loop: %s", e)
+                    break
+                finally:
+                    self._recv_task = None
+        finally:
+            if self._run_finished is not None and not self._run_finished.done():
+                self._run_finished.set_result(None)
 
     async def _send_service_method_with_name(self, message, target_job_name: str):
         emsg = EMsg.ServiceMethodCallFromClientNonAuthed if self.confirmed_steam_id is None else EMsg.ServiceMethodCallFromClient;
@@ -442,10 +458,29 @@ class ProtobufClient:
     #retrieve info
 
     async def _import_game_stats(self, game_id):
-        logger.info(f"Importing game stats for {game_id}")
-        message = CMsgClientGetUserStats()
-        message.game_id = int(game_id) 
-        await self._send(EMsg.ClientGetUserStats, message)
+        logger.info(f"Importing game stats for {game_id} via service methods")
+        await self._import_user_achievements(game_id)
+        await self._import_game_achievements_schema(game_id)
+
+    async def _import_user_achievements(self, game_id):
+        logger.info(f"Importing user achievements for {game_id}")
+        job_id = next(self._job_id_iterator)
+        self._job_context_map[job_id] = (game_id, "user")
+        
+        message = CPlayer_GetUserAchievements_Request()
+        message.steamid = self.confirmed_steam_id
+        message.appid = int(game_id)
+        await self._send(EMsg.ServiceMethodCallFromClient, message, job_id, None, GET_USER_ACHIEVEMENTS)
+
+    async def _import_game_achievements_schema(self, game_id):
+        logger.info(f"Importing game achievements schema for {game_id}")
+        job_id = next(self._job_id_iterator)
+        self._job_context_map[job_id] = (game_id, "schema")
+        
+        message = CPlayer_GetGameAchievements_Request()
+        message.appid = int(game_id)
+        message.language = "english"
+        await self._send(EMsg.ServiceMethodCallFromClient, message, job_id, None, GET_GAME_ACHIEVEMENTS)
 
     async def _import_game_time(self):
         logger.info("Importing game times")
@@ -567,6 +602,7 @@ class ProtobufClient:
         logger.debug("Processing packet of %d bytes", package_size)
         if package_size < 8:
             logger.warning("Package too small, ignoring...")
+            return
         raw_emsg = struct.unpack("<I", packet[:4])[0]
         emsg: int = raw_emsg & ~self._PROTO_MASK
         if raw_emsg & self._PROTO_MASK != 0:
@@ -599,8 +635,6 @@ class ProtobufClient:
             await self._process_license_list(body)
         elif emsg == EMsg.ClientPICSProductInfoResponse:
             await self._process_product_info_response(body)
-        elif emsg == EMsg.ClientGetUserStatsResponse:
-            await self._process_user_stats_response(body)
         elif emsg == EMsg.ClientAccountInfo:
             await self._process_account_info(body)
         elif emsg == EMsg.ClientPlayerNicknameList:
@@ -812,21 +846,6 @@ class ProtobufClient:
         else:
             logger.debug("No translations_handler set; skipping rich presence translations processing")
 
-    async def _process_user_stats_response(self, body):
-        logger.debug("Processing message ClientGetUserStatsResponse")
-        message = CMsgClientGetUserStatsResponse()
-        message.ParseFromString(body)
-
-        game_id = str(message.game_id)
-        stats = message.stats
-        achievement_blocks = message.achievement_blocks
-        achievements_schema = vdf.binary_loads(message.schema, merge_duplicate_keys=False)
-
-        if self.stats_handler:
-            result = self.stats_handler(game_id, stats, achievement_blocks, achievements_schema)
-            if asyncio.iscoroutine(result):
-                await result
-
     async def _process_user_time_response(self, body):
         message = CPlayer_GetLastPlayedTimes_Response()
         message.ParseFromString(body) 
@@ -850,6 +869,38 @@ class ProtobufClient:
                     logger.debug("Failed to parse collection entry", exc_info=True)
         self.collections['event'].set()
 
+    async def _process_user_achievements_response(self, target_job_id, body):
+        logger.info("Processing GetUserAchievements response")
+        message = CPlayer_GetUserAchievements_Response()
+        message.ParseFromString(body)
+        
+        ctx = self._job_context_map.pop(target_job_id, None)
+        if ctx is None:
+            logger.warning("Unmapped job ID for user achievements")
+            return
+        
+        game_id, _ = ctx
+        if self.user_achievements_handler:
+            result = self.user_achievements_handler(game_id, message)
+            if asyncio.iscoroutine(result):
+                await result
+
+    async def _process_game_achievements_response(self, target_job_id, body):
+        logger.info("Processing GetGameAchievements response")
+        message = CPlayer_GetGameAchievements_Response()
+        message.ParseFromString(body)
+        
+        ctx = self._job_context_map.pop(target_job_id, None)
+        if ctx is None:
+            logger.warning("Unmapped job ID for game achievements")
+            return
+            
+        game_id, _ = ctx
+        if self.game_achievements_handler:
+            result = self.game_achievements_handler(game_id, message)
+            if asyncio.iscoroutine(result):
+                await result
+
     async def _process_service_method_response(self, target_job_name, target_job_id, eresult, body):
         logger.info("Processing message ServiceMethodResponse %s", target_job_name)
         if target_job_name == GET_APP_RICH_PRESENCE:
@@ -858,6 +909,10 @@ class ProtobufClient:
             await self._process_user_time_response(body)
         elif target_job_name == CLOUD_CONFIG_DOWNLOAD:
             await self._process_collections_response(body)
+        elif target_job_name == GET_USER_ACHIEVEMENTS:
+            await self._process_user_achievements_response(target_job_id, body)
+        elif target_job_name == GET_GAME_ACHIEVEMENTS:
+            await self._process_game_achievements_response(target_job_id, body)
         #elif target_job_name == REQUEST_FRIEND_PERSONA_STATES:
             #pass #no idea what to do here. for now, having it error will let me know when it's called so i can see wtf to do with it.
         elif target_job_name == GET_RSA_KEY:

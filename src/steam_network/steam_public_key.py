@@ -1,6 +1,6 @@
 from typing import NamedTuple
-from rsa import PublicKey
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 class SteamPublicKey(NamedTuple):
-    rsa_public_key: PublicKey
+    rsa_public_key: RSAPublicKey
     timestamp: int

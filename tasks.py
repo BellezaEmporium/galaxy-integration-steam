@@ -228,7 +228,7 @@ def GenerateProtobufMessages(c):
     with open(os.path.join(out_dir, "__init__.py"), "wb") as fp:
         fp.write(b"")
 
-    # The last protobuf updates actually are having duplicate areas. 
+    # The last protobuf updates actually contained duplicate areas. 
     # To avoid the issue of protoc generating multiple files with the same name, 
     # we will remove the duplicate message definitions before running protoc. 
     # This is not ideal, but it is a lot easier than trying to rename the messages 
