@@ -2,7 +2,7 @@
 requests
 
 #install requirements. 
-invoke==2.2.1
+invoke
 wheel
 
-galaxy.plugin.api==0.70
+galaxy.plugin.api==0.71

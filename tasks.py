@@ -3,7 +3,7 @@ import os
 import sys
 import json
 import tempfile
-from shutil import rmtree, which, copytree
+from shutil import rmtree, which, copytree, copy2
 
 from urllib.request import urlopen #used to retrieve the proto files from github.
 from http.client import HTTPResponse
