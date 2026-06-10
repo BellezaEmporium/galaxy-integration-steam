@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Protocol Buffers, Protoc, and Steam:](#protocol-buffers-protoc-and-steam)
+  - [About:](#about)
+  - [Getting started:](#getting-started)
+  - [Getting the latest Proto Files:](#getting-the-latest-proto-files)
+  - [Getting Protoc](#getting-protoc)
+  - [Updating the python files.](#updating-the-python-files)
+  - [Sources](#sources)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Protocol Buffers, Protoc, and Steam
 
 ## About
@@ -37,6 +51,4 @@ Now that we have protoc, we need to actually do the conversion. This process is 
 
 ## Sources
 
-- <https://github.com/steamdatabase/protobufs>
 - <https://github.com/ValvePython/steam>
-- Uses [BetterProto](https://pypi.org/project/betterproto/) version 1.2.5. There are some manual fixes we have made to clean up the code generated here, but it is mostly the same.

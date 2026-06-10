@@ -6,9 +6,8 @@ import ssl
 import sys
 import webbrowser
 import time
-from functools import partial
 from contextlib import suppress
-from typing import List, Optional, NewType, Dict, AsyncGenerator, Any, Callable, Type
+from typing import List, Optional, NewType, Dict, AsyncGenerator, Any, Type
 
 import traceback
 
@@ -100,8 +99,12 @@ class SteamPlugin(Plugin):
         return self.__backend
     
     def handshake_complete(self):
-        self.__backend = self._load_steam_network_backend()
-        logger.info("Handshake complete")
+        try:
+            self.__backend = self._load_steam_network_backend()
+            logger.info("Handshake complete, backend initialized")
+        except Exception:
+            logger.exception("Failed to initialize backend during handshake")
+            raise  # let the framework know something went wrong
 
     def _load_steam_network_backend(self):
         http_client : HttpClient = self._http_client
@@ -143,7 +146,8 @@ class SteamPlugin(Plugin):
     async def shutdown(self):
         self._regmon.close()
         await self._http_client.close()
-        await self._backend.shutdown()
+        if self.__backend is not None:
+            await self.__backend.shutdown()
 
         with suppress(asyncio.CancelledError):
             self._update_local_games_task.cancel()
@@ -224,11 +228,12 @@ class SteamPlugin(Plugin):
         self._persistent_storage_state.modified = False
         await asyncio.sleep(
             COOLDOWN_TIME
-        )  # lower pushing cache rate to do not clog socket in case of big cache
+        ) 
 
     def tick(self):
+        if self.__backend is None:
+            return
         self._backend.tick()
-
         if (
             self._local_games_cache is not None
             and self._update_local_games_task.done()
@@ -237,7 +242,7 @@ class SteamPlugin(Plugin):
             self._update_local_games_task = asyncio.create_task(self._update_local_games())
 
         if self._pushing_cache_task.done() and self._persistent_storage_state.modified:
-            self._pushing_cache = asyncio.create_task(self._push_cache())
+            self._pushing_cache_task = asyncio.create_task(self._push_cache())
 
     async def get_local_games(self):
         loop = asyncio.get_running_loop()

@@ -1,8 +1,7 @@
 import asyncio
 import logging
 import secrets
-import base64
-from typing import Callable, List, Optional, Tuple, Dict
+from typing import Callable, List, Optional, Set, Tuple, Dict, cast
 
 from .steam_public_key import SteamPublicKey
 from .steam_auth_polling_data import SteamPollingData
@@ -18,17 +17,17 @@ from .authentication_cache import AuthenticationCache
 from .enums import TwoFactorMethod, UserActionRequired, to_TwoFactorWithMessage, to_EAuthSessionGuardType
 from .utils import get_os, translate_error
 
-from rsa import PublicKey
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
 from asyncio import Future
 
 from .protocol.messages.steammessages_auth_pb2 import (
     CAuthentication_BeginAuthSessionViaCredentials_Response,
-    CAuthentication_AllowedConfirmation,
     CAuthentication_PollAuthSessionStatus_Response,
 )
 
-from .protocol.messages.steammessages_clientserver_userstats_pb2 import (
-    CMsgClientGetUserStatsResponse,
+from .protocol.messages.steammessages_player_pb2 import (
+    CPlayer_GetUserAchievements_Response,
+    CPlayer_GetGameAchievements_Response,
 )
 
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
@@ -70,10 +69,11 @@ class ProtocolClient:
             "package_info_handler": self._package_info_handler,
             "license_import_handler": self._license_import_handler,
             "translations_handler": self._translations_handler,
-            "stats_handler": self._stats_handler,
             "times_handler": self._times_handler,
             "user_authentication_handler": self._user_authentication_handler,
             "times_import_finished_handler": self._times_import_finished_handler,
+            "user_achievements_handler": self._user_achievements_handler,
+            "game_achievements_handler": self._game_achievements_handler,
         }
 
         for name, handler in handlers.items():
@@ -88,6 +88,10 @@ class ProtocolClient:
         self._user_info_cache: UserInfoCache = user_info_cache
         self._times_cache: TimesCache = times_cache
 
+        # temp storage for achievements data
+        self._temp_user_achievements = {}
+        self._temp_game_achievements = {}
+
         # auth/connection state
         self._auth_lost_handler = None
 
@@ -101,6 +105,8 @@ class ProtocolClient:
         # other state
         self._used_server_cell_id: int = used_server_cell_id
         self._local_machine_cache: LocalMachineCache = local_machine_cache
+        self._pending_translations: Set[int] = set()
+
 
         if not self._local_machine_cache.machine_id:
             self._local_machine_cache.machine_id = self._generate_machine_id()
@@ -142,7 +148,8 @@ class ProtocolClient:
     async def register_auth_ticket_with_cm(self, ticket: bytes):
         await self._protobuf_client.register_auth_ticket_with_cm(ticket)
 
-    async def finish_handshake(self):
+    async def say_hello(self):
+        """Send ClientHello to the server. Required before authentication."""
         await self._protobuf_client.say_hello()
 
     async def get_rsa_public_key(self, username:str, auth_lost_handler) -> Tuple[bool, SteamPublicKey]:
@@ -174,10 +181,13 @@ class ProtocolClient:
     async def _rsa_handler(self, result: EResult, mod: int, exp: int, timestamp: int) -> None:
         logger.info("In Protocol_Client RSA Handler")
         spk = None
-        if (result == EResult.OK):
-            spk = SteamPublicKey(PublicKey(mod, exp), timestamp)
+        if result == EResult.OK:
+            spk = SteamPublicKey(
+                RSAPublicNumbers(exp, mod).public_key(),
+                timestamp
+            )
         else:
-            pass #probably should get the EResult for bad username separetely from the else, but for now this will work. 
+            pass
         self._complete_future('_rsa_future', (result, spk))
     async def authenticate_password(self, account_name :str, enciphered_password : bytes, timestamp: int, auth_lost_handler:Callable) ->  Optional[SteamPollingData]:
         # create and await login future
@@ -481,51 +491,50 @@ class ProtocolClient:
     async def _translations_handler(self, appid, translations=None):
         if appid and translations:
             self._translations_cache[appid] = translations[0]
-        elif appid not in self._translations_cache:
+            self._pending_translations.discard(appid)
+        elif appid not in self._translations_cache and appid not in self._pending_translations:
+            self._pending_translations.add(appid)
             self._translations_cache[appid] = None
             await self._protobuf_client.get_presence_localization(appid)
 
-    def _stats_handler(self,
-        game_id: str,
-        stats: "CMsgClientGetUserStatsResponse.Stats",
-        achievement_blocks: "CMsgClientGetUserStatsResponse.AchievementBlocks",
-        schema: dict
-    ):
-        def get_achievement_name(achievements_block_schema: dict, bit_no: int) -> str:
-            name = achievements_block_schema['bits'][str(bit_no)]['display']['name']
-            try:
-                return name['english']
-            except TypeError:
-                return name
+    def _user_achievements_handler(self, game_id: str, response: CPlayer_GetUserAchievements_Response):
+        logger.debug(f"Received user achievements list for {game_id}")
+        self._temp_user_achievements[game_id] = response
+        self._merge_and_update_stats(game_id)
 
-        logger.debug(f"Processing user stats response for {game_id}")
+    def _game_achievements_handler(self, game_id: str, response: CPlayer_GetGameAchievements_Response):
+        logger.debug(f"Received game achievements schema for {game_id}")
+        self._temp_game_achievements[game_id] = response
+        self._merge_and_update_stats(game_id)
+
+    def _merge_and_update_stats(self, game_id: str):
+        if game_id not in self._temp_user_achievements or game_id not in self._temp_game_achievements:
+            return  # Wait until we have both responses before processing
+            
+        user_response = self._temp_user_achievements.pop(game_id)
+        game_response = self._temp_game_achievements.pop(game_id)
+        
+        # link internal_key -> localized_name
+        schema_map = {}
+        for ach in game_response.achievements:
+            name = ach.localized_name or ach.internal_name
+            if name:
+                schema_map[ach.internal_key] = name
+                
         achievements_unlocked = []
-
-        for achievement_block in achievement_blocks:
-            block_id = str(achievement_block.achievement_id)
-            try:
-                stats_block_schema = schema[game_id]['stats'][block_id]
-            except KeyError:
-                logger.warning("No stat schema for block %s for game: %s", block_id, game_id)
-                continue
-
-            for i, unlock_time in enumerate(achievement_block.unlock_time):
-                if unlock_time > 0:
-                    try:
-                        display_name = get_achievement_name(stats_block_schema, i)
-                    except KeyError:
-                        logger.warning("Unexpected schema for achievement bit %d from block %s for game %s: %s",
-                            i, block_id, game_id, stats_block_schema
-                        )
-                        continue
-
+        for ach in user_response.achievements:
+            if ach.unlocked and ach.unlock_time > 0:
+                name = schema_map.get(ach.internal_key)
+                if name is not None:
                     achievements_unlocked.append({
-                        'id': 32 * (achievement_block.achievement_id - 1) + i,
-                        'unlock_time': unlock_time,
-                        'name': display_name
+                        'id': ach.internal_key,
+                        'unlock_time': ach.unlock_time,
+                        'name': name.strip() or name
                     })
-
-        self._stats_cache.update_stats(game_id, stats, achievements_unlocked)
+                    
+        # Update stats cache with merged achievement data. 
+        # Stats data is not available in this flow, so we pass None.
+        self._stats_cache.update_stats(game_id, None, achievements_unlocked)
 
     async def _user_authentication_handler(self, key, value):
         logger.info(f"Updating user info cache with new {key}")

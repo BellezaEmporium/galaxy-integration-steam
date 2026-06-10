@@ -44,7 +44,7 @@ def inject_nethook(steam_ps=None):
         steam_ps = find_steam_ps(steam_ps)
         assert steam_ps, 'NetHook requires Steam running'
         if time.time() > timeout:
-            print('timeout on loading steamclint.dll by Steam')
+            print('timeout on loading steamclient.dll by Steam')
             break
         if [dll for dll in steam_ps.memory_maps() if 'steamclient.dll' in dll.path]:
             print('steamclient.dll loaded. Injecting nethook')
@@ -57,7 +57,7 @@ def copy_results_to_common_dir(dest_dir, must_include=''):
     os.makedirs(dest_dir, exist_ok=True)
     steam_nethook_dir = pathlib.PurePath(STEAM_PATH).parent / 'nethook'
     for d in os.listdir(steam_nethook_dir):
-        if steam_nethook_dir.name == d:  # avoid recurssion
+        if steam_nethook_dir.name == d:  # avoid recursion
             continue
         for f in os.listdir(steam_nethook_dir / d):
             if must_include not in f:

@@ -4,7 +4,7 @@ import pytest
 from galaxy.api.errors import BackendError, InvalidCredentials, AccessDenied, NetworkError
 from galaxy.api.types import Authentication
 
-from backend_configuration import BackendMode
+from plugin import SteamNetworkBackend
 from backend_interface import BackendInterface
 
 
@@ -101,10 +101,17 @@ class DummyBackendWithAuthLostCallback(BackendInterface):
     
     async def authenticate(self, credentials):
         pass
+
+    async def pass_login_credentials(self, *args, **kwargs):
+        pass
+
+    async def tick(self, *args, **kwargs):
+        pass
     
     def emulate_loosing_authorization(self):
         """public method specific for this class for the test purposes"""
-        self._auth_lost_callback()
+        if self._auth_lost_callback is not None:
+            self._auth_lost_callback()
 
 
 async def test_lost_authentication_callback_called_once(
@@ -184,12 +191,12 @@ async def test_lost_authentication_when_backend_was_switched_on_authentication_a
 
 @pytest.fixture
 def steam_network_backend(register_mock_backend):
-    return register_mock_backend(BackendMode.SteamNetwork).return_value
+    return register_mock_backend(SteamNetworkBackend.SteamNetwork).return_value
 
 
 @pytest.fixture
 def public_profiles_backend(register_mock_backend):
-    return register_mock_backend(BackendMode.PublicProfiles).return_value
+    return register_mock_backend(SteamNetworkBackend.PublicProfiles).return_value
 
 
 @pytest.fixture
@@ -225,7 +232,7 @@ async def test_failed_authentication_on_steam_network_with_no_fallback_mode(
     steam_network_backend.authenticate.side_effect = InvalidCredentials("eresult: 5")
 
     plugin = create_plugin_with_backend(
-        initial_mode=BackendMode.SteamNetwork,
+        initial_mode=SteamNetworkBackend.SteamNetwork,
         fallback_mode=None
     )
     with pytest.raises(InvalidCredentials):
@@ -239,7 +246,7 @@ async def test_failed_authentication_on_public_profiles_with_no_fallback_mode(
     public_profiles_backend.authenticate.side_effect = AccessDenied("profile is private")
 
     plugin = create_plugin_with_backend(
-        initial_mode=BackendMode.PublicProfiles,
+        initial_mode=SteamNetworkBackend.PublicProfiles,
         fallback_mode=None
     )
     with pytest.raises(AccessDenied):

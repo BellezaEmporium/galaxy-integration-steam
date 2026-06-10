@@ -25,7 +25,8 @@ class WebSocketList:
     @staticmethod 
     def __host_name(url: str) -> HostName:
         host = yarl.URL(url).host
-        assert host is not None
+        if host is None:
+            raise ValueError(f"Invalid URL: {url}")
         return host
     
     def add_server_to_ignored(self, socket_addr: str, timeout_sec: int):

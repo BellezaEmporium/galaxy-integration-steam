@@ -1,11 +1,41 @@
-__version__ = "1.2.3-alt"
+__version__ = "1.3.4"
 __changelog__ = {
     "unreleased": '''
     ''',
-    "1.2.3-alt": """
-    - Bump up Galaxy API to v70, retarget dependencies to Python 3.13.
-    - Major code overhaul to support new Galaxy API features and changes.
-    - Major code overhaul to better tinker with Python's newest editions.
+    "1.3.4": """
+    - Updated protobufs to their latest version.
+    - Minor bug fixes and stability improvements.
+    """,
+    "1.3.3 hotfix 1": """
+    - Fixes achievements linked to DLCs not being imported
+    - Load up user game stats faster, should provide an overall smoother experience for people with big libraries
+    """,
+    "1.3.3": """
+    - Replaces steammessages_webui_friends with SteamTracking's community.proto, lines up the whole project to one specific resource.
+    - Added a safeguard for the backend, potentially not initializing on startup due to silent handshake errors.
+    - Added a safeguard for the cache subclasses, potentially crashing on initialization.
+    - Fix games cache timing out on load; cached games now load significantly faster.
+    - Fix DLCs not linked to their parent games. (thanks to Hustlefan for the bug report !)
+    - Fix game stats being silently discarded instead of processed.
+    - Fix cache push running every tick instead of being debounced.
+    - Fix games cache getting permanently stuck when an app belongs to multiple licenses.
+    - Minor bug fixes and stability improvements.
+    """,
+    "1.3.2": """
+    - Update protobuf files to latest versions.
+    - Upgrade websocket client usage to new asyncio compatible version, should improve stability and performance.
+    - Minor code cleanups and optimizations.
+    """,
+    "1.3.1": """
+    [I have to call it 1.3.1 due to the fact that FriendsOfGalaxy has uploaded version 1.3, to prevent confusion. Apparently, their version is buggy on login callbacks.]
+    - Reverted a change that could create potential issues when trying to decode stored user credentials.
+    - Updated ptotobuf files to latest versions.
+    - Minor code cleanups and optimizations.
+    """,
+    "1.2.4": """
+    - Updated protobuf files to latest versions.
+    - Few more safeguards related to users.
+    - Gracefully handle cases where user info cache fails to load stored credentials.
     """,
     "1.2.3": """
     - Bumped up dependencies.
@@ -14,7 +44,7 @@ __changelog__ = {
     - Improved user presence updates to include user IDs.
     - Slight rewrite on the protobuf client and client protocol to use the latest features.
     - Bumped protobuf/protoc, using new protobuf messages from Steam to prevent failure points.
-     """,
+    """,
     "1.0.7": """
     - Fixes issues when SteamGuard is disabled. Made it so 2FA codes would ignore leading or trailing whitespace.
     - Code cleanup

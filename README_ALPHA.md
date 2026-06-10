@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Pre-Alpha Testing](#pre-alpha-testing)
+  - [Setup (Windows)](#setup-windows)
+  - [Setup (MacOS)](#setup-macos)
+  - [The Logs](#the-logs)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Pre-Alpha Testing
 
 If you're here, you know things could be (and likely will be) broken. You are here because we are few, but you are many. It's easier to find bugs and such by making you do it.
@@ -14,10 +25,10 @@ If you're here, you know things could be (and likely will be) broken. You are he
     `py.exe -3.13 -m venv .venv`
 * Activate the virtual env:
   `.\.venv\Scripts\activate.ps1`
-* Install the dev dependencies (optional). This will let you potentially help us debug, but isn't really necessary if you don't feel comfortable monkeying around the code. <br/>
+- Install the dev dependencies (optional). This will let you potentially help us debug, but isn't really necessary if you don't feel comfortable monkeying around the code.
   `pip install -r requirements/dev.txt`
 * Install `invoke`* Only necessary if you didn't install the dev dependencies. This IS required<br/>
-  `pip install invoke==2.2.1`
+  `pip install invoke`
 * Backup the current installation of steam (optional) we will overwrite this in the next command.
 * Install the plugin in it's buggy glory:<br/>
   `inv install`
@@ -33,8 +44,8 @@ If you're here, you know things could be (and likely will be) broken. You are he
   `./.venv/Scripts/activate`
 * Install the dev dependencies (optional). This will let you potentially help us debug, but isn't really necessary if you don't feel comfortable monkeying around the code.
   `pip install -r requirements/dev.txt`
-* Backup the current installation of steam (optional) we will overwrite this in the next command.
-* Install the plugin in it's buggy glory:
+- Backup the current installation of steam (optional) we will overwrite this in the next command.
+- Install the plugin in it's buggy glory:
   `inv install`
 
 ## The Logs

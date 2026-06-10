@@ -48,8 +48,8 @@ This project is in open beta. It is not completely bulletproof, but it has been 
 ### Installation
 
 1. Close GOG Galaxy.
-1. Download the `windows.zip` file of the latest version in [the Releases page](https://github.com/ABaumher/galaxy-integration-steam/releases).
-1. Navigate to GOG Galaxy steam plugin directory:
+2. Download the `windows.zip` file of the latest version in [the Releases page](https://github.com/ABaumher/galaxy-integration-steam/releases).
+3. Navigate to GOG Galaxy steam plugin directory:
    - Windows:
 
       ```
@@ -62,9 +62,9 @@ This project is in open beta. It is not completely bulletproof, but it has been 
       ~/Library/Application Support/GOG.com/Galaxy/plugins/installed/steam_ca27391f-2675-49b1-92c0-896d43afa4f8
       ```
 
-1. If the directory does not exist, create it. If it does, delete all its content.
-1. Extract the content of `windows.zip` to that directory.
-1. Start GOG Galaxy.
+4. If the directory does not exist, create it. If it does, delete all its content.
+5. Extract the content of `windows.zip` to that directory.
+6. Start GOG Galaxy.
 
 ### Logging
 
@@ -119,8 +119,8 @@ Steam uses protobufs for its messages. Please see README_UPDATE_PROTOBUF_FILES.m
 
 There are several commands that make your life easier. These are done via the `invoke` python module. To do so, make sure your virtual environment is active (`.venv\Scripts\activate.ps1` on Windows via cmd/powershell, `.venv/Scripts/activate` on macOS via Terminal) and then the following commands will be available to you:
 
-To build your code, run `inv build`<br/>
-To run the defined python tests on your code, run `inv test`<br/>
+To build your code, run `inv build`
+To run the defined python tests on your code, run `inv test`
 To install the changed code on your local GOG Galaxy instance, run `inv install`. Note that GOG Galaxy must not be running when you do this.
 To pack a zipped release file that you can share with others, run `inv pack`
 
@@ -146,7 +146,7 @@ Please do the following:
 - Activate the virtual env
   - Windows, Powershell:<br>
   `.venv\Scripts\activate`
-  - macOS, terminal:<br>
+  - macOS, terminal:
   `.venv/Scripts/activate`
 - Use Pip to get the python tools we need to install the plugin.
 <br>These will only be applied to the `.venv` virtual environment you created earlier:<br>
