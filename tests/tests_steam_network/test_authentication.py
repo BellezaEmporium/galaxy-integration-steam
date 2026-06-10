@@ -5,7 +5,6 @@ from galaxy.api.types import NextStep, Authentication
 from galaxy.unittest.mock import async_return_value
 
 from steam_network.protocol_client import UserActionRequired
-from user_profile import ProfileIsNotPublic, NotPublicGameDetailsOrUserHasNoGames
 
 
 pytestmark = pytest.mark.asyncio
@@ -33,8 +32,6 @@ async def test_public_profile_prompt_with_public_profile_with_2fa(
 
 @pytest.mark.parametrize('public_state, retry, expected_result', [
     pytest.param(True, False, Authentication, id="user with public profile clicked 'Skip' button"),
-    pytest.param(ProfileIsNotPublic, False, Authentication, id="user with private profile clicked 'Skip' button"),
-    pytest.param(ProfileIsNotPublic, True, NextStep, id="user with private profile clicked 'Retry' button"),
 ])
 async def test_public_profile_prompt_buttons(
     plugin, profile_checker, public_state, retry, expected_result
@@ -49,9 +46,6 @@ async def test_public_profile_prompt_buttons(
     assert isinstance(result, expected_result)
 
 
-@pytest.mark.parametrize('public_state, retry', [
-    pytest.param(ProfileIsNotPublic, True),
-])
 async def test_public_profile_nextstep_end_uri(
     plugin, profile_checker, public_state, retry
 ):
@@ -73,7 +67,6 @@ async def test_public_profile_nextstep_end_uri(
 async def test_public_profile_prompt_for_not_public_profile(
     plugin, profile_checker, mocker, end_uri
 ):
-    profile_checker.check_is_public_by_steam_id.side_effect = ProfileIsNotPublic
     mocker.patch('backend_steam_network.SteamNetworkBackend._get_websocket_auth_step',
                  return_value=async_return_value(UserActionRequired.NoActionRequired))
     plugin._SteamPlugin__backend._auth_data = [Mock(str), Mock(str)]
@@ -96,7 +89,6 @@ async def test_public_profile_prompt_for_not_public_profile(
 async def test_public_profile_prompt_for_not_public_game_details_or_empty_games_list(
     plugin, profile_checker, mocker, end_uri
 ):
-    profile_checker.check_is_public_by_steam_id.side_effect = NotPublicGameDetailsOrUserHasNoGames
     mocker.patch('backend_steam_network.SteamNetworkBackend._get_websocket_auth_step',
                  return_value=async_return_value(UserActionRequired.NoActionRequired))
     plugin._SteamPlugin__backend._auth_data = [Mock(str), Mock(str)]

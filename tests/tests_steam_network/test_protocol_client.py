@@ -1,10 +1,10 @@
 import asyncio
-from unittest.mock import MagicMock, ANY
+from unittest.mock import MagicMock, AsyncMock, ANY
 from typing import NamedTuple, List
 
 import pytest
 
-from galaxy.unittest.mock import async_return_value, AsyncMock, skip_loop
+from galaxy.unittest.mock import async_return_value, skip_loop
 from galaxy.api.errors import Banned, BackendNotAvailable
 from steam_network.enums import UserActionRequired
 
@@ -112,7 +112,10 @@ async def test_log_out(client, protobuf_client):
     await client._login_token_handler(EResult.OK, STEAM_ID, None)
     await auth_task
     await protobuf_client.log_off_handler(EResult.Banned)
-    auth_lost_handler.assert_called_with(Banned({"result": EResult.Banned}))
+    auth_lost_handler.assert_called_once()
+    error = auth_lost_handler.call_args.args[0]
+    assert isinstance(error, Banned)
+    assert error.args[0]["result"] == EResult.Banned
 
 
 @pytest.mark.asyncio
@@ -135,7 +138,7 @@ async def test_protocol_connection_with_authentication(
 
 @pytest.mark.asyncio
 async def test_protocol_connection_failure_with_backend_not_available__eresult48(client, protobuf_client):
-    protobuf_client.run.side_effect = BackendNotAvailable(EResult.TryAnotherCM)
+    protobuf_client.run.side_effect = BackendNotAvailable(str(EResult.TryAnotherCM))
 
     with pytest.raises(BackendNotAvailable):
         await client.run()

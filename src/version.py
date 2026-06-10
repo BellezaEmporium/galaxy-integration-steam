@@ -1,7 +1,13 @@
-__version__ = "1.3.4"
+__version__ = "2.1.0"
 __changelog__ = {
     "unreleased": '''
     ''',
+    "2.1.0": """
+      - Full support for Galaxy 2.1 Preview.
+      - Update code for Python 3.13 compatibility.
+      - Updated protobuf files to latest versions.
+      - Minor code cleanups and optimizations.
+    """,
     "1.3.4": """
     - Updated protobufs to their latest version.
     - Minor bug fixes and stability improvements.

@@ -1,8 +1,7 @@
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, AsyncMock
 from typing import Iterable
 
 import pytest
-from galaxy.unittest.mock import AsyncMock
 from galaxy.api.types import Game, LicenseInfo
 from galaxy.api.consts import LicenseType
 from galaxy.api.errors import AuthenticationRequired

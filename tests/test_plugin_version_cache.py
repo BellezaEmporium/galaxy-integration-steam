@@ -1,13 +1,9 @@
-from unittest.mock import Mock
+import asyncio
+from unittest.mock import Mock, AsyncMock
 import pytest
-
-from async_mock import AsyncMock
 
 
 FIRST_SETUP_VERSION_CACHE = "auth_setup_on_version"
-
-
-pytestmark = pytest.mark.asyncio
 
 
 @pytest.mark.parametrize("initial_version", [
@@ -15,7 +11,7 @@ pytestmark = pytest.mark.asyncio
     "1.53",
     "2.2.10",
 ])
-async def test_ensure_version_is_cached_on_pass_login_credentials(
+def test_ensure_version_is_cached_on_pass_login_credentials(
     create_plugin_with_backend,
     register_mock_backend,
     initial_version,
@@ -27,16 +23,18 @@ async def test_ensure_version_is_cached_on_pass_login_credentials(
     backend.pass_login_credentials = AsyncMock(return_value=Mock(name="auth result"))
     plugin = create_plugin_with_backend("A", connected_on_version=initial_version)
 
-    await plugin.pass_login_credentials(
-        Mock(str, name="step"),
-        Mock(dict, name="credentials"),
-        Mock(dict, name="cookies")
+    asyncio.run(
+        plugin.pass_login_credentials(
+            Mock(str, name="step"),
+            Mock(dict, name="credentials"),
+            Mock(dict, name="cookies"),
+        )
     )
     
     assert plugin.persistent_cache[FIRST_SETUP_VERSION_CACHE] == current_plugin_version
 
 
-async def test_do_not_cache_version_on_authenticate(
+def test_do_not_cache_version_on_authenticate(
     create_plugin_with_backend,
     register_mock_backend,
     mocker
@@ -48,6 +46,6 @@ async def test_do_not_cache_version_on_authenticate(
     backend.authenticate = AsyncMock(return_value=Mock(name="auth result"))
     plugin = create_plugin_with_backend("A", connected_on_version=initial_version)
 
-    await plugin.authenticate(stored_credentials=Mock(name='stored_credentials'))
+    asyncio.run(plugin.authenticate(stored_credentials=Mock(name="stored_credentials")))
     
-    plugin.persistent_cache[FIRST_SETUP_VERSION_CACHE] == initial_version
+    assert plugin.persistent_cache[FIRST_SETUP_VERSION_CACHE] == initial_version

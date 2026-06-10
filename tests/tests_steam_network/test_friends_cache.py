@@ -1,8 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import pytest
 
-from tests.async_mock import AsyncMock
 from steam_network.protocol.consts import EPersonaState
 from steam_network.protocol.steam_types import ProtoUserInfo
 from steam_network.friends_cache import FriendsCache

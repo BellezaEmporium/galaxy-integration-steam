@@ -75,7 +75,7 @@ class SteamPlugin(Plugin):
         self._update_local_games_task = asyncio.create_task(asyncio.sleep(0))
 
         # http client
-        self._ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        self._ssl_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
         self._ssl_context.load_verify_locations(certifi.where())
         self._http_client = HttpClient()
 

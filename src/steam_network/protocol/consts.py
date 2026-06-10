@@ -1,10 +1,10 @@
-import enum
+from enum import IntEnum
 
 
 STEAM_CLIENT_APP_ID = 7
 
 
-class EMsg(enum.IntEnum):
+class EMsg(IntEnum):
     Invalid = 0
     Multi = 1
     ProtobufWrapped = 2
@@ -1650,7 +1650,7 @@ class EMsg(enum.IntEnum):
         return cls.Invalid
 
 
-class EResult(enum.IntEnum):
+class EResult(IntEnum):
     Invalid = 0
     OK = 1
     Fail = 2
@@ -1777,7 +1777,7 @@ class EResult(enum.IntEnum):
     AccountHasAnExistingUserCancelledLicense = 115
 
 
-class EPersonaState(enum.IntEnum):
+class EPersonaState(IntEnum):
     Offline = 0
     Online = 1
     Busy = 2
@@ -1788,7 +1788,7 @@ class EPersonaState(enum.IntEnum):
     Invisible = 7
 
 
-class EAccountType(enum.IntEnum):
+class EAccountType(IntEnum):
     Invalid = 0
     Individual = 1
     Multiseat = 2
@@ -1802,7 +1802,7 @@ class EAccountType(enum.IntEnum):
     AnonUser = 10
 
 
-class EFriendRelationship(enum.IntEnum):
+class EFriendRelationship(IntEnum):
     None_ = 0
     Blocked = 1
     RequestRecipient = 2
@@ -1813,7 +1813,7 @@ class EFriendRelationship(enum.IntEnum):
     SuggestedFriend = 7
 
 
-class EClientPersonaStateFlag(enum.IntEnum):
+class EClientPersonaStateFlag(IntEnum):
     Status = 1
     PlayerName = 2
     QueryPort = 4
@@ -1828,7 +1828,7 @@ class EClientPersonaStateFlag(enum.IntEnum):
     Facebook = 2048
 
 
-class EOSType(enum.IntEnum):
+class EOSType(IntEnum):
     Unknown = -1
     Web = -700
     IOSUnknown = -600

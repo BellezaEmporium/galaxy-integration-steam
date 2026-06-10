@@ -21,7 +21,7 @@ with open(os.path.join(BASE_DIR, "src", "manifest.json"), "r") as f:
 
 if sys.platform == 'win32':
     DIST_DIR = os.environ['localappdata'] + '\\GOG.com\\Galaxy\\plugins\\installed'
-    PLATFORM = "win32"
+    PLATFORM = "win_amd64"
     
     if which("py"):
         PYTHON_EXE = "py -3.13"
@@ -52,7 +52,7 @@ def build(c, output='output', ziparchive=None):
     # as pip requires --no-deps if --platform is used.
     print('--> Flattening dependencies to temporary requirements file')
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
-        c.run(f'pip-compile requirements/app.txt --resolver=backtracking --output-file=-', out_stream=tmp)
+        c.run(f'"{sys.executable}" -m piptools compile requirements/app.txt --resolver=backtracking --output-file=-', out_stream=tmp)
 
     # Then install all stuff with pip to output folder
     print('--> Installing with pip for specific version')

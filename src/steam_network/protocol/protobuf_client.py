@@ -188,10 +188,10 @@ class ProtobufClient:
                     break
                 except (ConnectionClosedOK, ConnectionClosedError) as e:
                     logger.info("Websocket connection closed: %s", repr(e))
-                    break
+                    raise
                 except Exception as e:
                     logger.exception("Unexpected error in protobuf client run loop: %s", e)
-                    break
+                    raise
                 finally:
                     self._recv_task = None
         finally:

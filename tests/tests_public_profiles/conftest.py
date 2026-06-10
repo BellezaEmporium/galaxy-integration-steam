@@ -1,10 +1,9 @@
 """Fixtures for testing behaviors in when relying on user public profile only."""
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import pytest
 
-from tests.async_mock import AsyncMock
 from plugin import SteamNetworkBackend
 
 

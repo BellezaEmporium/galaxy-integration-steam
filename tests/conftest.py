@@ -1,8 +1,8 @@
 import pathlib
 import pytest
 
-from unittest.mock import MagicMock, PropertyMock, Mock, sentinel
-from galaxy.unittest.mock import AsyncMock, async_return_value
+from unittest.mock import MagicMock, AsyncMock, PropertyMock, Mock, sentinel
+from galaxy.unittest.mock import async_return_value
 
 from os import path
 BASE_DIR = path.abspath(path.curdir)

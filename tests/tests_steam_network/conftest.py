@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import pytest
-from galaxy.unittest.mock import AsyncMock
+
 
 from plugin import SteamNetworkBackend
 

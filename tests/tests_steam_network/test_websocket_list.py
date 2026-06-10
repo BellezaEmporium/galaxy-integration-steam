@@ -1,7 +1,6 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 import pytest
-from galaxy.unittest.mock import AsyncMock
 
 from steam_network.websocket_list import WebSocketList
 from steam_network.steam_http_client import SteamHttpClient

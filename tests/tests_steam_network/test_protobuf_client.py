@@ -1,8 +1,7 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import pytest
 import websockets
-from galaxy.unittest.mock import AsyncMock
 from websockets.protocol import State
 
 from steam_network.protocol.protobuf_client import ProtobufClient

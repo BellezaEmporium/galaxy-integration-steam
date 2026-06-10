@@ -118,10 +118,10 @@ class WebSocketClient:
                     assert run_task in done
                     await run_task
                     break
-                except Exception:
+                except BaseException:
                     with suppress(asyncio.CancelledError):
-                        if pending is not None:
-                            for task in pending:
+                        for task in (run_task, auth_task):
+                            if task is not None and not task.done():
                                 task.cancel()
                                 await task
                     raise

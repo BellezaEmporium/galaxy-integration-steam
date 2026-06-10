@@ -12,7 +12,8 @@ from galaxy.api.errors import (
     InvalidCredentials,
     NetworkError,
 )
-from galaxy.unittest.mock import async_return_value, skip_loop, AsyncMock
+from galaxy.unittest.mock import async_return_value, skip_loop
+from unittest.mock import AsyncMock
 
 from steam_network.websocket_client import WebSocketClient, RECONNECT_INTERVAL_SECONDS
 from steam_network.websocket_list import WebSocketList
@@ -22,7 +23,6 @@ from steam_network.games_cache import GamesCache
 from steam_network.stats_cache import StatsCache
 from steam_network.times_cache import TimesCache
 from steam_network.user_info_cache import UserInfoCache
-from steam_network.ownership_ticket_cache import OwnershipTicketCache
 
 
 ACCOUNT_NAME = "john"
@@ -105,7 +105,7 @@ def local_machine_cache():
 
 @pytest.fixture
 def ownership_ticket_cache():
-    return MagicMock(OwnershipTicketCache)
+    return MagicMock()
 
 
 @pytest.fixture
@@ -186,7 +186,10 @@ async def test_websocket_close_reconnect(
         aiter(["wss://abc.com/websocket"]),
     ]
     protocol_client.run.side_effect = [
-        async_raise(websockets.ConnectionClosedError(1002, ""), 10),
+        async_raise(
+            websockets.ConnectionClosedError(websockets.frames.Close(1002, ""), None),
+            10,
+        ),
         async_raise(AssertionError),
     ]
     credentials_mock = {"password": PASSWORD, "two_factor": TWO_FACTOR}
@@ -254,7 +257,7 @@ async def test_servers_cache_failure(client, protocol_client, websocket_list):
     [
         asyncio.TimeoutError(),
         IOError(),
-        websockets.InvalidURI("wss://websocket_1"),
+        websockets.InvalidURI("wss://websocket_1", "invalid uri"),
         websockets.InvalidHandshake(),
     ],
 )
@@ -283,7 +286,7 @@ async def test_connect_error(
     [
         asyncio.TimeoutError(),
         IOError(),
-        websockets.InvalidURI("wss://websocket_1"),
+        websockets.InvalidURI("wss://websocket_1", "invalid_uri"),
         websockets.InvalidHandshake(),
     ],
 )

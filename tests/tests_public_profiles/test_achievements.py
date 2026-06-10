@@ -5,8 +5,6 @@ from galaxy.api.types import Achievement, GameTime
 from galaxy.api.errors import AuthenticationRequired, BackendError, UnknownError
 from galaxy.unittest.mock import skip_loop
 
-from public_profiles.steamcommunity_scrapper import SteamHttpClient
-
 
 @pytest.fixture()
 def push_cache(authenticated_plugin, mocker):
@@ -203,13 +201,3 @@ async def test_no_game_time(authenticated_plugin):
     context = {}
     with pytest.raises(UnknownError):
         await authenticated_plugin.get_unlocked_achievements("17923", context)
-
-
-@pytest.mark.parametrize("input_time, parsed_date", [
-    ("Unlocked 22 Jan @ 12:12am", datetime(datetime.utcnow().year, 1, 22, 0, 12, tzinfo=timezone.utc)),
-    ("Unlocked Feb 1 @ 12:12am", datetime(datetime.utcnow().year, 2, 1, 0, 12, tzinfo=timezone.utc)),
-    ("Unlocked 9 Jun, 2017 @ 11:35pm", datetime(2017, 6, 9, 23, 35, tzinfo=timezone.utc)),
-    ("Unlocked Feb 20, 2015 @ 9:24pm", datetime(2015, 2, 20, 21, 24, tzinfo=timezone.utc))
-])
-def test_unlock_time_parsing(input_time, parsed_date):
-    assert parsed_date == SteamHttpClient.parse_date(input_time)

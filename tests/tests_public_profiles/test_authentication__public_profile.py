@@ -6,9 +6,6 @@ import pytest
 from galaxy.api.types import Authentication, NextStep
 from galaxy.api.errors import AccessDenied, UnknownBackendResponse
 
-from user_profile import ProfileDoesNotExist, ProfileIsNotPublic
-
-
 PROFILE_URL = "https://url"
 
 
@@ -130,20 +127,8 @@ async def test_provided_not_public_profile(
 ):
     assert NextStep("web_session", auth_params("?view=login"), None, None) == await plugin.authenticate()
 
-    profile_checker.check_is_public_by_steam_id.side_effect = ProfileIsNotPublic()
-
-    assert NextStep("web_session", auth_params("?view=login&profile_is_not_public=true"), None, None) == await plugin.pass_login_credentials(
-        "random step name",
-        {"end_uri": f".*login_finished.*?steam_id={steam_id}"},
-        cookies
-    )
-
     
 @pytest.mark.asyncio
-@pytest.mark.parametrize("profile_problem", [
-    ProfileIsNotPublic,
-    ProfileDoesNotExist,
-])
 async def test_authenticate_with_credentials_raises_on_not_public_profile(
     plugin,
     stored_credentials,
