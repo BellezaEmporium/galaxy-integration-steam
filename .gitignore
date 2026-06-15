@@ -5,10 +5,9 @@ __pycache__/
 .idea/
 .vscode/
 .mypy_cache/
-.venv
+.venv*
 
 # dev
-venv37/
 build/
 output/
 *.log
