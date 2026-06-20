@@ -1,4 +1,5 @@
 __version__ = "2.1.0"
+__branch__ = "galaxy-2.1"
 __changelog__ = {
     "unreleased": '''
     ''',
