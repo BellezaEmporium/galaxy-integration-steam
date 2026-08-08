@@ -48,6 +48,7 @@ class ProtocolClient:
         user_info_cache: UserInfoCache,
         local_machine_cache: LocalMachineCache,
         used_server_cell_id : int,
+        cell_id_updated_handler: Optional[Callable[[int], None]] = None,
     ):
         # Create protobuf client and wire handlers in a compact way
         self._protobuf_client = ProtobufClient(socket)
@@ -104,6 +105,7 @@ class ProtocolClient:
 
         # other state
         self._used_server_cell_id: int = used_server_cell_id
+        self._cell_id_updated_handler = cell_id_updated_handler
         self._local_machine_cache: LocalMachineCache = local_machine_cache
         self._pending_translations: Set[int] = set()
 
@@ -189,6 +191,7 @@ class ProtocolClient:
         else:
             pass
         self._complete_future('_rsa_future', (result, spk))
+
     async def authenticate_password(self, account_name :str, enciphered_password : bytes, timestamp: int, auth_lost_handler:Callable) ->  Optional[SteamPollingData]:
         # create and await login future
         login_future = self._create_future('_login_future')
@@ -347,9 +350,15 @@ class ProtocolClient:
 
         return UserActionRequired.NoActionRequired
 
-    async def _login_token_handler(self, result: EResult, steam_id : Optional[int], account_id: Optional[int]):
+    async def _login_token_handler(self, result: EResult, steam_id : Optional[int], account_id: Optional[int], cell_id: Optional[int] = None):
         # Sometimes Steam sends LogOnResponse message even if plugin didn't send LogOnRequest
         # known example is LogOnResponse with result=EResult.TryAnotherCM
+        if cell_id is not None:
+            self._used_server_cell_id = cell_id
+            self._user_info_cache.cell_id = cell_id
+            if self._cell_id_updated_handler is not None:
+                self._cell_id_updated_handler(cell_id)
+
         fut: Optional[Future] = getattr(self, '_token_login_future', None)
         if fut is not None:
             if not fut.done():

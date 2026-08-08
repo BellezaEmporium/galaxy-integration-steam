@@ -218,6 +218,22 @@ message CCommunity_GetClanMetadata_Response {
 	optional uint32 appid = 4;
 }
 
+message CCommunity_GetComment_Request {
+	optional fixed64 steamid = 1;
+	optional int32 comment_thread_type = 2 [(.description) = "enum"];
+	optional fixed64 gidfeature = 3;
+	optional fixed64 gidfeature2 = 4;
+	optional fixed64 gidcomment = 5;
+	optional fixed64 comment_thread_id = 6;
+}
+
+message CCommunity_GetComment_Response {
+	optional .CCommunity_Comment comment = 1;
+	optional int32 comment_thread_type = 2 [(.description) = "enum"];
+	optional fixed64 gidfeature = 3;
+	optional fixed64 gidfeature2 = 4;
+}
+
 message CCommunity_GetCommentThread_Request {
 	optional fixed64 steamid = 1;
 	optional int32 comment_thread_type = 2 [(.description) = "enum"];
@@ -415,6 +431,24 @@ message CCommunity_RateCommentThread_Response {
 	optional bool has_upvoted = 5;
 }
 
+message CCommunity_SanctionComment_Request {
+	optional fixed64 steamid = 1;
+	optional fixed64 comment_thread_id = 2;
+	optional fixed64 gidcomment = 3;
+	optional int32 reason = 4 [(.description) = "enum"];
+	optional string note = 5;
+	repeated .CCommunity_SanctionComment_Request_Sanction sanctions = 6;
+}
+
+message CCommunity_SanctionComment_Request_Sanction {
+	optional int32 sanction = 1 [(.description) = "enum"];
+	optional int32 days = 2;
+	optional int32 escalate_to = 3 [(.description) = "enum"];
+}
+
+message CCommunity_SanctionComment_Response {
+}
+
 message CCommunity_SetRecommendationBotReviewStatus_Request {
 	repeated .CCommunity_SetRecommendationBotReviewStatus_Request_ReviewLabel review_labels = 1;
 }
@@ -464,6 +498,8 @@ service Community {
 	rpc GetClanLocGroupImages (.CCommunity_GetClanLocGroupImages_Request) returns (.CCommunity_GetClanLocGroupImages_Response);
 	// bConstMethod=true, ePrivilege=1
 	rpc GetClanMetadata (.CCommunity_GetClanMetadata_Request) returns (.CCommunity_GetClanMetadata_Response);
+	// bConstMethod=true, ePrivilege=5
+	rpc GetComment (.CCommunity_GetComment_Request) returns (.CCommunity_GetComment_Response);
 	// ePrivilege=2, eWebAPIKeyRequirement=1
 	rpc GetCommentThread (.CCommunity_GetCommentThread_Request) returns (.CCommunity_GetCommentThread_Response);
 	// ePrivilege=2
@@ -488,6 +524,8 @@ service Community {
 	rpc RateClanAnnouncement (.CCommunity_RateClanAnnouncement_Request) returns (.CCommunity_RateClanAnnouncement_Response);
 	// ePrivilege=3
 	rpc RateCommentThread (.CCommunity_RateCommentThread_Request) returns (.CCommunity_RateCommentThread_Response);
+	// ePrivilege=5
+	rpc SanctionComment (.CCommunity_SanctionComment_Request) returns (.CCommunity_SanctionComment_Response);
 	// ePrivilege=1
 	rpc SetRecommendationBotReviewStatus (.CCommunity_SetRecommendationBotReviewStatus_Request) returns (.CCommunity_SetRecommendationBotReviewStatus_Response);
 	// bConstMethod=true, ePrivilege=0, eWebAPIKeyRequirement=2

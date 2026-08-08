@@ -11,9 +11,7 @@ class StatsCache(ProtoCache):
         self._update_ready_state()
 
     def start_game_stats_import(self, game_ids):
-        for game_id in game_ids:
-            self._info_map[game_id] = dict()
-        self._games_to_import = set(game_ids)
+        self._games_to_import |= set(game_ids)
         self._update_ready_state()
 
     def finish_game_stats_import(self):

@@ -14,11 +14,12 @@ class SteamHttpClient:
         self._http_client = http_client
 
     async def get_servers(self, cell_id) -> List[str]:
-        url = f"http://api.steampowered.com/ISteamDirectory/GetCMList/v1/?cellid={cell_id}"
+        url = f"https://api.steampowered.com/ISteamDirectory/GetCMListForConnect/v0001/?cellid={cell_id}&format=json&qoslevel=3"
         response = await self._http_client.get(url)
         try:
             data = await response.json()
-            return data['response']['serverlist_websockets']
+            ws_servers = [server['endpoint'] for server in data['response']['serverlist'] if server['type'] == 'websockets']
+            return ws_servers
         except (ValueError, KeyError) :
             logger.exception("Can not parse backend response")
             raise UnknownBackendResponse()

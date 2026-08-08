@@ -118,7 +118,7 @@ class ProtobufClient:
         self.two_factor_update_handler:     Optional[Callable[[EResult, str], Awaitable[None]]] = None
         self.poll_status_handler:           Optional[Callable[[EResult, object], Awaitable[None]]] = None  # object instead of the complex type
         #old auth flow. Used to confirm login and repeat logins using the refresh token.
-        self.log_on_token_handler:          Optional[Callable[[EResult, Optional[int], Optional[int]], Awaitable[None]]] = None
+        self.log_on_token_handler:          Optional[Callable[[EResult, Optional[int], Optional[int], Optional[int]], Awaitable[None]]] = None # can also get the cell id
         self._heartbeat_task:               Optional[asyncio.Task] = None #keeps our connection alive, essentially, by pinging the steam server.
         self.log_off_handler:               Optional[Callable[[EResult], Awaitable[None]]] = None
         #retrive information
@@ -442,8 +442,9 @@ class ProtobufClient:
 
         if self.log_on_token_handler is not None:
             steamid_val = int(message.client_supplied_steamid) if message.client_supplied_steamid else None
-            account_id = int(message.client_supplied_steamid - self._ACCOUNT_ID_MASK) if message.client_supplied_steamid else None 
-            await self.log_on_token_handler(EResult(result), steamid_val, account_id) 
+            account_id = int(message.client_supplied_steamid - self._ACCOUNT_ID_MASK) if message.client_supplied_steamid else None
+            cell_id = int(message.cell_id) if message.cell_id else None
+            await self.log_on_token_handler(EResult(result), steamid_val, account_id, cell_id)
         else:
             logger.warning("NO LOGIN TOKEN HANDLER SET!")
 
@@ -869,17 +870,18 @@ class ProtobufClient:
                     logger.debug("Failed to parse collection entry", exc_info=True)
         self.collections['event'].set()
 
-    async def _process_user_achievements_response(self, target_job_id, body):
+    async def _process_user_achievements_response(self, target_job_id, eresult, body):
         logger.info("Processing GetUserAchievements response")
-        message = CPlayer_GetUserAchievements_Response()
-        message.ParseFromString(body)
-        
         ctx = self._job_context_map.pop(target_job_id, None)
         if ctx is None:
             logger.warning("Unmapped job ID for user achievements")
             return
-        
         game_id, _ = ctx
+        message = CPlayer_GetUserAchievements_Response()
+        if eresult == EResult.OK:
+            message.ParseFromString(body)
+        else:
+            logger.warning("GetUserAchievements failed for %s: %s", game_id, EResult(eresult).name)
         if self.user_achievements_handler:
             result = self.user_achievements_handler(game_id, message)
             if asyncio.iscoroutine(result):
@@ -910,7 +912,7 @@ class ProtobufClient:
         elif target_job_name == CLOUD_CONFIG_DOWNLOAD:
             await self._process_collections_response(body)
         elif target_job_name == GET_USER_ACHIEVEMENTS:
-            await self._process_user_achievements_response(target_job_id, body)
+            await self._process_user_achievements_response(target_job_id, eresult, body)
         elif target_job_name == GET_GAME_ACHIEVEMENTS:
             await self._process_game_achievements_response(target_job_id, body)
         #elif target_job_name == REQUEST_FRIEND_PERSONA_STATES:

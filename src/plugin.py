@@ -131,7 +131,7 @@ class SteamPlugin(Plugin):
     async def authenticate(self, stored_credentials=None):
         try:
             auth = await self._backend.authenticate(stored_credentials)
-        except NetworkError:  # casuses "Offline. Retry"
+        except NetworkError:  # causes "Offline. Retry"
             raise
         except (
             InvalidCredentials, AccessDenied,  # re-raised would cause "Connection Lost"

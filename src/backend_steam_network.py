@@ -2,7 +2,7 @@ import asyncio
 import logging
 import ssl
 from contextlib import suppress
-from typing import Callable, List, Any, Dict, Union, Coroutine, cast
+from typing import Callable, List, Any, Dict, Optional, Union, Coroutine, cast
 from urllib import parse
 from pprint import pformat
 
@@ -82,6 +82,7 @@ class SteamNetworkBackend(BackendInterface):
         self._add_game : Callable[[Game], None] = add_game
         self._persistent_cache : Dict[str, Any] = persistent_cache
         self._persistent_storage_state : PersistentCacheState = persistent_storage_state
+        self._steam_run_task : Optional[Task[None]] = None
 
         self._store_credentials : Callable[[Dict[str, Any]], None] = store_credentials
         self._authentication_cache : AuthenticationCache = AuthenticationCache()
@@ -320,10 +321,7 @@ class SteamNetworkBackend(BackendInterface):
         return await self._get_websocket_auth_step()
 
     async def _finish_auth_process(self) -> Authentication:
-        """ Essentially, call the classic Client.Login and get all the messages back we normally would. 
-
-
-        """
+        """ Essentially, call the classic Client.Login and get all the messages back we normally would. """
         if (self._user_info_cache.is_initialized()):
             await self._websocket_client.communication_queues["websocket"].put({'mode': AuthCall.TOKEN})
             result = await self._get_websocket_auth_step()
@@ -337,7 +335,8 @@ class SteamNetworkBackend(BackendInterface):
             raise UnknownBackendResponse()
 
     async def authenticate(self, stored_credentials=None):
-        self._steam_run_task = asyncio.create_task(self._websocket_client.run())
+        if self._steam_run_task is None or self._steam_run_task.done():
+            self._steam_run_task = asyncio.create_task(self._websocket_client.run())
         if stored_credentials is None:
             return next_step_response_simple(DisplayUriHelper.LOGIN)
         else:
@@ -477,7 +476,14 @@ class SteamNetworkBackend(BackendInterface):
         else:
             logger.info("Game stats import already in progress")
         await self._stats_cache.wait_ready(10 * 60)
+        if not self._stats_cache.ready:
+            pending = sorted(self._stats_cache._games_to_import)
+            logger.warning("Stats import incomplete; %d ids never reported: %s", len(pending), pending[:20])
+            self._stats_cache.finish_game_stats_import()
         logger.info("Finished preparing the achievements context")
+
+    def achievements_import_complete(self):
+        self._stats_cache.finish_game_stats_import()
 
     async def get_unlocked_achievements(self, game_id: str, context: Any) -> List[Achievement]:
         logger.info(f"Asked for achievs for {game_id}")
@@ -512,9 +518,13 @@ class SteamNetworkBackend(BackendInterface):
             await self._websocket_client.refresh_game_times()
         else:
             logger.info("Game stats import already in progress")
-        await self._times_cache.wait_ready(
-            10 * 60
-        )  # Don't block future imports in case we somehow don't receive one of the responses
+        try:
+            await self._times_cache.wait_ready(
+                10 * 60
+            )  # Don't block future imports in case we somehow don't receive one of the responses
+        except asyncio.TimeoutError:
+            logger.warning("Game times import timed out, resetting")
+            self._times_cache.finish_game_stats_import()
         logger.info("Finished game times context prepare")
 
     async def get_game_time(self, game_id: str, context: Dict[int, int]) -> GameTime:

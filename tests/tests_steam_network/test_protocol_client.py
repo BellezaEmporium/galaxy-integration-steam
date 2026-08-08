@@ -93,6 +93,15 @@ async def test_authenticate_success(client, protobuf_client):
 
 
 @pytest.mark.asyncio
+async def test_login_token_handler_updates_cell_id(client):
+    client._used_server_cell_id = 0
+
+    await client._login_token_handler(EResult.OK, STEAM_ID, None, 42)
+
+    assert client._used_server_cell_id == 42
+
+
+@pytest.mark.asyncio
 async def test_authenticate_failure(client, protobuf_client):
     auth_lost_handler = MagicMock()
     protobuf_client.send_log_on_token_message.return_value = async_return_value(None)

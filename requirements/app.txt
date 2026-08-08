@@ -3,7 +3,7 @@ galaxy.plugin.api==0.71
 # steam_network backend
 protobuf
 vdf==3.4
-pyobjc-framework-CoreServices==12.1; sys_platform == 'darwin'
+pyobjc-framework-CoreServices==12.2.1; sys_platform == 'darwin'
 websockets
 dataclasses-json
 cryptography

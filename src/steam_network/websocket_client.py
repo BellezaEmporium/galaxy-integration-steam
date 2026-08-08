@@ -230,6 +230,10 @@ class WebSocketClient:
         return await self._protocol_client.retrieve_collections()
 
 
+    def _update_used_server_cell_id(self, cell_id: int) -> None:
+        self.used_server_cell_id = cell_id
+        logger.info("Updated used server cell_id to %s from Steam login response", cell_id)
+
     async def _ensure_connected(self):
         if self._protocol_client is not None:
             return  # already connected
@@ -250,7 +254,8 @@ class WebSocketClient:
                         self._authentication_cache,
                         self._user_info_cache,
                         self._local_machine_cache,
-                        self.used_server_cell_id
+                        self.used_server_cell_id,
+                        cell_id_updated_handler=self._update_used_server_cell_id,
                     )
                     logger.info(f'Connected to Steam on CM {ws_address} on cell_id {self.used_server_cell_id}. Sending Hello')
                     await self._protocol_client.say_hello()
