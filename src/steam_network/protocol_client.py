@@ -36,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 class ProtocolClient:
     _STATUS_FLAG = 1106
+    _STATS_SWEEP_INTERVAL = 15   # seconds between sweeper checks
+    _STATS_GRACE_PERIOD = 30     # grace period after the job queue drains
 
     def __init__(self,
         socket,
@@ -92,6 +94,7 @@ class ProtocolClient:
         # temp storage for achievements data
         self._temp_user_achievements = {}
         self._temp_game_achievements = {}
+        self._stats_sweeper_task: Optional[asyncio.Task] = None
 
         # auth/connection state
         self._auth_lost_handler = None
@@ -108,7 +111,6 @@ class ProtocolClient:
         self._cell_id_updated_handler = cell_id_updated_handler
         self._local_machine_cache: LocalMachineCache = local_machine_cache
         self._pending_translations: Set[int] = set()
-
 
         if not self._local_machine_cache.machine_id:
             self._local_machine_cache.machine_id = self._generate_machine_id()
@@ -300,7 +302,7 @@ class ProtocolClient:
                 #string agreement_session_url = 8 [(description) = "agreement the user needs to agree to"];
 
                 self._user_info_cache.refresh_token = data.refresh_token
-                self._user_info_cache.persona_name = data.account_name
+                self._user_info_cache.persona_name = data.account_name or self._user_info_cache.account_username
                 self._user_info_cache.access_token = data.access_token
                 #self._user_info_cache.guard_data = data.new_guard_data #seems to not be required.
                 
@@ -369,7 +371,30 @@ class ProtocolClient:
     async def import_game_stats(self, game_ids):
         for game_id in game_ids:
             self._protobuf_client.job_list.append({"job_name": "import_game_stats", "game_id": game_id})
-        #pass
+        if self._stats_sweeper_task is None or self._stats_sweeper_task.done():
+            self._stats_sweeper_task = asyncio.create_task(self._stats_sweeper())
+
+    async def _stats_sweeper(self):
+        queue_empty_since = None
+        while True:
+            await asyncio.sleep(self._STATS_SWEEP_INTERVAL)
+            if any(job.get("job_name") == "import_game_stats" for job in self._protobuf_client.job_list):
+                queue_empty_since = None
+                continue
+            pending = self._stats_cache.pending_game_ids
+            if not pending:
+                return
+            if queue_empty_since is None:
+                queue_empty_since = asyncio.get_running_loop().time()
+                continue
+            if asyncio.get_running_loop().time() - queue_empty_since < self._STATS_GRACE_PERIOD:
+                continue
+            for game_id in list(pending):
+                logger.warning("Force-completing stats for %s (response pair never arrived)", game_id)
+                self._temp_user_achievements.pop(game_id, None)
+                self._temp_game_achievements.pop(game_id, None)
+                self._stats_cache.update_stats(game_id, None, [])
+            return
 
     async def import_game_times(self):
         self._protobuf_client.job_list.append({"job_name": "import_game_times"})

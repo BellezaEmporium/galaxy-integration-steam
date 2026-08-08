@@ -471,13 +471,10 @@ class SteamNetworkBackend(BackendInterface):
             if parent_id in base_ids_set:
                 expanded_ids.extend(dlc_appids)
 
-        if not self._stats_cache.import_in_progress:
-            await self._websocket_client.refresh_game_stats(expanded_ids)
-        else:
-            logger.info("Game stats import already in progress")
+        await self._websocket_client.refresh_game_stats(expanded_ids)
         await self._stats_cache.wait_ready(10 * 60)
         if not self._stats_cache.ready:
-            pending = sorted(self._stats_cache._games_to_import)
+            pending = sorted(self._stats_cache.pending_game_ids)
             logger.warning("Stats import incomplete; %d ids never reported: %s", len(pending), pending[:20])
             self._stats_cache.finish_game_stats_import()
         logger.info("Finished preparing the achievements context")
@@ -499,7 +496,12 @@ class SteamNetworkBackend(BackendInterface):
                 raw_achievements.extend(dlc_stats["achievements"])
 
         achievements = []
+        seen = set()
         for achievement in raw_achievements:
+            key = (achievement["name"], achievement["unlock_time"])
+            if key in seen:
+                continue
+            seen.add(key)
             achievement_name = achievement["name"].strip() or achievement["name"]
             achievements.append(
                 Achievement(
@@ -517,14 +519,11 @@ class SteamNetworkBackend(BackendInterface):
         if not self._times_cache.import_in_progress:
             await self._websocket_client.refresh_game_times()
         else:
-            logger.info("Game stats import already in progress")
-        try:
-            await self._times_cache.wait_ready(
-                10 * 60
-            )  # Don't block future imports in case we somehow don't receive one of the responses
-        except asyncio.TimeoutError:
-            logger.warning("Game times import timed out, resetting")
-            self._times_cache.finish_game_stats_import()
+            logger.info("Game times import already in progress")
+        await self._times_cache.wait_ready(10 * 60)
+        if not self._times_cache.ready:
+            logger.warning("Game times import incomplete, resetting")
+            self._times_cache.times_import_finished(True)
         logger.info("Finished game times context prepare")
 
     async def get_game_time(self, game_id: str, context: Dict[int, int]) -> GameTime:

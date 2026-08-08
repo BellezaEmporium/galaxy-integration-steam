@@ -887,17 +887,18 @@ class ProtobufClient:
             if asyncio.iscoroutine(result):
                 await result
 
-    async def _process_game_achievements_response(self, target_job_id, body):
+    async def _process_game_achievements_response(self, target_job_id, eresult, body):
         logger.info("Processing GetGameAchievements response")
-        message = CPlayer_GetGameAchievements_Response()
-        message.ParseFromString(body)
-        
         ctx = self._job_context_map.pop(target_job_id, None)
         if ctx is None:
             logger.warning("Unmapped job ID for game achievements")
             return
-            
         game_id, _ = ctx
+        message = CPlayer_GetGameAchievements_Response()
+        if eresult == EResult.OK:
+            message.ParseFromString(body)
+        else:
+            logger.warning("GetGameAchievements failed for %s: %s", game_id, EResult(eresult).name)
         if self.game_achievements_handler:
             result = self.game_achievements_handler(game_id, message)
             if asyncio.iscoroutine(result):
@@ -914,7 +915,7 @@ class ProtobufClient:
         elif target_job_name == GET_USER_ACHIEVEMENTS:
             await self._process_user_achievements_response(target_job_id, eresult, body)
         elif target_job_name == GET_GAME_ACHIEVEMENTS:
-            await self._process_game_achievements_response(target_job_id, body)
+            await self._process_game_achievements_response(target_job_id, eresult, body)
         #elif target_job_name == REQUEST_FRIEND_PERSONA_STATES:
             #pass #no idea what to do here. for now, having it error will let me know when it's called so i can see wtf to do with it.
         elif target_job_name == GET_RSA_KEY:
