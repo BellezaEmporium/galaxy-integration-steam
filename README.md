@@ -1,14 +1,10 @@
 # DISCLAIMER
 
-If you're curious enough, you are on the "galaxy_v70" branch, meaning you are in an updated version of the Steam plugin that is ONLY compatible with a NEWER version of GOG Galaxy that is still NOT PUBLICALLY RELEASED.
-
-It contains a MAJOR version of the GOG Galaxy API, that is NOT compatible with the current public version of Galaxy (unless you are on the unreleased Python 3.13-based Galaxy build).
-
 **PLEASE DO NOT USE THE PLUGIN UNLESS YOU HAVE THE NEW GOG GALAXY VERSION INSTALLED, AS IT WILL NOT WORK WITH THE CURRENT PUBLIC VERSION.**
 
 # Steam Integration
 
-GOG Galaxy 2.0 Community integration for Steam.
+GOG Galaxy 2.1 Community integration for Steam.
 
 _Table of Contents_
 
