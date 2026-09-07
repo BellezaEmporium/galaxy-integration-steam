@@ -127,11 +127,12 @@ def local_games_list():
                 continue
             local_game = LocalGame(app_id, app_state)
             local_games.append(local_game)
-    except:
-        logger.exception("Failed to get local games list")
-    finally:
-        return local_games
-
+    except OSError as e:
+        logger.error(f"OS error while getting local games list: {e}")
+    except Exception as e:
+        logger.exception(f"Unexpected error while getting local games list: {e}")
+    
+    return local_games
 
 def get_state_changes(old_list, new_list):
     old_dict = {x.game_id: x.local_game_state for x in old_list}

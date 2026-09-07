@@ -1,8 +1,11 @@
 import asyncio
 import logging
+import os
+from pathlib import Path
 import ssl
 from contextlib import suppress
-from typing import Callable, List, Any, Dict, Optional, Union, Coroutine, cast
+import sys
+from typing import Callable, List, Any, Dict, Optional, Union, Coroutine, Iterable, cast
 from urllib import parse
 from pprint import pformat
 
@@ -32,6 +35,7 @@ from galaxy.api.types import (
 
 from backend_interface import BackendInterface
 from http_client import HttpClient
+from galaxy.api.consts import LocalGameState
 from persistent_cache_state import PersistentCacheState
 from steam_network.authentication_cache import AuthenticationCache
 from steam_network.friends_cache import FriendsCache
@@ -111,6 +115,8 @@ class SteamNetworkBackend(BackendInterface):
         local_machine_cache : LocalMachineCache = LocalMachineCache(self._persistent_cache, self._persistent_storage_state)
 
         steam_http_client = SteamHttpClient(http_client)
+        cell_id_file = self.get_cell_id_file_path()
+
         self._websocket_client = WebSocketClient(
             WebSocketList(steam_http_client),
             ssl_context,
@@ -122,6 +128,7 @@ class SteamNetworkBackend(BackendInterface):
             self._authentication_cache,
             self._user_info_cache,
             local_machine_cache,
+            cell_id_file=cell_id_file,
         )
 
         self._update_owned_games_task : Task[None] = asyncio.create_task(asyncio.sleep(0))
@@ -151,21 +158,35 @@ class SteamNetworkBackend(BackendInterface):
         new_games = self._games_cache.consume_added_games()
         if not new_games:
             return
-
+        
         self._persistent_cache["games"] = self._games_cache.dump()
         self._persistent_storage_state.modified = True
-
-        for i, game in enumerate(new_games):
-            self._add_game(
-                Game(
-                    game.appid,
-                    game.title,
-                    [],
-                    license_info=LicenseInfo(LicenseType.SinglePurchase),
-                )
+        
+        # Convert to Game objects first
+        games_to_add = [
+            Game(
+                game.appid,
+                game.title,
+                [],  # DLCs will be added separately
+                license_info=LicenseInfo(LicenseType.SinglePurchase),
             )
-            if i % 50 == 49:
-                await asyncio.sleep(5)  # give Galaxy a breath in case of adding thousands games
+            for game in new_games
+        ]
+        
+        # Add games in batches with adaptive sleep
+        batch_size = 100 
+        adaptive_delay = 0.5
+        
+        for i in range(0, len(games_to_add), batch_size):
+            batch = games_to_add[i:i + batch_size]
+            
+            for game in batch:
+                self._add_game(game)
+            
+            await asyncio.sleep(adaptive_delay)
+            
+            if i > 1000:  # After 1000 games
+                adaptive_delay = 0.1
 
     def tick(self):
         if self._update_owned_games_task.done() and self._owned_games_parsed:
@@ -360,15 +381,33 @@ class SteamNetworkBackend(BackendInterface):
 
     # features implementation
 
-    async def get_owned_games(self) -> List[Game]:
-        await self._games_cache.wait_ready(GAME_CACHE_IS_READY_TIMEOUT)
+    def get_cell_id_file_path(self) -> Path:
+        if sys.platform == "win32":
+            base = Path(os.environ.get('LOCALAPPDATA', ''))
+            if not base:
+                # Fallback si variable absente
+                base = Path.home() / "AppData" / "Local"
+            return base / "GOG.com" / "Galaxy" / "plugins" / "steam_ca27391f-2675-49b1-92c0-896d43afa4f8" / "user" / "cell_id.txt"
+        
+        elif sys.platform == "darwin":
+            return Path.home() / "Library" / "Application Support" / "GOG.com" / "Galaxy" / "plugins" / "steam_ca27391f-2675-49b1-92c0-896d43afa4f8" / "user" / "cell_id.txt"
+        
+        else:
+            # erh, linux. for now unusable, but it's there just in case.
+            return Path.home() / ".local" / "share" / "gog-galaxy" / "plugins" / "steam_ca27391f-2675-49b1-92c0-896d43afa4f8" / "user" / "cell_id.txt"
 
+    async def get_owned_games(self) -> List[Game]:
+        # Check if cache is already ready
+        if not self._games_cache.ready:
+            await self._games_cache.wait_ready(GAME_CACHE_IS_READY_TIMEOUT)
+        
         owned_games = []
         owned_witcher_3_dlcs = set()
-
-        # build parent → [dlc, ...] map first
+        
+        # Build DLC map first
         dlcs_by_parent: Dict[str, List[Dlc]] = {}
         self._dlcs_by_parent = {}
+        
         async for app in self._games_cache.get_dlcs():
             if app.parent is not None:
                 parent_id = str(app.parent)
@@ -377,21 +416,35 @@ class SteamNetworkBackend(BackendInterface):
                     Dlc(dlc_appid, app.title, LicenseInfo(LicenseType.SinglePurchase, None))
                 )
                 self._dlcs_by_parent.setdefault(parent_id, []).append(dlc_appid)
-
+        
         try:
+            chunk_size = 500
+            current_chunk = []
+            
             async for app in self._games_cache.get_owned_games():
                 dlcs = dlcs_by_parent.get(str(app.appid), [])
-                owned_games.append(
+                current_chunk.append(
                     Game(
                         str(app.appid),
                         app.title,
-                        dlcs,              
+                        dlcs,
                         LicenseInfo(LicenseType.SinglePurchase, None),
                     )
                 )
+                
                 if app.appid in WITCHER_3_DLCS_APP_IDS:
                     owned_witcher_3_dlcs.add(app.appid)
-
+                
+                if len(current_chunk) >= chunk_size:
+                    owned_games.extend(current_chunk)
+                    current_chunk = []
+                    await asyncio.sleep(0)
+            
+            # Add remaining games
+            if current_chunk:
+                owned_games.extend(current_chunk)
+            
+            # Handle Witcher 3 GOTY
             if does_witcher_3_dlcs_set_resolve_to_GOTY(owned_witcher_3_dlcs):
                 owned_games.append(
                     Game(
@@ -401,16 +454,17 @@ class SteamNetworkBackend(BackendInterface):
                         LicenseInfo(LicenseType.SinglePurchase, None),
                     )
                 )
-
+        
         except (KeyError, ValueError):
             logger.exception("Cannot parse backend response")
             raise UnknownBackendResponse()
         finally:
             self._owned_games_parsed = True
-
+        
+        # Update persistent cache
         self._persistent_cache["games"] = self._games_cache.dump()
         self._persistent_storage_state.modified = True
-
+        
         return owned_games
 
     async def get_subscriptions(self) -> List[Subscription]:
@@ -464,19 +518,47 @@ class SteamNetworkBackend(BackendInterface):
     async def prepare_achievements_context(self, game_ids: List[str]) -> Any:
         if self._user_info_cache.steam_id is None:
             raise AuthenticationRequired()
-
+        
+        # Expand DLC IDs
         expanded_ids = list(game_ids)
         base_ids_set = set(game_ids)
         for parent_id, dlc_appids in self._dlcs_by_parent.items():
             if parent_id in base_ids_set:
                 expanded_ids.extend(dlc_appids)
-
-        await self._websocket_client.refresh_game_stats(expanded_ids)
-        await self._stats_cache.wait_ready(10 * 60)
+        
+        # Check if any games are currently running
+        running_games = []
+        if self._local_games_cache:
+            running_games = [
+                game.game_id for game in cast(Iterable[Any], self._local_games_cache)
+                if LocalGameState.Running in game.local_game_state
+            ]
+        
+        # If games are running, use shorter timeout and immediate refresh
+        if any(game_id in running_games for game_id in game_ids):
+            logger.info(f"Games are running, using aggressive refresh")
+            await self._websocket_client.refresh_game_stats(expanded_ids)
+            await self._stats_cache.wait_ready(30)  # 30 seconds for running games
+        else:
+            # Games not running, use standard timeout
+            await self._websocket_client.refresh_game_stats(expanded_ids)
+            await self._stats_cache.wait_ready(60)  # 1 minute for idle games
+        
         if not self._stats_cache.ready:
             pending = sorted(self._stats_cache.pending_game_ids)
-            logger.warning("Stats import incomplete; %d ids never reported: %s", len(pending), pending[:20])
-            self._stats_cache.finish_game_stats_import()
+            logger.warning(
+                "Stats import incomplete; %d ids never reported: %s", 
+                len(pending), 
+                pending[:20]
+            )
+            # Instead of forcing finish, try one more time for running games
+            if any(game_id in running_games for game_id in game_ids):
+                await self._websocket_client.refresh_game_stats(expanded_ids)
+                await self._stats_cache.wait_ready(30)
+            
+            if not self._stats_cache.ready:
+                self._stats_cache.finish_game_stats_import()
+        
         logger.info("Finished preparing the achievements context")
 
     def achievements_import_complete(self):

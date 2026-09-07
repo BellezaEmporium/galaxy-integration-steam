@@ -1,9 +1,11 @@
 import asyncio
+from datetime import datetime
 import logging
 from asyncio import Future
+from pathlib import Path
 import ssl
 from contextlib import suppress
-from typing import Callable, Optional, Any, Dict
+from typing import Callable, List, Optional, Any, Dict, Set
 
 import websockets
 import websockets.exceptions
@@ -62,6 +64,7 @@ class WebSocketClient:
         authentication_cache: AuthenticationCache,
         user_info_cache: UserInfoCache,
         local_machine_cache: LocalMachineCache,
+        cell_id_file: Optional[Path] = None,
     ):
         self._ssl_context : ssl.SSLContext = ssl_context
         # Use a tolerant typing for the websocket protocol to work across websockets versions
@@ -77,12 +80,16 @@ class WebSocketClient:
         self._user_info_cache : UserInfoCache = user_info_cache
         self._local_machine_cache : LocalMachineCache = local_machine_cache
         self._times_cache : TimesCache = times_cache
-
+        self._cell_id_file: Path = cell_id_file or Path("user/cell_id.txt")
+        self._load_cell_id_from_file()
+        
         self.communication_queues : Dict[str, asyncio.Queue] = {'plugin': asyncio.Queue(), 'websocket': asyncio.Queue(),}
         self.used_server_cell_id: int = 0
+        self._sync_cell_id_from_cache()
         self._current_ws_address: Optional[str] = None
 
         self._steam_polling_data : Optional[SteamPollingData] = None
+        self._achievement_monitor = AchievementMonitor(self)
 
     async def run(self, create_future_factory: Callable[[], Future]=asyncio_future):
         #this loop lets us recover from certain errors by restarting the tasks that handle logging in and receiving information from Steam.
@@ -229,14 +236,71 @@ class WebSocketClient:
             raise RuntimeError("Protocol client is not initialized.")
         return await self._protocol_client.retrieve_collections()
 
+    async def start_achievement_monitor(self):
+        await self._achievement_monitor.start()
+    
+    async def stop_achievement_monitor(self):
+        await self._achievement_monitor.stop()
+    
+    def update_running_games(self, running_game_ids: List[str]):
+        current = set(running_game_ids)
+        
+        # Add new running games
+        for game_id in current - self._achievement_monitor._running_games:
+            self._achievement_monitor.add_running_game(game_id)
+        
+        # Remove stopped games
+        for game_id in self._achievement_monitor._running_games - current:
+            self._achievement_monitor.remove_running_game(game_id)
+
+    def _load_cell_id_from_file(self) -> None:
+        try:
+            if self._cell_id_file.exists():
+                content = self._cell_id_file.read_text(encoding='utf-8').strip()
+                if content.isdigit():
+                    self.used_server_cell_id = int(content)
+                    logger.info(f"Loaded cell_id from file : {self.used_server_cell_id}")
+                else:
+                    logger.warning(f"Invalid data found in {self._cell_id_file} : '{content}'")
+            else:
+                logger.info("No cell_id file found, first time ? Using default cell_id 0")
+        except OSError as e:
+            logger.warning(f"Error reading {self._cell_id_file} : {e}")
+
+    def _save_cell_id_to_file(self, cell_id: int) -> None:
+        try:
+            self._cell_id_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            temp_file = self._cell_id_file.with_suffix('.tmp')
+            temp_file.write_text(str(cell_id), encoding='utf-8')
+            temp_file.replace(self._cell_id_file)
+            
+            logger.debug(f"Saved {cell_id} to {self._cell_id_file}")
+            
+        except OSError as e:
+            logger.warning(f"Error saving {self._cell_id_file} : {e}")
 
     def _update_used_server_cell_id(self, cell_id: int) -> None:
+        old_cell_id = self.used_server_cell_id
         self.used_server_cell_id = cell_id
-        logger.info("Updated used server cell_id to %s from Steam login response", cell_id)
+        
+        self._save_cell_id_to_file(cell_id)
+        
+        if old_cell_id != cell_id:
+            logger.info(f"Cell_id updated : {old_cell_id} → {cell_id} (file updated)")
+
+    def _sync_cell_id_from_cache(self) -> None:
+        if hasattr(self._user_info_cache, 'cell_id') and self._user_info_cache.cell_id:
+            self.used_server_cell_id = self._user_info_cache.cell_id
+            logger.info(
+                f"cell_id found in stored credentials, using : {self.used_server_cell_id}"
+            )
 
     async def _ensure_connected(self):
         if self._protocol_client is not None:
             return  # already connected
+
+        self._sync_cell_id_from_cache()
 
         while True:
             async for ws_address in self._websocket_list.get(self.used_server_cell_id):
@@ -392,3 +456,94 @@ class WebSocketClient:
             # Signal auth lost so the main loop can handle reconnection
             if not auth_lost_future.done():
                 auth_lost_future.set_exception(AuthenticationRequired())
+
+class AchievementMonitor:    
+    def __init__(self, websocket_client: 'WebSocketClient'):
+        self._websocket_client = websocket_client
+        self._running_games: Set[str] = set()
+        self._monitor_task: Optional[asyncio.Task] = None
+        self._last_achievement_check: Dict[str, datetime] = {}
+        self._poll_interval = 30  # seconds
+        self._is_running = False
+    
+    def add_running_game(self, game_id: str):
+        self._running_games.add(game_id)
+        logger.info(f"Monitoring achievements for running game: {game_id}")
+    
+    def remove_running_game(self, game_id: str):
+        self._running_games.discard(game_id)
+        self._last_achievement_check.pop(game_id, None)
+        logger.info(f"Stopped monitoring game: {game_id}")
+    
+    async def start(self):
+        if self._is_running:
+            return
+        
+        self._is_running = True
+        self._monitor_task = asyncio.create_task(self._monitor_loop())
+        logger.info("Achievement monitor started")
+    
+    async def stop(self):
+        self._is_running = False
+        if self._monitor_task:
+            self._monitor_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._monitor_task
+        logger.info("Achievement monitor stopped")
+    
+    async def _monitor_loop(self):
+        while self._is_running:
+            try:
+                await asyncio.sleep(self._poll_interval)
+                
+                if not self._running_games:
+                    continue
+                
+                logger.debug(f"Checking achievements for {len(self._running_games)} running games")
+                
+                # Fetch achievements for running games
+                game_ids = list(self._running_games)
+                
+                # Also include DLCs for running games
+                expanded_ids = self._expand_with_dlcs(game_ids)
+                
+                # Trigger stats refresh
+                await self._websocket_client.refresh_game_stats(expanded_ids)
+                
+                # Update last check times
+                now = datetime.now()
+                for game_id in expanded_ids:
+                    self._last_achievement_check[game_id] = now
+                
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error(f"Error in achievement monitor: {e}")
+                await asyncio.sleep(5)  # Brief pause before retrying
+    
+    def _expand_with_dlcs(self, game_ids: List[str]) -> List[str]:
+        expanded = set(game_ids)
+        
+        # Get DLCs from games cache if available
+        games_cache = self._websocket_client._games_cache
+        if games_cache:
+            for game_id in game_ids:
+                try:
+                    # This assumes your GamesCache has a method to get DLCs
+                    # You may need to adjust based on your actual implementation
+                    dlcs = games_cache.get_dlcs_for_game(game_id)
+                    if dlcs:
+                        expanded.update(dlcs)
+                except Exception as e:
+                    logger.warning(f"Failed to get DLCs for {game_id}: {e}")
+        
+        return list(expanded)
+    
+    def get_stats(self) -> Dict[str, any]: # type: ignore
+        """Get monitoring statistics."""
+        return {
+            "running_games": len(self._running_games),
+            "monitored_games": len(self._last_achievement_check),
+            "poll_interval": self._poll_interval,
+            "is_running": self._is_running
+        }
