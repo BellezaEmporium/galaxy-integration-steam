@@ -2,6 +2,8 @@
 
 GOG Galaxy 2.1 Community integration for Steam.
 
+This is a continuation of ABaumher's work along with the GOG-Nebula team. Original work/fork available here : https://github.com/ABaumher/galaxy-integration-steam
+
 _Table of Contents_
 
 <!-- Generated with [DocToc](https://github.com/thlorenz/doctoc) -->
