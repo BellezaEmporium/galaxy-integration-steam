@@ -194,8 +194,6 @@ Well, without being too complicated, Steam changed how they do authentication. W
 
 ### Current Version
 
-This is a fork of <https://github.com/ABaumher/galaxy-integration-steam>, which is itself a fork of <https://github.com/FriendsOfGalaxy/galaxy-integration-steam>.
-
 The new Authorization flow implementation is heavily influenced by SteamKit. <https://github.com/SteamRE/SteamKit><br>
 While we have not utilized their source code, they have implemented the new authentication workflow before we did, and we used their knowledge of how to do so in order to implement it ourselves. If you are doing anything steam related in C#, you should check them out; their project has far more features than our own.
 
